@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Strona startowa</title>
+<style>
+  /* --- Reset i wyśrodkowanie --- */
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #121212; /* możesz zmienić na inny kolor */
+  }
+
+  a {
+    text-decoration: none;
+    outline: none;
+  }
+
+  /* --- Twój przycisk --- */
+  .loader {
+    --size: 250px;
+    --duration: 2s;
+    --logo-color: grey;
+    --background: linear-gradient(
+      0deg,
+      rgba(50, 50, 50, 0.2) 0%,
+      rgba(100, 100, 100, 0.2) 100%
+    );
+    height: var(--size);
+    aspect-ratio: 1;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .loader .box {
+    position: absolute;
+    background: var(--background);
+    border-radius: 50%;
+    border-top: 1px solid rgba(100, 100, 100, 1);
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
+    backdrop-filter: blur(5px);
+    animation: ripple var(--duration) infinite ease-in-out;
+  }
+
+  .loader .box:nth-child(1) { inset: 40%; z-index: 99; }
+  .loader .box:nth-child(2) { inset: 30%; z-index: 98; border-color: rgba(100,100,100,0.8); animation-delay: 0.2s; }
+  .loader .box:nth-child(3) { inset: 20%; z-index: 97; border-color: rgba(100,100,100,0.6); animation-delay: 0.4s; }
+  .loader .box:nth-child(4) { inset: 10%; z-index: 96; border-color: rgba(100,100,100,0.4); animation-delay: 0.6s; }
+  .loader .box:nth-child(5) { inset: 0%;  z-index: 95; border-color: rgba(100,100,100,0.2); animation-delay: 0.8s; }
+
+  .loader .logo {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    padding: 30%;
+    z-index: 101;
+  }
+
+  .loader .logo img {
+    width: 100%;
+    filter: drop-shadow(0 0 8px #fff9b0) drop-shadow(0 0 15px #f8e71c);
+    user-select: none;
+    pointer-events: none;
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  .energy-orb {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .energy {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #f8e71c;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #f8e71c, 0 0 20px rgba(248, 231, 28, 0.8);
+    opacity: 0.9;
+  }
+
+  .energy-1 { animation: orbit 3s linear infinite; }
+  .energy-2 { animation: orbit 4s linear infinite reverse; }
+  .energy-3 { animation: orbit 5s ease-in-out infinite; }
+
+  @keyframes orbit {
+    0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+  }
+
+  @keyframes ripple {
+    0% { transform: scale(1); box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px; }
+    50% { transform: scale(1.3); box-shadow: rgba(0, 0, 0, 0.3) 0px 30px 20px -0px; }
+    100% { transform: scale(1); box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { filter: drop-shadow(0 0 8px #fff9b0) drop-shadow(0 0 15px #f8e71c); }
+    50% { filter: drop-shadow(0 0 20px #fff9b0) drop-shadow(0 0 30px #f8e71c); }
+  }
+</style>
+</head>
+<body>
+  <a href="https://twojadomena.com/docelowa-strona" class="loader" aria-label="Przejdź dalej">
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+
+    <div class="logo">
+      <img src="https://i.postimg.cc/sx5skcZX/KK-YELLOW.png" alt="Logo" />
+    </div>
+
+    <div class="energy-orb">
+      <div class="energy energy-1"></div>
+      <div class="energy energy-2"></div>
+      <div class="energy energy-3"></div>
+    </div>
+  </a>
+</body>
+</html>
