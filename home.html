@@ -43,7 +43,7 @@
       align-items: center;
       border-radius: 50%;
       background-color: #222;
-      color: white;
+      color: white; /* ikonki zawsze białe */
       font-size: 26px;
       transition: background-color 0.3s, box-shadow 0.3s;
       box-shadow: inset 1px 1px 2px #fff3;
@@ -53,29 +53,17 @@
 
     .social-button:hover {
       background-color: white;
-      color: inherit;
       box-shadow: 0 0 12px 3px currentColor;
+      color: white; /* nadal białe na hover */
     }
 
-    /* Kolory hover dla każdego serwisu */
-    .instagram:hover {
-      color: #e1306c;
-      box-shadow: 0 0 12px 3px #e1306c;
-    }
-
-    .facebook:hover {
-      color: #4267b2;
-      box-shadow: 0 0 12px 3px #4267b2;
-    }
-
-    .google:hover {
-      color: #34a853;
-      box-shadow: 0 0 12px 3px #34a853;
-    }
-
+    /* Usuwamy zmiany koloru dla poszczególnych social w hover */
+    .instagram:hover,
+    .facebook:hover,
+    .google:hover,
     .whatsapp:hover {
-      color: #25d366;
-      box-shadow: 0 0 12px 3px #25d366;
+      color: white;
+      box-shadow: 0 0 12px 3px white;
     }
 
   </style>
@@ -213,7 +201,6 @@
 
     function drawLine(x0, y0, x1, y1) {
       ctx.beginPath();
-;
       ctx.moveTo(x0, y0);
       many(100, (i) => {
         i = (i + 1) / 100;
