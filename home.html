@@ -1,108 +1,300 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interaktywne tło z przyciskami</title>
-<style>
-/* Twoje oryginalne style z Uiverse.io */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twoja Strona</title>
+  <style>
+    /* Interaktywne tło */
+    body {
+      overflow: hidden;
+      margin: 0;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      position: relative;
+      min-height: 100vh;
+    }
 
-.parent {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed; /* żeby wypełniało ekran */
-  top: 0;
-  left: 0;
-  z-index: 0; /* w tle */
-  pointer-events: auto; /* interaktywne */
-}
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
 
-.child {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform-style: preserve-3d;
-  transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
-  border-radius: 5px;
-  margin: 0 5px;
-  box-shadow:
-    inset 1px 1px 2px #fff,
-    0 0 5px #4442;
-  background-color: transparent;
-}
+    /* Przyciski social media */
+    .social-container {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+    }
 
-.child:hover {
-  background-color: white;
-  background-position:
-    -100px 100px,
-    -100px 100px;
-  /*transform: rotate3d(0.5, 1, 0, 30deg);*/
-  transform: perspective(180px) rotateX(60deg) translateY(2px);
-}
+    .parent {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-.child-1:hover {
-  box-shadow: 0px 10px 10px #1e90ff;
-}
-.child-2:hover {
-  box-shadow: 0px 10px 10px #ff00ff;
-}
-.child-3:hover {
-  box-shadow: 0px 10px 10px #000;
-}
-.child-4:hover {
-  box-shadow: 0px 10px 10px #4267b2;
-}
+    .child {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
+      border-radius: 5px;
+      margin: 0 5px;
+      box-shadow:
+        inset 1px 1px 2px #fff,
+        0 0 5px #4442;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
 
-.button {
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  border: none;
-  background-color: transparent;
-  font-size: 20px;
-  transition-duration: 0.5s;
-  transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
-}
+    .child:hover {
+      background-color: white;
+      background-position:
+        -100px 100px,
+        -100px 100px;
+      transform: perspective(180px) rotateX(60deg) translateY(2px);
+    }
 
-.child:hover > .button {
-  transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
-    translateY(2px) translateZ(10px);
-}
+    .child-1:hover {
+      box-shadow: 0px 10px 10px #1e90ff;
+    }
+    .child-2:hover {
+      box-shadow: 0px 10px 10px #ff00ff;
+    }
+    .child-3:hover {
+      box-shadow: 0px 10px 10px #000;
+    }
+    .child-4:hover {
+      box-shadow: 0px 10px 10px #4267b2;
+    }
 
-/* Kontener na przyciski na dole strony */
-.buttons-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  z-index: 10; /* nad tłem */
-}
-</style>
+    .button {
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: transparent;
+      font-size: 20px;
+      transition-duration: 0.5s;
+      transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
+    }
+
+    .child:hover > .button {
+      transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
+        translateY(2px) translateZ(10px);
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Główna zawartość strony */
+    .content {
+      position: relative;
+      z-index: 10;
+      padding: 20px;
+      color: white;
+      text-shadow: 0 0 5px black;
+    }
+  </style>
 </head>
 <body>
+  <!-- Główna zawartość strony -->
+  <div class="content">
+    <!-- Tutaj możesz dodać swoją treść -->
+    <h1>Witaj na mojej stronie!</h1>
+    <p>To jest przykładowa zawartość.</p>
+  </div>
 
-<!-- Interaktywne tło -->
-<div class="parent">
-  <!-- Przykładowe elementy tła, można tu wstawić canvas lub inne -->
-  <div class="child child-1"><button class="button">A</button></div>
-  <div class="child child-2"><button class="button">B</button></div>
-  <div class="child child-3"><button class="button">C</button></div>
-  <div class="child child-4"><button class="button">D</button></div>
-</div>
+  <!-- Interaktywne tło -->
+  <canvas id="canvas"></canvas>
 
-<!-- Przyciski na dole strony -->
-<div class="buttons-container">
-  <div class="child child-1"><button class="button">A</button></div>
-  <div class="child child-2"><button class="button">B</button></div>
-  <div class="child child-3"><button class="button">C</button></div>
-  <div class="child child-4"><button class="button">D</button></div>
-</div>
+  <!-- Przyciski social media -->
+  <div class="social-container">
+    <div class="parent">
+      <div class="child child-1">
+        <button class="button btn-1">
+          <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill="#1e90ff">
+            <path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="child child-2">
+        <button class="button btn-2">
+          <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="#ff00ff">
+            <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="child child-3">
+        <button class="button btn-3">
+          <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 496 512">
+            <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="child child-4">
+        <button class="button btn-4">
+          <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="#4267B2">
+            <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
 
+  <script>
+    // Skrypt interaktywnego tła
+    const canvas = document.getElementById("canvas");
+    let w, h;
+    const ctx = canvas.getContext("2d");
+    const { sin, cos, PI, hypot, min, max } = Math;
+
+    function spawn() {
+      const pts = many(333, () => {
+        return {
+          x: rnd(innerWidth),
+          y: rnd(innerHeight),
+          len: 0,
+          r: 0
+        };
+      });
+
+      const pts2 = many(9, (i) => {
+        return {
+          x: cos((i / 9) * PI * 2),
+          y: sin((i / 9) * PI * 2)
+        };
+      });
+
+      let seed = rnd(100)
+      let tx = rnd(innerWidth);
+      let ty = rnd(innerHeight);
+      let x = rnd(innerWidth)
+      let y = rnd(innerHeight)
+      let kx = rnd(0.8, 0.8)
+      let ky = rnd(0.8, 0.8)
+      let walkRadius = pt(rnd(50, 50), rnd(50, 50))
+      let r = innerWidth / rnd(100, 150);
+
+      function paintPt(pt) {
+        pts2.forEach((pt2) => {
+          if (!pt.len) return
+          drawLine(
+            lerp(x + pt2.x * r, pt.x, pt.len * pt.len),
+            lerp(y + pt2.y * r, pt.y, pt.len * pt.len),
+            x + pt2.x * r,
+            y + pt2.y * r
+          );
+        });
+        drawCircle(pt.x, pt.y, pt.r);
+      }
+
+      return {
+        follow(x, y) {
+          tx = x;
+          ty = y;
+        },
+
+        tick(t) {
+          const selfMoveX = cos(t * kx + seed) * walkRadius.x;
+          const selfMoveY = sin(t * ky + seed) * walkRadius.y;
+          let fx = tx + selfMoveX;
+          let fy = ty + selfMoveY;
+
+          x += min(innerWidth / 100, (fx - x) / 10)
+          y += min(innerWidth / 100, (fy - y) / 10)
+
+          let i = 0
+          pts.forEach((pt) => {
+            const dx = pt.x - x,
+                  dy = pt.y - y;
+            const len = hypot(dx, dy);
+            let r = min(2, innerWidth / len / 5);
+            pt.t = 0;
+            const increasing = len < innerWidth / 10 && (i++) < 8;
+            let dir = increasing ? 0.1 : -0.1;
+            if (increasing) r *= 1.5;
+            pt.r = r;
+            pt.len = max(0, min(pt.len + dir, 1));
+            paintPt(pt)
+          });
+        }
+      }
+    }
+
+    const spiders = many(2, spawn);
+
+    addEventListener("pointermove", (e) => {
+      spiders.forEach(spider => {
+        spider.follow(e.clientX, e.clientY)
+      })
+    });
+
+    requestAnimationFrame(function anim(t) {
+      if (w !== innerWidth) w = canvas.width = innerWidth;
+      if (h !== innerHeight) h = canvas.height = innerHeight;
+      ctx.fillStyle = "#000";
+      drawCircle(0, 0, w * 10);
+      ctx.fillStyle = ctx.strokeStyle = "#fff";
+      t /= 1000;
+      spiders.forEach(spider => spider.tick(t))
+      requestAnimationFrame(anim);
+    });
+
+    function rnd(x = 1, dx = 0) {
+      return Math.random() * x + dx;
+    }
+
+    function drawCircle(x, y, r) {
+      ctx.beginPath();
+      ctx.ellipse(x, y, r, r, 0, 0, PI * 2);
+      ctx.fill();
+    }
+
+    function drawLine(x0, y0, x1, y1) {
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      many(100, (i) => {
+        i = (i + 1) / 100;
+        let x = lerp(x0, x1, i);
+        let y = lerp(y0, y1, i);
+        let k = noise(x / 5 + x0, y / 5 + y0) * 2;
+        ctx.lineTo(x + k, y + k);
+      });
+      ctx.stroke();
+    }
+
+    function many(n, f) {
+      return [...Array(n)].map((_, i) => f(i));
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function noise(x, y, t = 101) {
+      let w0 = sin(0.3 * x + 1.4 * t + 2.0 +
+        2.5 * sin(0.4 * y + -1.3 * t + 1.0));
+      let w1 = sin(0.2 * y + 1.5 * t + 2.8 +
+        2.3 * sin(0.5 * x + -1.2 * t + 0.5));
+      return w0 + w1;
+    }
+
+    function pt(x, y) {
+      return { x, y }
+    }
+  </script>
 </body>
 </html>
