@@ -3,23 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Centered Button with Text</title>
+  <title>Strona z pulsującym przyciskiem</title>
   <style>
-    /* Cały viewport, flex na kolumnę, centrowanie */
+    /* Reset i tło pełnoekranowe */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: black;
+      font-family: sans-serif;
+    }
+
+    /* Kontener centrowania */
     .center-wrapper {
       height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 1em;
-      background-color: #111; /* opcjonalnie tło ciemne, dopasuj według potrzeb */
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      background-color: black;
     }
 
-    /* From Uiverse.io by Smit-Prajapati */
+    /* Twój pulsujący przycisk (loader) */
     .loader {
       --size: 250px;
       --duration: 2s;
@@ -32,6 +38,7 @@
       height: var(--size);
       aspect-ratio: 1;
       position: relative;
+      cursor: pointer;
     }
 
     .loader .box {
@@ -88,12 +95,12 @@
 
     .loader .logo img {
       width: 100%;
-      filter: drop-shadow(0 0 15px #fff9b0) drop-shadow(0 0 30px #f8e71c);
+      filter: drop-shadow(0 0 10px #fff9b0) drop-shadow(0 0 20px #f8e71c);
       user-select: none;
       pointer-events: none;
     }
 
-    /* ENERGETYCZNE WIĄZKI */
+    /* Energetyczne wiązki */
     .energy-orb {
       position: absolute;
       inset: 0;
@@ -150,8 +157,9 @@
       }
     }
 
-    /* Tekst pod przyciskiem */
+    /* Napis pod przyciskiem */
     .txt {
+      margin-top: 20px;
       font-family: sans-serif;
       font-size: 1em;
       letter-spacing: 4px;
@@ -162,9 +170,7 @@
       animation: animate 3s linear infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: rgba(255, 255, 255, 0);
-      text-align: center;
-      width: 100%;
-      max-width: 300px;
+      user-select: none;
     }
 
     @keyframes animate {
@@ -179,23 +185,21 @@
 </head>
 <body>
   <div class="center-wrapper">
-    <a href="https://smartsystemskk.com" style="text-decoration: none;">
-      <div class="loader">
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
+    <a href="https://twoja-druga-strona.com" class="loader" title="Click to enter">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
 
-        <div class="logo">
-          <img src="https://i.postimg.cc/sx5skcZX/KK-YELLOW.png" alt="Logo" />
-        </div>
+      <div class="logo">
+        <img src="https://i.postimg.cc/sx5skcZX/KK-YELLOW.png" alt="Logo" />
+      </div>
 
-        <div class="energy-orb">
-          <div class="energy energy-1"></div>
-          <div class="energy energy-2"></div>
-          <div class="energy energy-3"></div>
-        </div>
+      <div class="energy-orb">
+        <div class="energy energy-1"></div>
+        <div class="energy energy-2"></div>
+        <div class="energy energy-3"></div>
       </div>
     </a>
     <p class="txt">Click the button above</p>
