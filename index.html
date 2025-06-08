@@ -1,131 +1,204 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Strona startowa</title>
-<style>
-  /* --- Reset i wyśrodkowanie --- */
-  html, body {
-    margin: 0; padding: 0; height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #121212; /* możesz zmienić na inny kolor */
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Centered Button with Text</title>
+  <style>
+    /* Cały viewport, flex na kolumnę, centrowanie */
+    .center-wrapper {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 1em;
+      background-color: #111; /* opcjonalnie tło ciemne, dopasuj według potrzeb */
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  a {
-    text-decoration: none;
-    outline: none;
-  }
+    /* From Uiverse.io by Smit-Prajapati */
+    .loader {
+      --size: 250px;
+      --duration: 2s;
+      --logo-color: grey;
+      --background: linear-gradient(
+        0deg,
+        rgba(50, 50, 50, 0.2) 0%,
+        rgba(100, 100, 100, 0.2) 100%
+      );
+      height: var(--size);
+      aspect-ratio: 1;
+      position: relative;
+    }
 
-  /* --- Twój przycisk --- */
-  .loader {
-    --size: 250px;
-    --duration: 2s;
-    --logo-color: grey;
-    --background: linear-gradient(
-      0deg,
-      rgba(50, 50, 50, 0.2) 0%,
-      rgba(100, 100, 100, 0.2) 100%
-    );
-    height: var(--size);
-    aspect-ratio: 1;
-    position: relative;
-    cursor: pointer;
-  }
+    .loader .box {
+      position: absolute;
+      background: var(--background);
+      border-radius: 50%;
+      border-top: 1px solid rgba(100, 100, 100, 1);
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
+      backdrop-filter: blur(5px);
+      animation: ripple var(--duration) infinite ease-in-out;
+    }
 
-  .loader .box {
-    position: absolute;
-    background: var(--background);
-    border-radius: 50%;
-    border-top: 1px solid rgba(100, 100, 100, 1);
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
-    backdrop-filter: blur(5px);
-    animation: ripple var(--duration) infinite ease-in-out;
-  }
+    .loader .box:nth-child(1) {
+      inset: 40%;
+      z-index: 99;
+    }
 
-  .loader .box:nth-child(1) { inset: 40%; z-index: 99; }
-  .loader .box:nth-child(2) { inset: 30%; z-index: 98; border-color: rgba(100,100,100,0.8); animation-delay: 0.2s; }
-  .loader .box:nth-child(3) { inset: 20%; z-index: 97; border-color: rgba(100,100,100,0.6); animation-delay: 0.4s; }
-  .loader .box:nth-child(4) { inset: 10%; z-index: 96; border-color: rgba(100,100,100,0.4); animation-delay: 0.6s; }
-  .loader .box:nth-child(5) { inset: 0%;  z-index: 95; border-color: rgba(100,100,100,0.2); animation-delay: 0.8s; }
+    .loader .box:nth-child(2) {
+      inset: 30%;
+      z-index: 98;
+      border-color: rgba(100, 100, 100, 0.8);
+      animation-delay: 0.2s;
+    }
 
-  .loader .logo {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-content: center;
-    padding: 30%;
-    z-index: 101;
-  }
+    .loader .box:nth-child(3) {
+      inset: 20%;
+      z-index: 97;
+      border-color: rgba(100, 100, 100, 0.6);
+      animation-delay: 0.4s;
+    }
 
-  .loader .logo img {
-    width: 100%;
-    filter: drop-shadow(0 0 8px #fff9b0) drop-shadow(0 0 15px #f8e71c);
-    user-select: none;
-    pointer-events: none;
-    animation: pulse 2s infinite ease-in-out;
-  }
+    .loader .box:nth-child(4) {
+      inset: 10%;
+      z-index: 96;
+      border-color: rgba(100, 100, 100, 0.4);
+      animation-delay: 0.6s;
+    }
 
-  .energy-orb {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    pointer-events: none;
-  }
+    .loader .box:nth-child(5) {
+      inset: 0%;
+      z-index: 95;
+      border-color: rgba(100, 100, 100, 0.2);
+      animation-delay: 0.8s;
+    }
 
-  .energy {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background: #f8e71c;
-    border-radius: 50%;
-    box-shadow: 0 0 12px #f8e71c, 0 0 20px rgba(248, 231, 28, 0.8);
-    opacity: 0.9;
-  }
+    .loader .logo {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      padding: 30%;
+      z-index: 101;
+    }
 
-  .energy-1 { animation: orbit 3s linear infinite; }
-  .energy-2 { animation: orbit 4s linear infinite reverse; }
-  .energy-3 { animation: orbit 5s ease-in-out infinite; }
+    .loader .logo img {
+      width: 100%;
+      filter: drop-shadow(0 0 15px #fff9b0) drop-shadow(0 0 30px #f8e71c);
+      user-select: none;
+      pointer-events: none;
+    }
 
-  @keyframes orbit {
-    0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
-    100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
-  }
+    /* ENERGETYCZNE WIĄZKI */
+    .energy-orb {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      pointer-events: none;
+    }
 
-  @keyframes ripple {
-    0% { transform: scale(1); box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px; }
-    50% { transform: scale(1.3); box-shadow: rgba(0, 0, 0, 0.3) 0px 30px 20px -0px; }
-    100% { transform: scale(1); box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px; }
-  }
+    .energy {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #f8e71c;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #f8e71c, 0 0 20px rgba(248, 231, 28, 0.8);
+      opacity: 0.9;
+    }
 
-  @keyframes pulse {
-    0%, 100% { filter: drop-shadow(0 0 8px #fff9b0) drop-shadow(0 0 15px #f8e71c); }
-    50% { filter: drop-shadow(0 0 20px #fff9b0) drop-shadow(0 0 30px #f8e71c); }
-  }
-</style>
+    .energy-1 {
+      animation: orbit 3s linear infinite;
+    }
+
+    .energy-2 {
+      animation: orbit 4s linear infinite reverse;
+    }
+
+    .energy-3 {
+      animation: orbit 5s ease-in-out infinite;
+    }
+
+    @keyframes orbit {
+      0% {
+        transform: rotate(0deg) translateX(100px) rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg) translateX(100px) rotate(-360deg);
+      }
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(1);
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
+      }
+      50% {
+        transform: scale(1.3);
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 30px 20px -0px;
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
+      }
+    }
+
+    /* Tekst pod przyciskiem */
+    .txt {
+      font-family: sans-serif;
+      font-size: 1em;
+      letter-spacing: 4px;
+      overflow: hidden;
+      background: linear-gradient(90deg, #fff 10%, #4d4d4d 20%);
+      background-repeat: no-repeat;
+      background-size: 80%;
+      animation: animate 3s linear infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: rgba(255, 255, 255, 0);
+      text-align: center;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    @keyframes animate {
+      0% {
+        background-position: -500%;
+      }
+      100% {
+        background-position: 500%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <a href="https://smartsystemskk.com" class="loader" aria-label="Przejdź dalej">
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
+  <div class="center-wrapper">
+    <a href="https://smartsystemskk.com" style="text-decoration: none;">
+      <div class="loader">
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
 
-    <div class="logo">
-      <img src="https://i.postimg.cc/sx5skcZX/KK-YELLOW.png" alt="Logo" />
-    </div>
+        <div class="logo">
+          <img src="https://i.postimg.cc/sx5skcZX/KK-YELLOW.png" alt="Logo" />
+        </div>
 
-    <div class="energy-orb">
-      <div class="energy energy-1"></div>
-      <div class="energy energy-2"></div>
-      <div class="energy energy-3"></div>
-    </div>
-  </a>
+        <div class="energy-orb">
+          <div class="energy energy-1"></div>
+          <div class="energy energy-2"></div>
+          <div class="energy energy-3"></div>
+        </div>
+      </div>
+    </a>
+    <p class="txt">Click the button above</p>
+  </div>
 </body>
 </html>
