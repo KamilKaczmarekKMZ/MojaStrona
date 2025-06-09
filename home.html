@@ -112,85 +112,6 @@
       font-size: 14px;
     }
 
-    /* Przyciski social media */
-    .social-container {
-      position: fixed;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    .parent {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .child {
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-style: preserve-3d;
-      transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
-      border-radius: 5px;
-      margin: 0 5px;
-      box-shadow:
-        inset 1px 1px 2px #fff,
-        0 0 5px #4442;
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    .child:hover {
-      background-color: black;
-      background-position:
-        -100px 100px,
-        -100px 100px;
-      transform: perspective(180px) rotateX(60deg) translateY(2px);
-    }
-
-    .child-2:hover {
-      box-shadow: 0px 10px 10px #ff00ff;
-    }
-    .child-3:hover {
-      box-shadow: 0px 10px 10px #EA4335; /* Gmail czerwony */
-    }
-    .child-4:hover {
-      box-shadow: 0px 10px 10px #4267B2;
-    }
-
-    .button {
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: transparent;
-      font-size: 20px;
-      transition-duration: 0.5s;
-      transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
-    }
-
-    .child:hover > .button {
-      transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
-        translateY(2px) translateZ(10px);
-    }
-
-    .button svg {
-      width: 24px;
-      height: 24px;
-      display: block;
-    }
-
     /* Główna zawartość strony */
     .content {
       position: relative;
@@ -325,6 +246,123 @@
       background-color: rgba(255, 255, 255, 0.6);
     }
 
+    /* Style dla sekcji kontaktowej */
+    .contact-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .contact-close {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+    }
+
+    .contact-close:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .contact-title {
+      color: white;
+      margin-bottom: 30px;
+      font-size: 28px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Style dla przycisków social media */
+    .social-container {
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .parent {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .child {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
+      border-radius: 5px;
+      margin: 0 15px;
+      box-shadow:
+        inset 1px 1px 2px #fff,
+        0 0 5px #4442;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .child:hover {
+      background-color: black;
+      background-position:
+        -100px 100px,
+        -100px 100px;
+      transform: perspective(180px) rotateX(60deg) translateY(2px);
+    }
+
+    .child-2:hover {
+      box-shadow: 0px 10px 10px #ff00ff;
+    }
+    .child-3:hover {
+      box-shadow: 0px 10px 10px #EA4335;
+    }
+    .child-4:hover {
+      box-shadow: 0px 10px 10px #4267B2;
+    }
+
+    .button {
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: transparent;
+      font-size: 20px;
+      transition-duration: 0.5s;
+      transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+    }
+
+    .child:hover > .button {
+      transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
+        translateY(2px) translateZ(10px);
+    }
+
+    .button svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
     @media (max-width: 768px) {
       .carousel {
         height: 70vh;
@@ -333,6 +371,10 @@
       .carousel-item {
         width: 250px;
         height: 350px;
+      }
+
+      .child {
+        margin: 0 10px;
       }
     }
 
@@ -382,7 +424,7 @@
       </span>
       <span class="link-title">Products</span>
     </a>
-    <a href="#" class="link">
+    <a href="#" class="link" id="contact-link">
       <span class="link-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
           <rect width="256" height="256" fill="none"></rect>
@@ -411,7 +453,7 @@
     <p>KK</p>
   </div>
 
-  <!-- Nowa karuzela produktów 3D -->
+  <!-- Karuzela produktów -->
   <div class="carousel-container" id="carousel-container">
     <div class="carousel">
       <button class="carousel-close" id="carousel-close">&times;</button>
@@ -442,35 +484,39 @@
     </div>
   </div>
 
-  <!-- Interaktywne tło -->
-  <canvas id="canvas"></canvas>
-
-  <!-- Przyciski social media -->
-  <div class="social-container">
-    <div class="parent">
-      <div class="child child-2">
-        <button class="button btn-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ff00ff">
-            <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
-          </svg>
-        </button>
-      </div>
-      <div class="child child-3">
-        <a href="mailto:twój@email.com" class="button btn-3">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#EA4335">
-            <path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"></path>
-          </svg>
-        </a>
-      </div>
-      <div class="child child-4">
-        <button class="button btn-4">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="#4267B2">
-            <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
-          </svg>
-        </button>
+  <!-- Sekcja kontaktowa z przyciskami social media -->
+  <div class="contact-container" id="contact-container">
+    <button class="contact-close" id="contact-close">&times;</button>
+    <h2 class="contact-title">Contact Us</h2>
+    <div class="social-container">
+      <div class="parent">
+        <div class="child child-2">
+          <button class="button btn-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ff00ff">
+              <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="child child-3">
+          <a href="mailto:twój@email.com" class="button btn-3">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#EA4335">
+              <path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"></path>
+            </svg>
+          </a>
+        </div>
+        <div class="child child-4">
+          <button class="button btn-4">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="#4267B2">
+              <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Interaktywne tło -->
+  <canvas id="canvas"></canvas>
 
   <!-- Widget czatu -->
   <script>
@@ -486,7 +532,7 @@
         responseTimeText: 'Click the button to start chatting'
       },
       style: {
-        primaryColor: '#001f3f',  // Navy blue
+        primaryColor: '#001f3f',
         secondaryColor: '#003366',
         position: 'right',
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -732,6 +778,36 @@
       // Responsywność
       window.addEventListener('resize', function() {
         initCarousel();
+      });
+    });
+  </script>
+
+  <!-- Skrypt sekcji kontaktowej -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const contactContainer = document.getElementById('contact-container');
+      const contactLink = document.getElementById('contact-link');
+      const contactClose = document.getElementById('contact-close');
+
+      // Otwórz sekcję kontaktową
+      contactLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        contactContainer.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      });
+
+      // Zamknij sekcję kontaktową
+      contactClose.addEventListener('click', function() {
+        contactContainer.style.display = 'none';
+        document.body.style.overflow = '';
+      });
+
+      // Zamknij po kliknięciu poza sekcją
+      contactContainer.addEventListener('click', function(e) {
+        if (e.target === contactContainer) {
+          contactContainer.style.display = 'none';
+          document.body.style.overflow = '';
+        }
       });
     });
   </script>
