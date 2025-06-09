@@ -295,6 +295,22 @@
   </div>
 
   <!-- Widget czatu -->
+  <style>
+    /* Dodatkowe style dla responsywności widgetu */
+    @media (max-width: 480px) {
+      .chat-widget-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-radius: 0 !important;
+      }
+      .chat-widget-header {
+        border-radius: 0 !important;
+      }
+    }
+  </style>
+  
   <script>
     window.ChatWidgetConfig = {
       webhook: {
@@ -308,14 +324,17 @@
         responseTimeText: 'Click the button to start chatting'
       },
       style: {
-        primaryColor: '#ff00ff',  // Dopasowane do Twojego motywu
-        secondaryColor: '#d100d1',
+        primaryColor: '#001f3f',  // Navy blue
+        secondaryColor: '#003366',
         position: 'right',
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         fontColor: '#ffffff',
         buttonIcon: '💬',
         buttonSize: '60px',
-        buttonPosition: 'bottom'
+        buttonPosition: 'bottom',
+        mobileBreakpoint: 480,  // Specjalne ustawienia dla telefonów
+        mobileWidth: '95%',    // Szerokość na telefonach
+        mobileHeight: '80%'    // Wysokość na telefonach
       },
       suggestedQuestions: []
     };
