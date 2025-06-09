@@ -1,2 +1,11 @@
-<script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.2/build/spline-viewer.js"></script>
-<spline-viewer url="undefined"></spline-viewer>
+import Spline from '@splinetool/react-spline/next';
+
+export default function Home() {
+  return (
+    <main>
+      <Spline
+        scene="https://prod.spline.design/ijS5oSpW3YVkFIaU/scene.splinecode" 
+      />
+    </main>
+  );
+}
