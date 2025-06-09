@@ -200,6 +200,92 @@
       text-shadow: 0 0 5px black;
       text-align: center;
     }
+
+    /* Style dla karuzeli */
+    .carousel-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .carousel {
+      position: relative;
+      width: 80%;
+      max-width: 800px;
+      overflow: hidden;
+    }
+
+    .carousel-inner {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-item {
+      min-width: 100%;
+      box-sizing: border-box;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .carousel-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      color: #333;
+    }
+
+    .carousel-card h3 {
+      margin-top: 0;
+      color: #001f3f;
+    }
+
+    .carousel-nav {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .carousel-arrow {
+      background-color: rgba(255, 255, 255, 0.8);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 0 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .carousel-arrow:hover {
+      background-color: white;
+      transform: scale(1.1);
+    }
+
+    .carousel-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .carousel-close:hover {
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
@@ -214,7 +300,7 @@
       </span>
       <span class="link-title">Home</span>
     </a>
-    <a href="#" class="link">
+    <a href="#" class="link" id="products-link">
       <span class="link-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
           <rect width="256" height="256" fill="none"></rect>
@@ -254,6 +340,37 @@
   <div class="content">
     <h1>SmartSystems</h1>
     <p>KK</p>
+  </div>
+
+  <!-- Karuzela produktów -->
+  <div class="carousel-container" id="carousel-container">
+    <div class="carousel">
+      <button class="carousel-close" id="carousel-close">&times;</button>
+      <div class="carousel-inner" id="carousel-inner">
+        <div class="carousel-item">
+          <div class="carousel-card">
+            <h3>Product 1</h3>
+            <p>Description of product 1. This is an amazing product with many features.</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-card">
+            <h3>Product 2</h3>
+            <p>Description of product 2. Another fantastic product from our collection.</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-card">
+            <h3>Product 3</h3>
+            <p>Description of product 3. The best solution for your needs.</p>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-nav">
+        <button class="carousel-arrow" id="carousel-prev">&#10094;</button>
+        <button class="carousel-arrow" id="carousel-next">&#10095;</button>
+      </div>
+    </div>
   </div>
 
   <!-- Interaktywne tło -->
@@ -299,6 +416,12 @@
       }
       .chat-widget-header {
         border-radius: 0 !important;
+      }
+      .carousel {
+        width: 95% !important;
+      }
+      .carousel-card {
+        padding: 15px !important;
       }
     }
   </style>
@@ -478,6 +601,60 @@
     function pt(x, y) {
       return { x, y }
     }
+  </script>
+
+  <!-- Skrypt karuzeli -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const carouselContainer = document.getElementById('carousel-container');
+      const carouselInner = document.getElementById('carousel-inner');
+      const carouselPrev = document.getElementById('carousel-prev');
+      const carouselNext = document.getElementById('carousel-next');
+      const carouselClose = document.getElementById('carousel-close');
+      const productsLink = document.getElementById('products-link');
+
+      let currentIndex = 0;
+      const items = document.querySelectorAll('.carousel-item');
+      const itemCount = items.length;
+
+      // Otwórz karuzelę po kliknięciu w Products
+      productsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        carouselContainer.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      });
+
+      // Zamknij karuzelę
+      carouselClose.addEventListener('click', function() {
+        carouselContainer.style.display = 'none';
+        document.body.style.overflow = '';
+      });
+
+      // Przycisk poprzedni
+      carouselPrev.addEventListener('click', function() {
+        currentIndex = (currentIndex - 1 + itemCount) % itemCount;
+        updateCarousel();
+      });
+
+      // Przycisk następny
+      carouselNext.addEventListener('click', function() {
+        currentIndex = (currentIndex + 1) % itemCount;
+        updateCarousel();
+      });
+
+      // Aktualizacja pozycji karuzeli
+      function updateCarousel() {
+        carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+      }
+
+      // Zamknij karuzelę po kliknięciu poza nią
+      carouselContainer.addEventListener('click', function(e) {
+        if (e.target === carouselContainer) {
+          carouselContainer.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      });
+    });
   </script>
 </body>
 </html>
