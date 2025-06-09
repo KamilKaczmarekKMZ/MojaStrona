@@ -294,6 +294,38 @@
     </div>
   </div>
 
+  <!-- Widget czatu -->
+  <script>
+    window.ChatWidgetConfig = {
+      webhook: {
+        url: 'https://thekamilkaczmarek.app.n8n.cloud/webhook/5800ad3c-860f-44a0-8fd6-b402bb390b74/chat',
+        route: 'chat'
+      },
+      branding: {
+        logo: 'https://i.postimg.cc/sx5skcZX/KK-YELLOW.png',
+        name: 'SmartSystem',
+        welcomeText: 'Let’s figure out how can we help you!',
+        responseTimeText: 'Click the button to start chatting'
+      },
+      style: {
+        primaryColor: '#ff00ff',  // Dopasowane do Twojego motywu
+        secondaryColor: '#d100d1',
+        position: 'right',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        fontColor: '#ffffff',
+        buttonIcon: '💬',
+        buttonSize: '60px',
+        buttonPosition: 'bottom'
+      },
+      suggestedQuestions: []
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/gh/KamilKaczmarekKMZ/SmartSystemsKKwidget/chat-widget.js';
+    script.defer = true;
+    document.body.appendChild(script);
+  </script>
+
   <!-- Skrypt interaktywnego tła -->
   <script>
     const canvas = document.getElementById("canvas");
