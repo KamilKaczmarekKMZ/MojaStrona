@@ -12,7 +12,7 @@
     }
     
     body {
-      overflow: hidden;
+      overflow-x: hidden;
       margin: 0;
       cursor: pointer;
       font-family: Arial, sans-serif;
@@ -25,6 +25,91 @@
       top: 0;
       left: 0;
       z-index: -1;
+    }
+
+    /* Menu */
+    .menu {
+      padding: 0.5rem;
+      background-color: rgba(0, 0, 0, 0.8);
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px 0 rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    .link {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 50px;
+      height: 40px;
+      border-radius: 8px;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      transform-origin: center left;
+      transition: width 0.2s ease-in;
+      text-decoration: none;
+      color: white;
+    }
+
+    .link:before {
+      position: absolute;
+      z-index: -1;
+      content: "";
+      display: block;
+      border-radius: 8px;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      transform: translateX(100%);
+      transition: transform 0.2s ease-in;
+      transform-origin: center right;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .link:hover,
+    .link:focus {
+      outline: 0;
+      width: 110px;
+    }
+
+    .link:hover:before,
+    .link:focus:before,
+    .link:hover .link-title,
+    .link:focus .link-title {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .link-icon {
+      width: 24px;
+      height: 24px;
+      display: block;
+      flex-shrink: 0;
+      left: 13px;
+      position: absolute;
+    }
+
+    .link-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .link-title {
+      transform: translateX(100%);
+      transition: transform 0.2s ease-in;
+      transform-origin: center right;
+      display: block;
+      text-align: center;
+      text-indent: 24px;
+      width: 100%;
+      font-size: 14px;
     }
 
     /* Przyciski social media */
@@ -110,16 +195,71 @@
     .content {
       position: relative;
       z-index: 10;
-      padding: 20px;
+      padding: 80px 20px 20px;
       color: white;
       text-shadow: 0 0 5px black;
+      text-align: center;
     }
   </style>
 </head>
 <body>
+  <!-- Menu -->
+  <div class="menu">
+    <a href="#" class="link">
+      <span class="link-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
+          <rect width="256" height="256" fill="none"></rect>
+          <path d="M213.3815,109.61945,133.376,36.88436a8,8,0,0,0-10.76339.00036l-79.9945,72.73477A8,8,0,0,0,40,115.53855V208a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V115.53887A8,8,0,0,0,213.3815,109.61945Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
+        </svg>
+      </span>
+      <span class="link-title">Home</span>
+    </a>
+    <a href="#" class="link">
+      <span class="link-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
+          <rect width="256" height="256" fill="none"></rect>
+          <polyline points="76.201 132.201 152.201 40.201 216 40 215.799 103.799 123.799 179.799" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline>
+          <line x1="100" y1="156" x2="160" y2="96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+          <path d="M82.14214,197.45584,52.201,227.397a8,8,0,0,1-11.31371,0L28.603,215.11268a8,8,0,0,1,0-11.31371l29.94113-29.94112a8,8,0,0,0,0-11.31371L37.65685,141.65685a8,8,0,0,1,0-11.3137l12.6863-12.6863a8,8,0,0,1,11.3137,0l76.6863,76.6863a8,8,0,0,1,0,11.3137l-12.6863,12.6863a8,8,0,0,1-11.3137,0L93.45584,197.45584A8,8,0,0,0,82.14214,197.45584Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
+        </svg>
+      </span>
+      <span class="link-title">Games</span>
+    </a>
+    <a href="#" class="link">
+      <span class="link-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
+          <rect width="256" height="256" fill="none"></rect>
+          <path d="M45.42853,176.99811A95.95978,95.95978,0,1,1,79.00228,210.5717l.00023-.001L45.84594,220.044a8,8,0,0,1-9.89-9.89l9.47331-33.15657Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
+          <line x1="96" y1="112" x2="160" y2="112" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+          <line x1="96" y1="144" x2="160" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+        </svg>
+      </span>
+      <span class="link-title">Chat</span>
+    </a>
+    <a href="#" class="link">
+      <span class="link-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
+          <rect width="256" height="256" fill="none"></rect>
+          <circle cx="116" cy="116" r="84" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle>
+          <line x1="175.39356" y1="175.40039" x2="223.99414" y2="224.00098" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+        </svg>
+      </span>
+      <span class="link-title">Search</span>
+    </a>
+    <a href="#" class="link">
+      <span class="link-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
+          <rect width="256" height="256" fill="none"></rect>
+          <circle cx="128" cy="96" r="64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="16"></circle>
+          <path d="M30.989,215.99064a112.03731,112.03731,0,0,1,194.02311.002" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
+        </svg>
+      </span>
+      <span class="link-title">Profile</span>
+    </a>
+  </div>
+
   <!-- Główna zawartość strony -->
   <div class="content">
-    <!-- Tutaj możesz dodać swoją treść -->
     <h1>SmartSystems</h1>
     <p>KK</p>
   </div>
