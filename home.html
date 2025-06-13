@@ -378,7 +378,6 @@
       }
     }
   </style>
-  <!-- Load Poppins font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -501,6 +500,7 @@
   <canvas id="canvas"></canvas>
 
   <!-- Widget czatu - teraz zewnętrzny -->
+  <div id="chat-widget-root"></div>
   <script>
     window.ChatWidgetConfig = {
       webhook: {
@@ -511,20 +511,27 @@
         logo: 'https://i.postimg.cc/sx5skcZX/KK-YELLOW.png',
         name: 'SmartSystem',
         welcomeText: 'Let’s figure out how can we help you!',
-        responseTimeText: 'Click the button to start chatting'
+        responseTimeText: 'Click the button to start chatting',
+        poweredBy: {
+          text: 'Powered by SmartSystemsKK',
+          link: 'https://www.instagram.com/kk_smartsystems/'
+        }
       },
       style: {
         primaryColor: '#10b981',
         secondaryColor: '#059669',
         position: 'right',
         backgroundColor: '#ffffff',
-        fontColor: '#1f2937'
+        fontColor: '#1f2937',
+        mobileBreakpoint: 480,
+        mobileWidth: '95vw',
+        mobileHeight: '65vh'
       },
       suggestedQuestions: []
     };
     
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/KamilKaczmarekKMZ/SmartSystemsKKwidget/chat-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/gh/KamilKaczmarekKMZ/SmartSystemsKKwidget@latest/chat-widget.js';
     script.defer = true;
     document.body.appendChild(script);
   </script>
@@ -537,46 +544,13 @@
     const { sin, cos, PI, hypot, min, max } = Math;
 
     function spawn() {
-      const pts = many(333, () => {
-        return {
-          x: rnd(innerWidth),
-          y: rnd(innerHeight),
-          len: 0,
-          r: 0
-        };
-      });
-      return pts;
-    }
-
-    function many(n, fn) {
-      return Array.from({ length: n }, fn);
-    }
-
-    function rnd(max, min = 0) {
-      return Math.random() * (max - min) + min;
-    }
-
-    function setup() {
-      resize();
-      window.addEventListener("resize", resize);
-      canvas.addEventListener("click", onClick);
-      canvas.addEventListener("touchstart", onClick);
-    }
-
-    function resize() {
-      w = canvas.width = innerWidth;
-      h = canvas.height = innerHeight;
-    }
-
-    function onClick(e) {
-      const pt = {
-        x: e.clientX || e.touches[0].clientX,
-        y: e.clientY || e.touches[0].clientY,
+      const pts = Array.from({ length: 333 }, () => ({
+        x: Math.random() * innerWidth,
+        y: Math.random() * innerHeight,
         len: 0,
         r: 0
-      };
-      pts.push(pt);
-      if (pts.length > 333) pts.shift();
+      }));
+      return pts;
     }
 
     let pts = spawn();
@@ -587,34 +561,33 @@
       ctx.fillStyle = "#0001";
       ctx.fillRect(0, 0, w, h);
       ctx.lineWidth = 1;
-      pts.forEach((pt, i) => {
+      pts.forEach(pt => {
         pt.len += 1;
         pt.r = min(33, pt.r + 0.1);
         if (pt.len > 111) {
           pt.len = 0;
-          pt.x = rnd(w);
-          pt.y = rnd(h);
+          pt.x = Math.random() * w;
+          pt.y = Math.random() * h;
           pt.r = 0;
         }
-        drawPt(pt);
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, PI * 2);
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
       });
       requestAnimationFrame(update);
     }
 
-    function drawPt(pt) {
-      const { x, y, len, r } = pt;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, PI * 2);
-      ctx.strokeStyle = `hsl(${(time % 360)}, 80%, 50%)`;
-      ctx.stroke();
+    function resize() {
+      w = canvas.width = innerWidth;
+      h = canvas.height = innerHeight;
     }
 
-    setup();
+    window.addEventListener("resize", resize);
+    resize();
     update();
-  </script>
 
-  <!-- Skrypt karuzeli 3D -->
-  <script>
+    // Skrypt karuzeli
     document.addEventListener('DOMContentLoaded', function() {
       const carouselContainer = document.getElementById('carousel-container');
       const carouselInner = document.getElementById('carousel-inner');
@@ -629,7 +602,6 @@
       const radius = Math.min(window.innerWidth, window.innerHeight) * 0.3;
       const theta = (2 * Math.PI) / itemCount;
 
-      // Inicjalizacja pozycji kart
       function initCarousel() {
         items.forEach((item, index) => {
           const angle = index * theta;
@@ -641,7 +613,6 @@
         });
       }
 
-      // Otwórz karuzelę
       productsLink.addEventListener('click', function(e) {
         e.preventDefault();
         carouselContainer.style.display = 'flex';
@@ -649,13 +620,11 @@
         initCarousel();
       });
 
-      // Zamknij karuzelę
       carouselClose.addEventListener('click', function() {
         carouselContainer.style.display = 'none';
         document.body.style.overflow = '';
       });
 
-      // Nawigacja
       carouselPrev.addEventListener('click', function() {
         currentIndex = (currentIndex - 1 + itemCount) % itemCount;
         updateCarousel();
@@ -666,12 +635,10 @@
         updateCarousel();
       });
 
-      // Aktualizacja pozycji karuzeli
       function updateCarousel() {
         const angle = currentIndex * -theta;
         carouselInner.style.transform = `rotateY(${angle}rad)`;
 
-        // Podświetlenie aktywnej karty
         items.forEach((item, index) => {
           const isActive = index === currentIndex;
           item.style.opacity = isActive ? '1' : '0.6';
@@ -680,7 +647,6 @@
         });
       }
 
-      // Zamknij po kliknięciu poza karuzelą
       carouselContainer.addEventListener('click', function(e) {
         if (e.target === carouselContainer) {
           carouselContainer.style.display = 'none';
@@ -688,38 +654,28 @@
         }
       });
 
-      // Inicjalizacja
       initCarousel();
       updateCarousel();
-
-      // Responsywność
-      window.addEventListener('resize', function() {
-        initCarousel();
-      });
+      window.addEventListener('resize', initCarousel);
     });
-  </script>
 
-  <!-- Skrypt sekcji kontaktowej -->
-  <script>
+    // Skrypt sekcji kontaktowej
     document.addEventListener('DOMContentLoaded', function() {
       const contactContainer = document.getElementById('contact-container');
       const contactLink = document.getElementById('contact-link');
       const contactClose = document.getElementById('contact-close');
 
-      // Otwórz sekcję kontaktową
       contactLink.addEventListener('click', function(e) {
         e.preventDefault();
         contactContainer.style.display = 'flex';
         document.body.style.overflow = 'hidden';
       });
 
-      // Zamknij sekcję kontaktową
       contactClose.addEventListener('click', function() {
         contactContainer.style.display = 'none';
         document.body.style.overflow = '';
       });
 
-      // Zamknij po kliknięciu poza sekcją
       contactContainer.addEventListener('click', function(e) {
         if (e.target === contactContainer) {
           contactContainer.style.display = 'none';
