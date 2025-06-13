@@ -116,7 +116,7 @@
       text-align: center;
     }
 
-    /* NOWA POJEDYNCZA KARTA (zastąpiła karuzelę) */
+    /* Nowa pojedyncza karta z obsługą żyroskopu */
     :root {
       --pointer-x: 50%;
       --pointer-y: 50%;
@@ -148,6 +148,7 @@
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      touch-action: none;
     }
 
     .profile-card-wrapper {
@@ -184,7 +185,7 @@
       position: relative;
       background-blend-mode: color-dodge, normal, normal, normal;
       box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
-      transition: transform 1s ease;
+      transition: transform 0.3s ease-out;
       transform: translate3d(0, 0, 0.1px) rotateX(0deg) rotateY(0deg);
       background-image: radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y), 
                         hsla(266, 100%, 90%, var(--card-opacity)) 4%, 
@@ -391,6 +392,25 @@
         margin: 0 10px;
       }
     }
+
+    @media (max-width: 480px) {
+      .profile-card-wrapper {
+        width: 220px;
+        height: 320px;
+      }
+
+      .profile-card h3 {
+        font-size: 18px;
+      }
+
+      .profile-card p {
+        font-size: 13px;
+      }
+
+      .profile-card-inside {
+        padding: 20px;
+      }
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -448,7 +468,7 @@
     <p>KK</p>
   </div>
 
-  <!-- Nowa pojedyncza karta (zamiast karuzeli) -->
+  <!-- Nowa pojedyncza karta z obsługą żyroskopu -->
   <div class="profile-card-container" id="profile-card-container">
     <button class="profile-card-close" id="profile-card-close">&times;</button>
     <div class="profile-card-wrapper">
@@ -529,29 +549,28 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- Skrypt dla nowej karty -->
+  <!-- Skrypt dla karty z obsługą żyroskopu -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const profileCardContainer = document.getElementById('profile-card-container');
       const profileCard = document.getElementById('profile-card');
       const profileCardClose = document.getElementById('profile-card-close');
       const productsLink = document.getElementById('products-link');
+      let gyroEnabled = false;
 
-      // Obsługa otwierania karty
-      productsLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        profileCardContainer.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-      });
+      // Funkcja aktualizująca transformację karty
+      function updateCardTransform(x, y) {
+        profileCard.style.setProperty('--pointer-x', `${x}%`);
+        profileCard.style.setProperty('--pointer-y', `${y}%`);
+        profileCard.style.setProperty('--rotate-x', `${(y - 50) / 5}deg`);
+        profileCard.style.setProperty('--rotate-y', `${-(x - 50) / 5}deg`);
+        profileCard.style.setProperty('--card-opacity', '1');
+      }
 
-      // Obsługa zamykania karty
-      profileCardClose.addEventListener('click', function() {
-        profileCardContainer.style.display = 'none';
-        document.body.style.overflow = '';
-      });
-
-      // Efekty interaktywne karty
-      profileCard.addEventListener('mousemove', (e) => {
+      // Obsługa ruchu myszy
+      function handleMouseMove(e) {
+        if (gyroEnabled) return;
+        
         const rect = profileCard.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -559,17 +578,76 @@
         const percentX = (x / rect.width) * 100;
         const percentY = (y / rect.height) * 100;
         
-        profileCard.style.setProperty('--pointer-x', `${percentX}%`);
-        profileCard.style.setProperty('--pointer-y', `${percentY}%`);
-        profileCard.style.setProperty('--rotate-x', `${(percentY - 50) / 5}deg`);
-        profileCard.style.setProperty('--rotate-y', `${-(percentX - 50) / 5}deg`);
-        profileCard.style.setProperty('--card-opacity', '1');
+        updateCardTransform(percentX, percentY);
+      }
+
+      // Obsługa żyroskopu
+      function handleDeviceOrientation(e) {
+        if (!e.beta || !e.gamma) return;
+        
+        gyroEnabled = true;
+        
+        // Beta to przechylenie przód/tył (zakres -180 do 180)
+        // Gamma to przechylenie lewo/prawo (zakres -90 do 90)
+        const beta = e.beta;  // przechylenie przód/tył
+        const gamma = e.gamma; // przechylenie lewo/prawo
+        
+        // Normalizujemy wartości do zakresu 0-100%
+        const percentX = 50 + (gamma / 90 * 50);
+        const percentY = 50 + (beta / 180 * 50);
+        
+        // Ograniczamy wartości do 10-90% aby uniknąć skrajnych efektów
+        const clampedX = Math.min(Math.max(percentX, 10), 90);
+        const clampedY = Math.min(Math.max(percentY, 10), 90);
+        
+        updateCardTransform(clampedX, clampedY);
+      }
+
+      // Obsługa otwierania karty
+      productsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        profileCardContainer.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Dodajemy obsługę żyroskopu jeśli dostępna
+        if (window.DeviceOrientationEvent) {
+          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // iOS 13+ wymaga uprawnień
+            DeviceOrientationEvent.requestPermission()
+              .then(permissionState => {
+                if (permissionState === 'granted') {
+                  window.addEventListener('deviceorientation', handleDeviceOrientation);
+                }
+              })
+              .catch(console.error);
+          } else {
+            // Inne przeglądarki
+            window.addEventListener('deviceorientation', handleDeviceOrientation);
+          }
+        }
+        
+        // Dodajemy też obsługę myszy
+        profileCard.addEventListener('mousemove', handleMouseMove);
       });
 
+      // Obsługa zamykania karty
+      profileCardClose.addEventListener('click', function() {
+        profileCardContainer.style.display = 'none';
+        document.body.style.overflow = '';
+        
+        // Usuwamy listenery
+        window.removeEventListener('deviceorientation', handleDeviceOrientation);
+        profileCard.removeEventListener('mousemove', handleMouseMove);
+        gyroEnabled = false;
+      });
+
+      // Reset pozycji karty gdy mysz ją opuści
       profileCard.addEventListener('mouseleave', () => {
-        profileCard.style.setProperty('--rotate-x', '0deg');
-        profileCard.style.setProperty('--rotate-y', '0deg');
-        profileCard.style.setProperty('--card-opacity', '0');
+        if (!gyroEnabled) {
+          profileCard.style.setProperty('--rotate-x', '0deg');
+          profileCard.style.setProperty('--rotate-y', '0deg');
+          profileCard.style.setProperty('--card-opacity', '0');
+        }
       });
 
       // Obsługa kliknięcia poza kartą
@@ -577,6 +655,11 @@
         if (e.target === profileCardContainer) {
           profileCardContainer.style.display = 'none';
           document.body.style.overflow = '';
+          
+          // Usuwamy listenery
+          window.removeEventListener('deviceorientation', handleDeviceOrientation);
+          profileCard.removeEventListener('mousemove', handleMouseMove);
+          gyroEnabled = false;
         }
       });
     });
