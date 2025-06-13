@@ -18,13 +18,7 @@
       font-family: Arial, sans-serif;
       position: relative;
       min-height: 100vh;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
+      background-color: #000; /* Dodane czarne tło w zastępstwie canvas */
     }
 
     /* Menu */
@@ -496,10 +490,7 @@
     </div>
   </div>
 
-  <!-- Interaktywne tło -->
-  <canvas id="canvas"></canvas>
-
-  <!-- Widget czatu - teraz zewnętrzny -->
+  <!-- Widget czatu -->
   <div id="chat-widget-root"></div>
   <script>
     window.ChatWidgetConfig = {
@@ -536,58 +527,8 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- Skrypt interaktywnego tła -->
+  <!-- Skrypt karuzeli -->
   <script>
-    const canvas = document.getElementById("canvas");
-    let w, h;
-    const ctx = canvas.getContext("2d");
-    const { sin, cos, PI, hypot, min, max } = Math;
-
-    function spawn() {
-      const pts = Array.from({ length: 333 }, () => ({
-        x: Math.random() * innerWidth,
-        y: Math.random() * innerHeight,
-        len: 0,
-        r: 0
-      }));
-      return pts;
-    }
-
-    let pts = spawn();
-    let time = 0;
-
-    function update() {
-      time++;
-      ctx.fillStyle = "#0001";
-      ctx.fillRect(0, 0, w, h);
-      ctx.lineWidth = 1;
-      pts.forEach(pt => {
-        pt.len += 1;
-        pt.r = min(33, pt.r + 0.1);
-        if (pt.len > 111) {
-          pt.len = 0;
-          pt.x = Math.random() * w;
-          pt.y = Math.random() * h;
-          pt.r = 0;
-        }
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, pt.r, 0, PI * 2);
-        ctx.strokeStyle = "#fff";
-        ctx.stroke();
-      });
-      requestAnimationFrame(update);
-    }
-
-    function resize() {
-      w = canvas.width = innerWidth;
-      h = canvas.height = innerHeight;
-    }
-
-    window.addEventListener("resize", resize);
-    resize();
-    update();
-
-    // Skrypt karuzeli
     document.addEventListener('DOMContentLoaded', function() {
       const carouselContainer = document.getElementById('carousel-container');
       const carouselInner = document.getElementById('carousel-inner');
