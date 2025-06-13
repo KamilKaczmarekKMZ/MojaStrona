@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moja Gra POV - Wybierz Drzwi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #000;
+            overflow: hidden;
+            color: white;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            perspective: 1000px;
+        }
+        
+        .corridor {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #111, #333);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+        
+        .door {
+            width: 150px;
+            height: 250px;
+            background: linear-gradient(90deg, #8B4513, #A0522D);
+            margin: 0 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            border: 5px solid #5D2906;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s, box-shadow 0.3s;
+            transform: translateZ(0);
+        }
+        
+        .door:hover {
+            transform: translateZ(20px);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+        }
+        
+        .room {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #222;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #8B4513;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .product {
+            background: #333;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Korytarz z drzwiami -->
+        <div class="corridor" id="corridor">
+            <div class="door" onclick="enterRoom('products')">PRODUKTY</div>
+            <div class="door" onclick="enterRoom('contact')">KONTAKT</div>
+            <div class="door" onclick="enterRoom('about')">O MNIE</div>
+        </div>
+        
+        <!-- Pokój z produktami -->
+        <div class="room" id="products">
+            <h1>Moje Produkty</h1>
+            <div class="product">
+                <h3>Produkt 1</h3>
+                <p>Cena: 100 zł</p>
+            </div>
+            <div class="product">
+                <h3>Produkt 2</h3>
+                <p>Cena: 200 zł</p>
+            </div>
+            <button class="back-button" onclick="goBack()">Wróć do korytarza</button>
+        </div>
+        
+        <!-- Pokój kontaktowy -->
+        <div class="room" id="contact">
+            <h1>Kontakt</h1>
+            <p>Email: przykladowy@email.com</p>
+            <p>Telefon: 123-456-789</p>
+            <button class="back-button" onclick="goBack()">Wróć do korytarza</button>
+        </div>
+        
+        <!-- Pokój "O mnie" -->
+        <div class="room" id="about">
+            <h1>O mnie</h1>
+            <p>Witaj! Jestem twórcą tej gry i sprzedaję fajne produkty.</p>
+            <button class="back-button" onclick="goBack()">Wróć do korytarza</button>
+        </div>
+    </div>
+
+    <script>
+        function enterRoom(roomId) {
+            document.getElementById('corridor').style.display = 'none';
+            document.getElementById(roomId).style.display = 'flex';
+        }
+        
+        function goBack() {
+            document.querySelectorAll('.room').forEach(room => {
+                room.style.display = 'none';
+            });
+            document.getElementById('corridor').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
