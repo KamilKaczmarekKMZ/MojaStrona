@@ -18,7 +18,7 @@
       font-family: Arial, sans-serif;
       position: relative;
       min-height: 100vh;
-      background-color: #000;
+      background-color: #000; /* Dodane czarne tło w zastępstwie canvas */
     }
 
     /* Menu */
@@ -371,32 +371,6 @@
         margin: 0 10px;
       }
     }
-
-    /* Style dla Orb */
-    #orb-section {
-      width: 100%;
-      height: 600px;
-      position: relative;
-      margin: 40px 0;
-    }
-
-    .orb-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-    }
-
-    .orb-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -452,11 +426,6 @@
   <div class="content">
     <h1>SmartSystems</h1>
     <p>KK</p>
-  </div>
-
-  <!-- Sekcja z Orb -->
-  <div id="orb-section">
-    <div class="orb-container" id="orb-container"></div>
   </div>
 
   <!-- Karuzela produktów -->
@@ -523,90 +492,44 @@
 
   <!-- Widget czatu -->
   <div id="chat-widget-root"></div>
-
-  <!-- Skrypt dla Orb -->
-  <script src="https://cdn.jsdelivr.net/npm/ogl@0.0.79/dist/ogl.min.js"></script>
   <script>
-    // Funkcja inicjalizacji Orb
-    function initOrb() {
-      const container = document.getElementById('orb-container');
-      if (!container) return;
-
-      const renderer = new OGL.Renderer({
-        width: container.clientWidth,
-        height: container.clientHeight,
-        alpha: true,
-        antialias: true
-      });
-      
-      const canvas = renderer.gl.canvas;
-      canvas.classList.add('orb-canvas');
-      container.appendChild(canvas);
-
-      // Vertex Shader
-      const vert = `precision highp float; attribute vec2 position; void main() { gl_Position = vec4(position, 0, 1); }`;
-      
-      // Fragment Shader (uproszczony dla testu)
-      const frag = `
-        precision highp float;
-        uniform float iTime;
-        uniform vec3 iResolution;
-        uniform float hue;
-        uniform float hover;
-        uniform float rot;
-        uniform float hoverIntensity;
-        
-        void main() {
-          vec2 uv = gl_FragCoord.xy / iResolution.xy;
-          vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
-          gl_FragColor = vec4(col, 1.0);
+    window.ChatWidgetConfig = {
+      webhook: {
+        url: 'https://thekamilkaczmarek.app.n8n.cloud/webhook/5800ad3c-860f-44a0-8fd6-b402bb390b74/chat',
+        route: 'chat'
+      },
+      branding: {
+        logo: 'https://i.postimg.cc/sx5skcZX/KK-YELLOW.png',
+        name: 'SmartSystem',
+        welcomeText: 'Let’s figure out how can we help you!',
+        responseTimeText: 'Click the button to start chatting',
+        poweredBy: {
+          text: 'Powered by SmartSystemsKK',
+          link: 'https://www.instagram.com/kk_smartsystems/'
         }
-      `;
-
-      const geometry = new OGL.Triangle(renderer.gl);
-      const program = new OGL.Program(renderer.gl, {
-        vertex: vert,
-        fragment: frag,
-        uniforms: {
-          iTime: { value: 0 },
-          iResolution: { value: new OGL.Vec3(canvas.width, canvas.height, 1) },
-          hue: { value: 0 },
-          hover: { value: 0 },
-          rot: { value: 0 },
-          hoverIntensity: { value: 0.5 }
-        }
-      });
-
-      const mesh = new OGL.Mesh(renderer.gl, { geometry, program });
-      
-      function animate(time) {
-        requestAnimationFrame(animate);
-        program.uniforms.iTime.value = time * 0.001;
-        renderer.render({ scene: mesh });
-      }
-      animate(0);
-
-      // Obsługa responsywności
-      function handleResize() {
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        program.uniforms.iResolution.value.set(
-          renderer.gl.canvas.width, 
-          renderer.gl.canvas.height, 
-          1
-        );
-      }
-      window.addEventListener('resize', handleResize);
-      handleResize();
-    }
-
-    // Inicjalizacja po załadowaniu strony
-    window.addEventListener('load', initOrb);
+      },
+      style: {
+        primaryColor: '#10b981',
+        secondaryColor: '#059669',
+        position: 'right',
+        backgroundColor: '#ffffff',
+        fontColor: '#1f2937',
+        mobileBreakpoint: 480,
+        mobileWidth: '95vw',
+        mobileHeight: '65vh'
+      },
+      suggestedQuestions: []
+    };
+    
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/gh/KamilKaczmarekKMZ/SmartSystemsKKwidget@latest/chat-widget.js';
+    script.defer = true;
+    document.body.appendChild(script);
   </script>
 
-  <!-- Skrypty karuzeli i kontaktów -->
+  <!-- Skrypt karuzeli -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Karuzela
       const carouselContainer = document.getElementById('carousel-container');
       const carouselInner = document.getElementById('carousel-inner');
       const carouselPrev = document.getElementById('carousel-prev');
@@ -675,8 +598,10 @@
       initCarousel();
       updateCarousel();
       window.addEventListener('resize', initCarousel);
+    });
 
-      // Kontakty
+    // Skrypt sekcji kontaktowej
+    document.addEventListener('DOMContentLoaded', function() {
       const contactContainer = document.getElementById('contact-container');
       const contactLink = document.getElementById('contact-link');
       const contactClose = document.getElementById('contact-close');
@@ -699,42 +624,6 @@
         }
       });
     });
-  </script>
-
-  <!-- Konfiguracja widgetu czatu -->
-  <script>
-    window.ChatWidgetConfig = {
-      webhook: {
-        url: 'https://thekamilkaczmarek.app.n8n.cloud/webhook/5800ad3c-860f-44a0-8fd6-b402bb390b74/chat',
-        route: 'chat'
-      },
-      branding: {
-        logo: 'https://i.postimg.cc/sx5skcZX/KK-YELLOW.png',
-        name: 'SmartSystem',
-        welcomeText: 'Let’s figure out how can we help you!',
-        responseTimeText: 'Click the button to start chatting',
-        poweredBy: {
-          text: 'Powered by SmartSystemsKK',
-          link: 'https://www.instagram.com/kk_smartsystems/'
-        }
-      },
-      style: {
-        primaryColor: '#10b981',
-        secondaryColor: '#059669',
-        position: 'right',
-        backgroundColor: '#ffffff',
-        fontColor: '#1f2937',
-        mobileBreakpoint: 480,
-        mobileWidth: '95vw',
-        mobileHeight: '65vh'
-      },
-      suggestedQuestions: []
-    };
-    
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/KamilKaczmarekKMZ/SmartSystemsKKwidget/chat-widget.js';
-    script.defer = true;
-    document.body.appendChild(script);
   </script>
 </body>
 </html>
