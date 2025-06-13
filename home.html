@@ -1,629 +1,444 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartSystems</title>
-  <style>
-    /* Interaktywne tło */
-    html {
-      -webkit-tap-highlight-color: transparent;
-      tap-highlight-color: transparent;
-    }
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable react-hooks/rules-of-hooks */
+import {
+  Suspense,
+  useRef,
+  useLayoutEffect,
+  useEffect,
+  useMemo,
+} from "react";
+import {
+  Canvas,
+  useFrame,
+  useLoader,
+  useThree,
+  invalidate,
+} from "@react-three/fiber";
+import {
+  OrbitControls,
+  useGLTF,
+  useFBX,
+  useProgress,
+  Html,
+  Environment,
+  ContactShadows,
+} from "@react-three/drei";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import * as THREE from "three";
 
-    body {
-      overflow-x: hidden;
-      margin: 0;
-      cursor: pointer;
-      font-family: Arial, sans-serif;
-      position: relative;
-      min-height: 100vh;
-      background-color: #000; /* Dodane czarne tło w zastępstwie canvas */
-    }
+const deg2rad = (d) => (d * Math.PI) / 180;
 
-    /* Menu */
-    .menu {
-      padding: 0.5rem;
-      background-color: rgba(0, 0, 0, 0.8);
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      justify-content: center;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px 0 rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-    }
+const Loader = ({ placeholderSrc }) => {
+  const { progress, active } = useProgress();
+  if (!active && placeholderSrc) return null;
+  return (
+    <Html center>
+      {placeholderSrc ? (
+        <img
+          src={placeholderSrc}
+          width={128}
+          height={128}
+          style={{ filter: "blur(8px)", borderRadius: 8 }}
+        />
+      ) : (
+        `${Math.round(progress)} %`
+      )}
+    </Html>
+  );
+};
 
-    .link {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      width: 50px;
-      height: 40px;
-      border-radius: 8px;
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-      transform-origin: center left;
-      transition: width 0.2s ease-in;
-      text-decoration: none;
-      color: white;
-    }
+const AdaptiveControls = ({ pivot, minDistance, maxDistance, enableManualZoom }) => {
+  const ref = useRef(null);
+  useFrame(() => ref.current?.target.copy(pivot));
+  return (
+    <OrbitControls
+      ref={ref}
+      makeDefault
+      enablePan={false}
+      enableRotate={false}
+      enableZoom={enableManualZoom}
+      minDistance={minDistance}
+      maxDistance={maxDistance}
+      touches={{ TWO: THREE.TOUCH.DOLLY_ROTATE }}
+    />
+  );
+};
 
-    .link:before {
-      position: absolute;
-      z-index: -1;
-      content: "";
-      display: block;
-      border-radius: 8px;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      transform: translateX(100%);
-      transition: transform 0.2s ease-in;
-      transform-origin: center right;
-      background-color: rgba(255, 255, 255, 0.2);
-    }
+const ROTATE_SPEED = 0.005;
+const INERTIA = 0.925;
+const PARALLAX_MAG = 0.05;
+const PARALLAX_EASE = 0.12;
+const HOVER_MAG = deg2rad(6);
+const HOVER_EASE = 0.15;
 
-    .link:hover,
-    .link:focus {
-      outline: 0;
-      width: 110px;
-    }
+const ModelInner = ({
+  url,
+  xOffset,
+  yOffset,
+  pivot,
+  initYaw,
+  initPitch,
+  enableMouseParallax,
+  enableManualRotation,
+  enableHoverRotation,
+  autoFrame,
+  fadeIn,
+  autoRotate,
+  autoRotateSpeed,
+  onLoaded,
+}) => {
+  const outer = useRef(null);
+  const inner = useRef(null);
+  const { camera, gl } = useThree();
 
-    .link:hover:before,
-    .link:focus:before,
-    .link:hover .link-title,
-    .link:focus .link-title {
-      transform: translateX(0);
-      opacity: 1;
-    }
+  const dragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const velocity = useRef({ x: 0, y: 0 });
 
-    .link-icon {
-      width: 24px;
-      height: 24px;
-      display: block;
-      flex-shrink: 0;
-      left: 13px;
-      position: absolute;
-    }
+  const targetPar = useRef({ x: 0, y: 0 });
+  const curPar = useRef({ x: 0, y: 0 });
+  const targetHover = useRef({ x: 0, y: 0 });
+  const curHover = useRef({ x: 0, y: 0 });
 
-    .link-icon svg {
-      width: 24px;
-      height: 24px;
-    }
+  const ext = useMemo(() => url.split(".").pop().toLowerCase(), [url]);
+  const content = useMemo(() => {
+    if (ext === "glb" || ext === "gltf") return useGLTF(url).scene.clone();
+    if (ext === "fbx") return useFBX(url).clone();
+    if (ext === "obj") return useLoader(OBJLoader, url).clone();
+    console.error("Unsupported format:", ext);
+    return null;
+  }, [url, ext]);
 
-    .link-title {
-      transform: translateX(100%);
-      transition: transform 0.2s ease-in;
-      transform-origin: center right;
-      display: block;
-      text-align: center;
-      text-indent: 24px;
-      width: 100%;
-      font-size: 14px;
-    }
+  const pivotW = useRef(new THREE.Vector3());
+  useLayoutEffect(() => {
+    if (!content) return;
+    const g = inner.current;
+    g.updateWorldMatrix(true, true);
 
-    /* Główna zawartość strony */
-    .content {
-      position: relative;
-      z-index: 10;
-      padding: 80px 20px 20px;
-      color: white;
-      text-shadow: 0 0 5px black;
-      text-align: center;
-    }
+    const sphere = new THREE.Box3()
+      .setFromObject(g)
+      .getBoundingSphere(new THREE.Sphere());
+    const scale = 1 / (sphere.radius * 2);
+    g.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z);
+    g.scale.setScalar(scale);
 
-    /* Nowe style dla karuzeli 3D */
-    .carousel-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
+    g.traverse((o) => {
+      if (o.isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+        if (fadeIn) {
+          o.material.transparent = true;
+          o.material.opacity = 0;
+        }
+      }
+    });
 
-    .carousel {
-      position: relative;
-      width: 90%;
-      max-width: 1000px;
-      height: 60vh;
-      perspective: 1000px;
-    }
+    g.getWorldPosition(pivotW.current);
+    pivot.copy(pivotW.current);
 
-    .carousel-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 1s ease;
-    }
+    outer.current.rotation.set(initPitch, initYaw, 0);
 
-    .carousel-item {
-      position: absolute;
-      width: 300px;
-      height: 400px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      transition: all 0.5s ease;
-      background: radial-gradient(
-        circle,
-        rgba(var(--color-card), 0.2) 0%,
-        rgba(var(--color-card), 0.6) 80%,
-        rgba(var(--color-card), 0.9) 100%
+    if (autoFrame && (camera).isPerspectiveCamera) {
+      const persp = camera;
+      const fitR = sphere.radius * scale;
+      const dist = (fitR * 1.2) / Math.sin((persp.fov * Math.PI) / 180 / 2);
+      persp.position.set(
+        pivotW.current.x,
+        pivotW.current.y,
+        pivotW.current.z + dist
       );
-      border: 2px solid rgba(var(--color-card));
+      persp.near = dist / 10;
+      persp.far = dist * 10;
+      persp.updateProjectionMatrix();
     }
 
-    .carousel-card {
-      padding: 30px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    }
-
-    .carousel-card h3 {
-      font-size: 24px;
-      margin-bottom: 20px;
-      color: white;
-    }
-
-    .carousel-card p {
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    .carousel-nav {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .carousel-arrow {
-      background-color: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(5px);
-      color: white;
-      font-size: 24px;
-    }
-
-    .carousel-arrow:hover {
-      background-color: rgba(255, 255, 255, 0.6);
-      transform: scale(1.1);
-    }
-
-    .carousel-close {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-    }
-
-    .carousel-close:hover {
-      background-color: rgba(255, 255, 255, 0.6);
-    }
-
-    /* Style dla sekcji kontaktowej */
-    .contact-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .contact-close {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-    }
-
-    .contact-close:hover {
-      background-color: rgba(255, 255, 255, 0.6);
-    }
-
-    .contact-title {
-      color: white;
-      margin-bottom: 30px;
-      font-size: 28px;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-
-    /* Style dla przycisków social media */
-    .social-container {
-      display: flex;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    .parent {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .child {
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-style: preserve-3d;
-      transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
-      border-radius: 5px;
-      margin: 0 15px;
-      box-shadow:
-        inset 1px 1px 2px #fff,
-        0 0 5px #4442;
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    .child:hover {
-      background-color: black;
-      background-position:
-        -100px 100px,
-        -100px 100px;
-      transform: perspective(180px) rotateX(60deg) translateY(2px);
-    }
-
-    .child-2:hover {
-      box-shadow: 0px 10px 10px #ff00ff;
-    }
-    .child-3:hover {
-      box-shadow: 0px 10px 10px #EA4335;
-    }
-    .child-4:hover {
-      box-shadow: 0px 10px 10px #4267B2;
-    }
-
-    .button {
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: transparent;
-      font-size: 20px;
-      transition-duration: 0.5s;
-      transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
-    }
-
-    .child:hover > .button {
-      transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
-        translateY(2px) translateZ(10px);
-    }
-
-    .button svg {
-      width: 24px;
-      height: 24px;
-      display: block;
-    }
-
-    @media (max-width: 768px) {
-      .carousel {
-        height: 70vh;
-      }
-
-      .carousel-item {
-        width: 250px;
-        height: 350px;
-      }
-
-      .child {
-        margin: 0 10px;
-      }
-    }
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <!-- Menu -->
-  <div class="menu">
-    <a href="#" class="link">
-      <span class="link-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
-          <rect width="256" height="256" fill="none"></rect>
-          <path d="M213.3815,109.61945,133.376,36.88436a8,8,0,0,0-10.76339.00036l-79.9945,72.73477A8,8,0,0,0,40,115.53855V208a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V115.53887A8,8,0,0,0,213.3815,109.61945Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-        </svg>
-      </span>
-      <span class="link-title">Home</span>
-    </a>
-    <a href="#" class="link" id="products-link">
-      <span class="link-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
-          <rect width="256" height="256" fill="none"></rect>
-          <path d="M128,216a16,16,0,0,1-16-16V152a16,16,0,0,1,16-16h0a16,16,0,0,1,16,16v48A16,16,0,0,1,128,216Z" opacity="0.2"></path>
-          <path d="M208,80H172L160,48H96L84,80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-          <line x1="128" y1="136" x2="128" y2="200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-          <line x1="96" y1="136" x2="96" y2="200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-          <line x1="160" y1="136" x2="160" y2="200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-        </svg>
-      </span>
-      <span class="link-title">Products</span>
-    </a>
-    <a href="#" class="link" id="contact-link">
-      <span class="link-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
-          <rect width="256" height="256" fill="none"></rect>
-          <path d="M45.42853,176.99811A95.95978,95.95978,0,1,1,79.00228,210.5717l.00023-.001L45.84594,220.044a8,8,0,0,1-9.89-9.89l9.47331-33.15657Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-          <line x1="96" y1="112" x2="160" y2="112" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-          <line x1="96" y1="144" x2="160" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-        </svg>
-      </span>
-      <span class="link-title">Contact</span>
-    </a>
-    <a href="#" class="link">
-      <span class="link-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
-          <rect width="256" height="256" fill="none"></rect>
-          <circle cx="128" cy="96" r="64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="16"></circle>
-          <path d="M30.989,215.99064a112.03731,112.03731,0,0,1,194.02311.002" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-        </svg>
-      </span>
-      <span class="link-title">Profile</span>
-    </a>
-  </div>
-
-  <!-- Główna zawartość strony -->
-  <div class="content">
-    <h1>SmartSystems</h1>
-    <p>KK</p>
-  </div>
-
-  <!-- Karuzela produktów -->
-  <div class="carousel-container" id="carousel-container">
-    <div class="carousel">
-      <button class="carousel-close" id="carousel-close">&times;</button>
-      <div class="carousel-inner" id="carousel-inner">
-        <div class="carousel-item" style="--color-card: 142, 249, 252;">
-          <div class="carousel-card">
-            <h3>ChatBot – 24/7 Customer Support</h3>
-            <p>An intelligent assistant available around the clock. It automates customer service and integrates with various tools to streamline your business operations.</p>
-          </div>
-        </div>
-        <div class="carousel-item" style="--color-card: 142, 252, 157;">
-          <div class="carousel-card">
-            <h3>Product 2</h3>
-            <p>Description of product 2. Another fantastic product from our collection.</p>
-          </div>
-        </div>
-        <div class="carousel-item" style="--color-card: 252, 208, 142;">
-          <div class="carousel-card">
-            <h3>Product 3</h3>
-            <p>Description of product 3. The best solution for your needs.</p>
-          </div>
-        </div>
-      </div>
-      <div class="carousel-nav">
-        <button class="carousel-arrow" id="carousel-prev">&#10094;</button>
-        <button class="carousel-arrow" id="carousel-next">&#10095;</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sekcja kontaktowa z przyciskami social media -->
-  <div class="contact-container" id="contact-container">
-    <button class="contact-close" id="contact-close">&times;</button>
-    <h2 class="contact-title">Contact</h2>
-    <div class="social-container">
-      <div class="parent">
-        <div class="child child-2">
-          <a href="https://www.instagram.com/direct/t/17847947670435948/" class="button btn-2" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ff00ff">
-              <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
-            </svg>
-          </a>
-        </div>
-        <div class="child child-3">
-          <a href="mailto:ceo@smartsystems.com" class="button btn-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#EA4335">
-              <path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"></path>
-            </svg>
-          </a>
-        </div>
-        <div class="child child-4">
-          <button class="button btn-4">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="#4267B2">
-              <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Widget czatu -->
-  <div id="chat-widget-root"></div>
-  <script>
-    window.ChatWidgetConfig = {
-      webhook: {
-        url: 'https://thekamilkaczmarek.app.n8n.cloud/webhook/5800ad3c-860f-44a0-8fd6-b402bb390b74/chat',
-        route: 'chat'
-      },
-      branding: {
-        logo: 'https://i.postimg.cc/sx5skcZX/KK-YELLOW.png',
-        name: 'SmartSystem',
-        welcomeText: 'Let’s figure out how can we help you!',
-        responseTimeText: 'Click the button to start chatting',
-        poweredBy: {
-          text: 'Powered by SmartSystemsKK',
-          link: 'https://www.instagram.com/kk_smartsystems/'
+    if (fadeIn) {
+      let t = 0;
+      const id = setInterval(() => {
+        t += 0.05;
+        const v = Math.min(t, 1);
+        g.traverse((o) => {
+          if (o.isMesh) o.material.opacity = v;
+        });
+        invalidate();
+        if (v === 1) {
+          clearInterval(id);
+          onLoaded?.();
         }
-      },
-      style: {
-        primaryColor: '#10b981',
-        secondaryColor: '#059669',
-        position: 'right',
-        backgroundColor: '#ffffff',
-        fontColor: '#1f2937',
-        mobileBreakpoint: 480,
-        mobileWidth: '95vw',
-        mobileHeight: '65vh'
-      },
-      suggestedQuestions: []
+      }, 16);
+      return () => clearInterval(id);
+    } else {
+      onLoaded?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content]);
+
+  useEffect(() => {
+    if (!enableManualRotation) return;
+    const elem = gl.domElement;
+    const down = (e) => {
+      dragging.current = true;
+      dragStart.current = { x: e.clientX, y: e.clientY };
+      velocity.current = { x: 0, y: 0 };
+      window.addEventListener("pointerup", up);
+      invalidate();
     };
-    
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/KamilKaczmarekKMZ/SmartSystemsKKwidget@latest/chat-widget.js';
-    script.defer = true;
-    document.body.appendChild(script);
-  </script>
+    const move = (e) => {
+      if (!dragging.current) return;
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+      dragStart.current = { x: e.clientX, y: e.clientY };
+      outer.current.rotation.y += dx * ROTATE_SPEED;
+      outer.current.rotation.x += dy * ROTATE_SPEED;
+      velocity.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
+      invalidate();
+    };
+    const up = () => (dragging.current = false);
 
-  <!-- Skrypt karuzeli -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const carouselContainer = document.getElementById('carousel-container');
-      const carouselInner = document.getElementById('carousel-inner');
-      const carouselPrev = document.getElementById('carousel-prev');
-      const carouselNext = document.getElementById('carousel-next');
-      const carouselClose = document.getElementById('carousel-close');
-      const productsLink = document.getElementById('products-link');
-      const items = document.querySelectorAll('.carousel-item');
-      const itemCount = items.length;
+    elem.addEventListener("pointerdown", down);
+    elem.addEventListener("pointermove", move);
+    return () => {
+      elem.removeEventListener("pointerdown", down);
+      elem.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+  }, [gl, enableManualRotation]);
 
-      let currentIndex = 0;
-      const radius = Math.min(window.innerWidth, window.innerHeight) * 0.3;
-      const theta = (2 * Math.PI) / itemCount;
+  useEffect(() => {
+    const onMove = (e) => {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
 
-      function initCarousel() {
-        items.forEach((item, index) => {
-          const angle = index * theta;
-          item.style.transform = `
-            translate(-50%, -50%)
-            rotateY(${angle}rad)
-            translateZ(${radius}px)
-          `;
-        });
+      if (enableMouseParallax) {
+        targetPar.current = { x: -nx * PARALLAX_MAG, y: -ny * PARALLAX_MAG };
       }
-
-      productsLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        carouselContainer.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        initCarousel();
-      });
-
-      carouselClose.addEventListener('click', function() {
-        carouselContainer.style.display = 'none';
-        document.body.style.overflow = '';
-      });
-
-      carouselPrev.addEventListener('click', function() {
-        currentIndex = (currentIndex - 1 + itemCount) % itemCount;
-        updateCarousel();
-      });
-
-      carouselNext.addEventListener('click', function() {
-        currentIndex = (currentIndex + 1) % itemCount;
-        updateCarousel();
-      });
-
-      function updateCarousel() {
-        const angle = currentIndex * -theta;
-        carouselInner.style.transform = `rotateY(${angle}rad)`;
-
-        items.forEach((item, index) => {
-          const isActive = index === currentIndex;
-          item.style.opacity = isActive ? '1' : '0.6';
-          item.style.zIndex = isActive ? '10' : '1';
-          item.style.filter = isActive ? 'none' : 'brightness(0.7)';
-        });
+      if (enableHoverRotation) {
+        targetHover.current = { x: ny * HOVER_MAG, y: nx * HOVER_MAG };
       }
+      invalidate();
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [enableMouseParallax, enableHoverRotation]);
 
-      carouselContainer.addEventListener('click', function(e) {
-        if (e.target === carouselContainer) {
-          carouselContainer.style.display = 'none';
-          document.body.style.overflow = '';
-        }
-      });
+  useFrame((_, delta) => {
+    let need = false;
 
-      initCarousel();
-      updateCarousel();
-      window.addEventListener('resize', initCarousel);
+    curPar.current.x +=
+      (targetPar.current.x - curPar.current.x) * PARALLAX_EASE;
+    curPar.current.y +=
+      (targetPar.current.y - curPar.current.y) * PARALLAX_EASE;
+
+    const prevHovX = curHover.current.x;
+    const prevHovY = curHover.current.y;
+    curHover.current.x +=
+      (targetHover.current.x - curHover.current.x) * HOVER_EASE;
+    curHover.current.y +=
+      (targetHover.current.y - curHover.current.y) * HOVER_EASE;
+
+    const ndc = pivotW.current.clone().project(camera);
+    ndc.x += xOffset + curPar.current.x;
+    ndc.y += yOffset + curPar.current.y;
+    outer.current.position.copy(ndc.unproject(camera));
+
+    outer.current.rotation.x += curHover.current.x - prevHovX;
+    outer.current.rotation.y += curHover.current.y - prevHovY;
+
+    if (autoRotate && !dragging.current) {
+      outer.current.rotation.y += autoRotateSpeed * delta;
+      need = true;
+    }
+
+    if (!dragging.current) {
+      outer.current.rotation.y += velocity.current.x;
+      outer.current.rotation.x += velocity.current.y;
+      velocity.current.x *= INERTIA;
+      velocity.current.y *= INERTIA;
+      if (
+        Math.abs(velocity.current.x) > 1e-4 ||
+        Math.abs(velocity.current.y) > 1e-4
+      )
+        need = true;
+    }
+
+    if (
+      Math.abs(curPar.current.x - targetPar.current.x) > 1e-4 ||
+      Math.abs(curPar.current.y - targetPar.current.y) > 1e-4 ||
+      Math.abs(curHover.current.x - targetHover.current.x) > 1e-4 ||
+      Math.abs(curHover.current.y - targetHover.current.y) > 1e-4
+    )
+      need = true;
+
+    if (need) invalidate();
+  });
+
+  if (!content) return null;
+  return (
+    <group ref={outer}>
+      <group ref={inner}>
+        <primitive object={content} />
+      </group>
+    </group>
+  );
+};
+
+const ModelViewer = ({
+  url,
+  width = 400,
+  height = 400,
+  modelXOffset = 0,
+  modelYOffset = 0,
+  defaultRotationX = -50,
+  defaultRotationY = 20,
+  defaultZoom = 0.5,
+  minZoomDistance = 0.5,
+  maxZoomDistance = 10,
+  enableMouseParallax = true,
+  enableManualRotation = true,
+  enableHoverRotation = true,
+  enableManualZoom = true,
+  ambientIntensity = 0.3,
+  keyLightIntensity = 1,
+  fillLightIntensity = 0.5,
+  rimLightIntensity = 0.8,
+  environmentPreset = "forest",
+  autoFrame = false,
+  placeholderSrc,
+  showScreenshotButton = true,
+  fadeIn = false,
+  autoRotate = false,
+  autoRotateSpeed = 0.35,
+  onModelLoaded,
+}) => {
+  useEffect(() => void useGLTF.preload(url), [url]);
+
+  const pivot = useRef(new THREE.Vector3()).current;
+  const contactRef = useRef(null);
+  const rendererRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+
+  const initYaw = deg2rad(defaultRotationX);
+  const initPitch = deg2rad(defaultRotationY);
+  const camZ = Math.min(
+    Math.max(defaultZoom, minZoomDistance),
+    maxZoomDistance
+  );
+
+  const capturePNG = () => {
+    const gl = rendererRef.current;
+    const scene = sceneRef.current;
+    const cam = cameraRef.current;
+    if (!gl || !scene || !cam) return;
+
+    gl.shadowMap.enabled = false;
+    const changed = [];
+    scene.traverse((o) => {
+      if (o.isLight && "castShadow" in o) {
+        changed.push({ l: o, cast: o.castShadow });
+        o.castShadow = false;
+      }
     });
+    if (contactRef.current) contactRef.current.visible = false;
 
-    // Skrypt sekcji kontaktowej
-    document.addEventListener('DOMContentLoaded', function() {
-      const contactContainer = document.getElementById('contact-container');
-      const contactLink = document.getElementById('contact-link');
-      const contactClose = document.getElementById('contact-close');
+    gl.render(scene, cam);
+    const url = gl.domElement.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.download = "model.png";
+    link.href = url;
+    link.click();
 
-      contactLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        contactContainer.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-      });
+    gl.shadowMap.enabled = true;
+    changed.forEach(({ l, cast }) => (l.castShadow = cast));
+    if (contactRef.current) contactRef.current.visible = true;
+    invalidate();
+  };
 
-      contactClose.addEventListener('click', function() {
-        contactContainer.style.display = 'none';
-        document.body.style.overflow = '';
-      });
+  return (
+    <div style={{ width, height, position: "relative" }}>
+      {showScreenshotButton && (
+        <button
+          onClick={capturePNG}
+          style={{
+            position: "absolute",
+            border: "1px solid #fff",
+            right: 16,
+            top: 16,
+            zIndex: 10,
+            cursor: "pointer",
+            padding: "8px 16px",
+            borderRadius: 10,
+          }}
+        >
+          Take Screenshot
+        </button>
+      )}
 
-      contactContainer.addEventListener('click', function(e) {
-        if (e.target === contactContainer) {
-          contactContainer.style.display = 'none';
-          document.body.style.overflow = '';
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+      <Canvas
+        shadows
+        frameloop="demand"
+        gl={{ preserveDrawingBuffer: true }}
+        onCreated={({ gl, scene, camera }) => {
+          rendererRef.current = gl;
+          sceneRef.current = scene;
+          cameraRef.current = camera;
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.outputColorSpace = THREE.SRGBColorSpace;
+        }}
+        camera={{ fov: 50, position: [0, 0, camZ], near: 0.01, far: 100 }}
+      >
+        {environmentPreset !== "none" && (
+          <Environment preset={environmentPreset} background={false} />
+        )}
+
+        <ambientLight intensity={ambientIntensity} />
+        <directionalLight
+          position={[5, 5, 5]}
+          intensity={keyLightIntensity}
+          castShadow
+        />
+        <directionalLight
+          position={[-5, 2, 5]}
+          intensity={fillLightIntensity}
+        />
+        <directionalLight position={[0, 4, -5]} intensity={rimLightIntensity} />
+
+        <ContactShadows
+          ref={contactRef}
+          position={[0, -0.5, 0]}
+          opacity={0.35}
+          scale={10}
+          blur={2}
+        />
+
+        <Suspense fallback={<Loader placeholderSrc={placeholderSrc} />}>
+          <ModelInner
+            url={url}
+            xOffset={modelXOffset}
+            yOffset={modelYOffset}
+            pivot={pivot}
+            initYaw={initYaw}
+            initPitch={initPitch}
+            enableMouseParallax={enableMouseParallax}
+            enableManualRotation={enableManualRotation}
+            enableHoverRotation={enableHoverRotation}
+            autoFrame={autoFrame}
+            fadeIn={fadeIn}
+            autoRotate={autoRotate}
+            autoRotateSpeed={autoRotateSpeed}
+            onLoaded={onModelLoaded}
+          />
+        </Suspense>
+
+        <AdaptiveControls
+          pivot={pivot}
+          minDistance={minZoomDistance}
+          maxDistance={maxZoomDistance}
+          enableManualZoom={enableManualZoom}
+        />
+      </Canvas>
+    </div>
+  );
+};
+
+export default ModelViewer;
