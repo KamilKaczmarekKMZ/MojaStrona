@@ -116,38 +116,7 @@
       text-align: center;
     }
 
-    /* Nowe style dla karuzeli 3D (zaktualizowane) */
-    .carousel-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .carousel {
-      position: relative;
-      width: 90%;
-      max-width: 1000px;
-      height: 60vh;
-      perspective: 1000px;
-    }
-
-    .carousel-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 1s ease;
-    }
-
-    /* Zaktualizowane style kart (na podstawie Twojego kodu) */
+    /* NOWA POJEDYNCZA KARTA (zastąpiła karuzelę) */
     :root {
       --pointer-x: 50%;
       --pointer-y: 50%;
@@ -159,52 +128,96 @@
       --rotate-y: 0deg;
       --background-x: 50%;
       --background-y: 50%;
-      --card-radius: 20px;
+      --card-radius: 30px;
+      --sunpillar-1: hsl(2, 100%, 73%);
+      --sunpillar-2: hsl(53, 100%, 69%);
+      --sunpillar-3: hsl(93, 100%, 69%);
+      --sunpillar-4: hsl(176, 100%, 76%);
+      --sunpillar-5: hsl(228, 100%, 74%);
+      --sunpillar-6: hsl(283, 100%, 73%);
     }
 
-    .carousel-item {
-      position: absolute;
+    .profile-card-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .profile-card-wrapper {
       width: 300px;
       height: 400px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: var(--card-radius);
-      overflow: hidden;
-      transition: all 0.5s ease;
-      background: radial-gradient(
-        circle at var(--pointer-x) var(--pointer-y),
-        hsla(266, 100%, 90%, var(--card-opacity)) 4%,
-        hsla(266, 50%, 80%, calc(var(--card-opacity) * 0.75)) 10%,
-        hsla(266, 25%, 70%, calc(var(--card-opacity) * 0.5)) 50%,
-        hsla(266, 0%, 60%, 0) 100%
-      );
-      box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
-      transform-style: preserve-3d;
+      perspective: 500px;
+      transform: translate3d(0, 0, 0.1px);
+      position: relative;
     }
 
-    .carousel-item::before {
+    .profile-card-wrapper::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(145deg, #60496e8c 0%, #71C4FF44 100%);
-      z-index: 1;
+      inset: -10px;
+      background: inherit;
+      border-radius: inherit;
+      transition: all 0.5s ease;
+      filter: contrast(2) saturate(2) blur(36px);
+      transform: scale(0.8) translate3d(0, 0, 0.1px);
+      background-image: radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y), 
+                        hsla(266, 100%, 90%, var(--card-opacity)) 4%, 
+                        hsla(266, 50%, 80%, calc(var(--card-opacity) * 0.75)) 10%, 
+                        hsla(266, 25%, 70%, calc(var(--card-opacity) * 0.5)) 50%, 
+                        hsla(266, 0%, 60%, 0) 100%),
+                      radial-gradient(35% 52% at 55% 20%, #00ffaac4 0%, #073aff00 100%),
+                      radial-gradient(100% 100% at 50% 50%, #00c1ffff 1%, #073aff00 76%),
+                      conic-gradient(from 124deg at 50% 50%, #c137ffff 0%, #07c6ffff 40%, #07c6ffff 60%, #c137ffff 100%);
     }
 
-    .carousel-card {
-      position: relative;
-      padding: 30px;
+    .profile-card {
+      width: 100%;
       height: 100%;
+      border-radius: var(--card-radius);
+      position: relative;
+      background-blend-mode: color-dodge, normal, normal, normal;
+      box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
+      transition: transform 1s ease;
+      transform: translate3d(0, 0, 0.1px) rotateX(0deg) rotateY(0deg);
+      background-image: radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y), 
+                        hsla(266, 100%, 90%, var(--card-opacity)) 4%, 
+                        hsla(266, 50%, 80%, calc(var(--card-opacity) * 0.75)) 10%, 
+                        hsla(266, 25%, 70%, calc(var(--card-opacity) * 0.5)) 50%, 
+                        hsla(266, 0%, 60%, 0) 100%),
+                      radial-gradient(35% 52% at 55% 20%, #00ffaac4 0%, #073aff00 100%),
+                      radial-gradient(100% 100% at 50% 50%, #00c1ffff 1%, #073aff00 76%),
+                      conic-gradient(from 124deg at 50% 50%, #c137ffff 0%, #07c6ffff 40%, #07c6ffff 60%, #c137ffff 100%);
+      overflow: hidden;
+    }
+
+    .profile-card:hover,
+    .profile-card.active {
+      transition: none;
+      transform: translate3d(0, 0, 0.1px) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
+    }
+
+    .profile-card-inside {
+      position: absolute;
+      inset: 1px;
+      background: linear-gradient(145deg, #60496e8c 0%, #71C4FF44 100%);
+      background-color: rgba(0, 0, 0, 0.9);
+      border-radius: var(--card-radius);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: white;
-      z-index: 2;
-      transform: translate3d(calc(var(--pointer-from-left) * -6px + 3px), calc(var(--pointer-from-top) * -6px + 3px), 0.1px);
+      padding: 30px;
+      text-align: center;
     }
 
-    .carousel-card h3 {
+    .profile-card h3 {
       font-size: 24px;
       margin-bottom: 20px;
       background-image: linear-gradient(to bottom, #fff, #6f6fbe);
@@ -213,7 +226,7 @@
       font-weight: 600;
     }
 
-    .carousel-card p {
+    .profile-card p {
       font-size: 16px;
       line-height: 1.6;
       background-image: linear-gradient(to bottom, #fff, #4a4ac0);
@@ -222,44 +235,43 @@
       font-weight: 500;
     }
 
-    .carousel-item:hover {
-      --card-opacity: 1;
-      transform: translate(-50%, -50%) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
-    }
-
-    /* Reszta stylów karuzeli */
-    .carousel-nav {
+    .profile-card-close {
       position: absolute;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .carousel-arrow {
-      background-color: rgba(255, 255, 255, 0.3);
+      top: 30px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.3);
       border: none;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(5px);
+      width: 40px;
+      height: 40px;
       color: white;
       font-size: 24px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      z-index: 10;
     }
 
-    .carousel-arrow:hover {
+    .profile-card-close:hover {
       background-color: rgba(255, 255, 255, 0.6);
-      transform: scale(1.1);
     }
 
-    .carousel-close {
+    /* Sekcja kontaktowa */
+    .contact-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .contact-close {
       position: absolute;
       top: 30px;
       right: 30px;
@@ -275,13 +287,110 @@
       transition: all 0.3s ease;
     }
 
-    .carousel-close:hover {
+    .contact-close:hover {
       background-color: rgba(255, 255, 255, 0.6);
     }
 
-    /* Reszta Twojego oryginalnego CSS... */
-    /* ... (style dla sekcji kontaktowej, przycisków social media itd.) ... */
+    .contact-title {
+      color: white;
+      margin-bottom: 30px;
+      font-size: 28px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
 
+    /* Style dla przycisków social media */
+    .social-container {
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .parent {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .child {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
+      border-radius: 5px;
+      margin: 0 15px;
+      box-shadow:
+        inset 1px 1px 2px #fff,
+        0 0 5px #4442;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .child:hover {
+      background-color: black;
+      background-position:
+        -100px 100px,
+        -100px 100px;
+      transform: perspective(180px) rotateX(60deg) translateY(2px);
+    }
+
+    .child-2:hover {
+      box-shadow: 0px 10px 10px #ff00ff;
+    }
+    .child-3:hover {
+      box-shadow: 0px 10px 10px #EA4335;
+    }
+    .child-4:hover {
+      box-shadow: 0px 10px 10px #4267B2;
+    }
+
+    .button {
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: transparent;
+      font-size: 20px;
+      transition-duration: 0.5s;
+      transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+    }
+
+    .child:hover > .button {
+      transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
+        translateY(2px) translateZ(10px);
+    }
+
+    .button svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .profile-card-wrapper {
+        width: 250px;
+        height: 350px;
+      }
+
+      .profile-card h3 {
+        font-size: 20px;
+      }
+
+      .profile-card p {
+        font-size: 14px;
+      }
+
+      .child {
+        margin: 0 10px;
+      }
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -339,33 +448,15 @@
     <p>KK</p>
   </div>
 
-  <!-- Karuzela produktów (zaktualizowana) -->
-  <div class="carousel-container" id="carousel-container">
-    <div class="carousel">
-      <button class="carousel-close" id="carousel-close">&times;</button>
-      <div class="carousel-inner" id="carousel-inner">
-        <div class="carousel-item" style="--color-card: 142, 249, 252;">
-          <div class="carousel-card">
-            <h3>ChatBot – 24/7 Customer Support</h3>
-            <p>An intelligent assistant available around the clock. It automates customer service and integrates with various tools to streamline your business operations.</p>
-          </div>
+  <!-- Nowa pojedyncza karta (zamiast karuzeli) -->
+  <div class="profile-card-container" id="profile-card-container">
+    <button class="profile-card-close" id="profile-card-close">&times;</button>
+    <div class="profile-card-wrapper">
+      <div class="profile-card" id="profile-card">
+        <div class="profile-card-inside">
+          <h3>ChatBot – 24/7 Customer Support</h3>
+          <p>An intelligent assistant available around the clock. It automates customer service and integrates with various tools to streamline your business operations.</p>
         </div>
-        <div class="carousel-item" style="--color-card: 142, 252, 157;">
-          <div class="carousel-card">
-            <h3>Product 2</h3>
-            <p>Description of product 2. Another fantastic product from our collection.</p>
-          </div>
-        </div>
-        <div class="carousel-item" style="--color-card: 252, 208, 142;">
-          <div class="carousel-card">
-            <h3>Product 3</h3>
-            <p>Description of product 3. The best solution for your needs.</p>
-          </div>
-        </div>
-      </div>
-      <div class="carousel-nav">
-        <button class="carousel-arrow" id="carousel-prev">&#10094;</button>
-        <button class="carousel-arrow" id="carousel-next">&#10095;</button>
       </div>
     </div>
   </div>
@@ -379,7 +470,7 @@
         <div class="child child-2">
           <a href="https://www.instagram.com/direct/t/17847947670435948/" class="button btn-2" target="_blank">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ff00ff">
-              <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+              <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
             </svg>
           </a>
         </div>
@@ -438,92 +529,56 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- Skrypt karuzeli (zaktualizowany) -->
+  <!-- Skrypt dla nowej karty -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const carouselContainer = document.getElementById('carousel-container');
-      const carouselInner = document.getElementById('carousel-inner');
-      const carouselPrev = document.getElementById('carousel-prev');
-      const carouselNext = document.getElementById('carousel-next');
-      const carouselClose = document.getElementById('carousel-close');
+      const profileCardContainer = document.getElementById('profile-card-container');
+      const profileCard = document.getElementById('profile-card');
+      const profileCardClose = document.getElementById('profile-card-close');
       const productsLink = document.getElementById('products-link');
-      const items = document.querySelectorAll('.carousel-item');
-      const itemCount = items.length;
 
-      let currentIndex = 0;
-      const radius = Math.min(window.innerWidth, window.innerHeight) * 0.3;
-      const theta = (2 * Math.PI) / itemCount;
-
-      function initCarousel() {
-        items.forEach((item, index) => {
-          const angle = index * theta;
-          item.style.transform = `
-            translate(-50%, -50%)
-            rotateY(${angle}rad)
-            translateZ(${radius}px)
-          `;
-          
-          // Dodajemy obsługę hover dla efektów 3D
-          item.addEventListener('mousemove', (e) => {
-            const rect = item.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const percentX = (x / rect.width) * 100;
-            const percentY = (y / rect.height) * 100;
-            
-            item.style.setProperty('--pointer-x', `${percentX}%`);
-            item.style.setProperty('--pointer-y', `${percentY}%`);
-            item.style.setProperty('--rotate-x', `${(percentY - 50) / 5}deg`);
-            item.style.setProperty('--rotate-y', `${-(percentX - 50) / 5}deg`);
-          });
-        });
-      }
-
+      // Obsługa otwierania karty
       productsLink.addEventListener('click', function(e) {
         e.preventDefault();
-        carouselContainer.style.display = 'flex';
+        profileCardContainer.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        initCarousel();
       });
 
-      carouselClose.addEventListener('click', function() {
-        carouselContainer.style.display = 'none';
+      // Obsługa zamykania karty
+      profileCardClose.addEventListener('click', function() {
+        profileCardContainer.style.display = 'none';
         document.body.style.overflow = '';
       });
 
-      carouselPrev.addEventListener('click', function() {
-        currentIndex = (currentIndex - 1 + itemCount) % itemCount;
-        updateCarousel();
+      // Efekty interaktywne karty
+      profileCard.addEventListener('mousemove', (e) => {
+        const rect = profileCard.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const percentX = (x / rect.width) * 100;
+        const percentY = (y / rect.height) * 100;
+        
+        profileCard.style.setProperty('--pointer-x', `${percentX}%`);
+        profileCard.style.setProperty('--pointer-y', `${percentY}%`);
+        profileCard.style.setProperty('--rotate-x', `${(percentY - 50) / 5}deg`);
+        profileCard.style.setProperty('--rotate-y', `${-(percentX - 50) / 5}deg`);
+        profileCard.style.setProperty('--card-opacity', '1');
       });
 
-      carouselNext.addEventListener('click', function() {
-        currentIndex = (currentIndex + 1) % itemCount;
-        updateCarousel();
+      profileCard.addEventListener('mouseleave', () => {
+        profileCard.style.setProperty('--rotate-x', '0deg');
+        profileCard.style.setProperty('--rotate-y', '0deg');
+        profileCard.style.setProperty('--card-opacity', '0');
       });
 
-      function updateCarousel() {
-        const angle = currentIndex * -theta;
-        carouselInner.style.transform = `rotateY(${angle}rad)`;
-
-        items.forEach((item, index) => {
-          const isActive = index === currentIndex;
-          item.style.opacity = isActive ? '1' : '0.6';
-          item.style.zIndex = isActive ? '10' : '1';
-          item.style.filter = isActive ? 'none' : 'brightness(0.7)';
-        });
-      }
-
-      carouselContainer.addEventListener('click', function(e) {
-        if (e.target === carouselContainer) {
-          carouselContainer.style.display = 'none';
+      // Obsługa kliknięcia poza kartą
+      profileCardContainer.addEventListener('click', function(e) {
+        if (e.target === profileCardContainer) {
+          profileCardContainer.style.display = 'none';
           document.body.style.overflow = '';
         }
       });
-
-      initCarousel();
-      updateCarousel();
-      window.addEventListener('resize', initCarousel);
     });
 
     // Skrypt sekcji kontaktowej
