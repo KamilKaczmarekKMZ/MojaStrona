@@ -116,7 +116,7 @@
       text-align: center;
     }
 
-    /* Nowa pojedyncza karta z obsługą żyroskopu */
+    /* Karuzela kart */
     :root {
       --pointer-x: 50%;
       --pointer-y: 50%;
@@ -151,12 +151,29 @@
       touch-action: none;
     }
 
+    .carousel-container {
+      position: relative;
+      width: 90%;
+      max-width: 1200px;
+      height: 500px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      transition: transform 0.5s ease-in-out;
+    }
+
     .profile-card-wrapper {
-      width: 300px;
+      min-width: 300px;
       height: 400px;
       perspective: 500px;
       transform: translate3d(0, 0, 0.1px);
       position: relative;
+      margin: 0 15px;
+      flex-shrink: 0;
     }
 
     .profile-card-wrapper::before {
@@ -254,6 +271,38 @@
     }
 
     .profile-card-close:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Przyciski nawigacyjne karuzeli */
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+
+    .carousel-button {
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      margin: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .carousel-button:hover {
       background-color: rgba(255, 255, 255, 0.6);
     }
 
@@ -391,6 +440,10 @@
       .child {
         margin: 0 10px;
       }
+
+      .carousel-container {
+        height: 400px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -409,6 +462,17 @@
 
       .profile-card-inside {
         padding: 20px;
+      }
+
+      .carousel-container {
+        height: 350px;
+      }
+
+      .carousel-button {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        margin: 0 10px;
       }
     }
   </style>
@@ -468,15 +532,86 @@
     <p>KK</p>
   </div>
 
-  <!-- Nowa pojedyncza karta z obsługą żyroskopu -->
+  <!-- Karuzela kart produktów -->
   <div class="profile-card-container" id="profile-card-container">
     <button class="profile-card-close" id="profile-card-close">&times;</button>
-    <div class="profile-card-wrapper">
-      <div class="profile-card" id="profile-card">
-        <div class="profile-card-inside">
-          <h3>ChatBot – 24/7 Customer Support</h3>
-          <p>An intelligent assistant available around the clock. It automates customer service and integrates with various tools to streamline your business operations.</p>
+    <div class="carousel-container">
+      <div class="carousel-track" id="carousel-track">
+        <!-- Karta 1 -->
+        <div class="profile-card-wrapper">
+          <div class="profile-card" id="profile-card">
+            <div class="profile-card-inside">
+              <h3>ChatBot – 24/7 Customer Support</h3>
+              <p>An intelligent assistant available around the clock. It automates customer service and integrates with various tools to streamline your business operations.</p>
+            </div>
+          </div>
         </div>
+        
+        <!-- Karta 2 -->
+        <div class="profile-card-wrapper">
+          <div class="profile-card">
+            <div class="profile-card-inside">
+              <h3>Smart Analytics</h3>
+              <p>Advanced data analysis tool that provides real-time insights and predictive analytics for your business decisions.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 3 -->
+        <div class="profile-card-wrapper">
+          <div class="profile-card">
+            <div class="profile-card-inside">
+              <h3>Automation Suite</h3>
+              <p>Complete workflow automation solution that reduces manual tasks and increases operational efficiency.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 4 -->
+        <div class="profile-card-wrapper">
+          <div class="profile-card">
+            <div class="profile-card-inside">
+              <h3>AI Marketing</h3>
+              <p>Artificial intelligence powered marketing platform that optimizes campaigns and maximizes ROI.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 5 -->
+        <div class="profile-card-wrapper">
+          <div class="profile-card">
+            <div class="profile-card-inside">
+              <h3>Cloud Integration</h3>
+              <p>Seamless integration with all major cloud platforms for secure data storage and access.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 6 -->
+        <div class="profile-card-wrapper">
+          <div class="profile-card">
+            <div class="profile-card-inside">
+              <h3>Security Shield</h3>
+              <p>Comprehensive cybersecurity solution that protects your business from modern threats.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 7 -->
+        <div class="profile-card-wrapper">
+          <div class="profile-card">
+            <div class="profile-card-inside">
+              <h3>IoT Platform</h3>
+              <p>Internet of Things solution that connects and manages all your smart devices in one place.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Przyciski nawigacyjne -->
+      <div class="carousel-nav">
+        <button class="carousel-button" id="carousel-prev">&lt;</button>
+        <button class="carousel-button" id="carousel-next">&gt;</button>
       </div>
     </div>
   </div>
@@ -549,36 +684,73 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- Skrypt dla karty z obsługą żyroskopu -->
+  <!-- Skrypt dla karuzeli kart -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const profileCardContainer = document.getElementById('profile-card-container');
-      const profileCard = document.getElementById('profile-card');
       const profileCardClose = document.getElementById('profile-card-close');
       const productsLink = document.getElementById('products-link');
+      const carouselTrack = document.getElementById('carousel-track');
+      const carouselPrev = document.getElementById('carousel-prev');
+      const carouselNext = document.getElementById('carousel-next');
+      const cards = document.querySelectorAll('.profile-card');
+      let currentIndex = 0;
       let gyroEnabled = false;
 
-      // Funkcja aktualizująca transformację karty
-      function updateCardTransform(x, y) {
-        profileCard.style.setProperty('--pointer-x', `${x}%`);
-        profileCard.style.setProperty('--pointer-y', `${y}%`);
-        profileCard.style.setProperty('--rotate-x', `${(y - 50) / 5}deg`);
-        profileCard.style.setProperty('--rotate-y', `${-(x - 50) / 5}deg`);
-        profileCard.style.setProperty('--card-opacity', '1');
+      // Inicjalizacja karuzeli
+      function initCarousel() {
+        updateCarousel();
       }
 
-      // Obsługa ruchu myszy
+      // Aktualizacja pozycji karuzeli
+      function updateCarousel() {
+        const cardWidth = document.querySelector('.profile-card-wrapper').offsetWidth;
+        carouselTrack.style.transform = `translateX(-${currentIndex * (cardWidth + 30)}px)`;
+      }
+
+      // Przejście do poprzedniej karty
+      carouselPrev.addEventListener('click', function() {
+        if (currentIndex > 0) {
+          currentIndex--;
+        } else {
+          currentIndex = cards.length - 1;
+        }
+        updateCarousel();
+      });
+
+      // Przejście do następnej karty
+      carouselNext.addEventListener('click', function() {
+        if (currentIndex < cards.length - 1) {
+          currentIndex++;
+        } else {
+          currentIndex = 0;
+        }
+        updateCarousel();
+      });
+
+      // Funkcja aktualizująca transformację karty
+      function updateCardTransform(card, x, y) {
+        card.style.setProperty('--pointer-x', `${x}%`);
+        card.style.setProperty('--pointer-y', `${y}%`);
+        card.style.setProperty('--rotate-x', `${(y - 50) / 5}deg`);
+        card.style.setProperty('--rotate-y', `${-(x - 50) / 5}deg`);
+        card.style.setProperty('--card-opacity', '1');
+      }
+
+      // Obsługa ruchu myszy dla wszystkich kart
       function handleMouseMove(e) {
         if (gyroEnabled) return;
         
-        const rect = profileCard.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const percentX = (x / rect.width) * 100;
-        const percentY = (y / rect.height) * 100;
-        
-        updateCardTransform(percentX, percentY);
+        cards.forEach(card => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const percentX = (x / rect.width) * 100;
+          const percentY = (y / rect.height) * 100;
+          
+          updateCardTransform(card, percentX, percentY);
+        });
       }
 
       // Obsługa żyroskopu
@@ -587,27 +759,27 @@
         
         gyroEnabled = true;
         
-        // Beta to przechylenie przód/tył (zakres -180 do 180)
-        // Gamma to przechylenie lewo/prawo (zakres -90 do 90)
-        const beta = e.beta;  // przechylenie przód/tył
-        const gamma = e.gamma; // przechylenie lewo/prawo
+        const beta = e.beta;
+        const gamma = e.gamma;
         
-        // Normalizujemy wartości do zakresu 0-100%
         const percentX = 50 + (gamma / 90 * 50);
         const percentY = 50 + (beta / 180 * 50);
         
-        // Ograniczamy wartości do 10-90% aby uniknąć skrajnych efektów
         const clampedX = Math.min(Math.max(percentX, 10), 90);
         const clampedY = Math.min(Math.max(percentY, 10), 90);
         
-        updateCardTransform(clampedX, clampedY);
+        cards.forEach(card => {
+          updateCardTransform(card, clampedX, clampedY);
+        });
       }
 
-      // Obsługa otwierania karty
+      // Obsługa otwierania karuzeli
       productsLink.addEventListener('click', function(e) {
         e.preventDefault();
         profileCardContainer.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        currentIndex = 0;
+        updateCarousel();
         
         // Dodajemy obsługę żyroskopu jeśli dostępna
         if (window.DeviceOrientationEvent) {
@@ -627,30 +799,32 @@
         }
         
         // Dodajemy też obsługę myszy
-        profileCard.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mousemove', handleMouseMove);
       });
 
-      // Obsługa zamykania karty
+      // Obsługa zamykania karuzeli
       profileCardClose.addEventListener('click', function() {
         profileCardContainer.style.display = 'none';
         document.body.style.overflow = '';
         
         // Usuwamy listenery
         window.removeEventListener('deviceorientation', handleDeviceOrientation);
-        profileCard.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mousemove', handleMouseMove);
         gyroEnabled = false;
       });
 
-      // Reset pozycji karty gdy mysz ją opuści
-      profileCard.addEventListener('mouseleave', () => {
-        if (!gyroEnabled) {
-          profileCard.style.setProperty('--rotate-x', '0deg');
-          profileCard.style.setProperty('--rotate-y', '0deg');
-          profileCard.style.setProperty('--card-opacity', '0');
-        }
+      // Reset pozycji kart gdy mysz je opuści
+      cards.forEach(card => {
+        card.addEventListener('mouseleave', () => {
+          if (!gyroEnabled) {
+            card.style.setProperty('--rotate-x', '0deg');
+            card.style.setProperty('--rotate-y', '0deg');
+            card.style.setProperty('--card-opacity', '0');
+          }
+        });
       });
 
-      // Obsługa kliknięcia poza kartą
+      // Obsługa kliknięcia poza kartami
       profileCardContainer.addEventListener('click', function(e) {
         if (e.target === profileCardContainer) {
           profileCardContainer.style.display = 'none';
@@ -658,10 +832,13 @@
           
           // Usuwamy listenery
           window.removeEventListener('deviceorientation', handleDeviceOrientation);
-          profileCard.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mousemove', handleMouseMove);
           gyroEnabled = false;
         }
       });
+
+      // Inicjalizacja karuzeli
+      initCarousel();
     });
 
     // Skrypt sekcji kontaktowej
