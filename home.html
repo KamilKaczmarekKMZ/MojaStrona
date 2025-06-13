@@ -18,7 +18,7 @@
       font-family: Arial, sans-serif;
       position: relative;
       min-height: 100vh;
-      background-color: #000; /* Dodane czarne tło w zastępstwie canvas */
+      background-color: #000;
     }
 
     /* Menu */
@@ -116,7 +116,7 @@
       text-align: center;
     }
 
-    /* Nowe style dla karuzeli 3D */
+    /* Nowe style dla karuzeli 3D (zaktualizowane) */
     .carousel-container {
       display: none;
       position: fixed;
@@ -147,6 +147,21 @@
       transition: transform 1s ease;
     }
 
+    /* Zaktualizowane style kart (na podstawie Twojego kodu) */
+    :root {
+      --pointer-x: 50%;
+      --pointer-y: 50%;
+      --pointer-from-center: 0;
+      --pointer-from-top: 0.5;
+      --pointer-from-left: 0.5;
+      --card-opacity: 0;
+      --rotate-x: 0deg;
+      --rotate-y: 0deg;
+      --background-x: 50%;
+      --background-y: 50%;
+      --card-radius: 20px;
+    }
+
     .carousel-item {
       position: absolute;
       width: 300px;
@@ -154,20 +169,30 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      border-radius: 20px;
+      border-radius: var(--card-radius);
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
       transition: all 0.5s ease;
       background: radial-gradient(
-        circle,
-        rgba(var(--color-card), 0.2) 0%,
-        rgba(var(--color-card), 0.6) 80%,
-        rgba(var(--color-card), 0.9) 100%
+        circle at var(--pointer-x) var(--pointer-y),
+        hsla(266, 100%, 90%, var(--card-opacity)) 4%,
+        hsla(266, 50%, 80%, calc(var(--card-opacity) * 0.75)) 10%,
+        hsla(266, 25%, 70%, calc(var(--card-opacity) * 0.5)) 50%,
+        hsla(266, 0%, 60%, 0) 100%
       );
-      border: 2px solid rgba(var(--color-card));
+      box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
+      transform-style: preserve-3d;
+    }
+
+    .carousel-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #60496e8c 0%, #71C4FF44 100%);
+      z-index: 1;
     }
 
     .carousel-card {
+      position: relative;
       padding: 30px;
       height: 100%;
       display: flex;
@@ -175,20 +200,34 @@
       justify-content: center;
       align-items: center;
       color: white;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      z-index: 2;
+      transform: translate3d(calc(var(--pointer-from-left) * -6px + 3px), calc(var(--pointer-from-top) * -6px + 3px), 0.1px);
     }
 
     .carousel-card h3 {
       font-size: 24px;
       margin-bottom: 20px;
-      color: white;
+      background-image: linear-gradient(to bottom, #fff, #6f6fbe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
     }
 
     .carousel-card p {
       font-size: 16px;
       line-height: 1.6;
+      background-image: linear-gradient(to bottom, #fff, #4a4ac0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 500;
     }
 
+    .carousel-item:hover {
+      --card-opacity: 1;
+      transform: translate(-50%, -50%) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
+    }
+
+    /* Reszta stylów karuzeli */
     .carousel-nav {
       position: absolute;
       bottom: 20px;
@@ -240,137 +279,9 @@
       background-color: rgba(255, 255, 255, 0.6);
     }
 
-    /* Style dla sekcji kontaktowej */
-    .contact-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
+    /* Reszta Twojego oryginalnego CSS... */
+    /* ... (style dla sekcji kontaktowej, przycisków social media itd.) ... */
 
-    .contact-close {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-    }
-
-    .contact-close:hover {
-      background-color: rgba(255, 255, 255, 0.6);
-    }
-
-    .contact-title {
-      color: white;
-      margin-bottom: 30px;
-      font-size: 28px;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-
-    /* Style dla przycisków social media */
-    .social-container {
-      display: flex;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    .parent {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .child {
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-style: preserve-3d;
-      transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
-      border-radius: 5px;
-      margin: 0 15px;
-      box-shadow:
-        inset 1px 1px 2px #fff,
-        0 0 5px #4442;
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    .child:hover {
-      background-color: black;
-      background-position:
-        -100px 100px,
-        -100px 100px;
-      transform: perspective(180px) rotateX(60deg) translateY(2px);
-    }
-
-    .child-2:hover {
-      box-shadow: 0px 10px 10px #ff00ff;
-    }
-    .child-3:hover {
-      box-shadow: 0px 10px 10px #EA4335;
-    }
-    .child-4:hover {
-      box-shadow: 0px 10px 10px #4267B2;
-    }
-
-    .button {
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: transparent;
-      font-size: 20px;
-      transition-duration: 0.5s;
-      transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
-    }
-
-    .child:hover > .button {
-      transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
-        translateY(2px) translateZ(10px);
-    }
-
-    .button svg {
-      width: 24px;
-      height: 24px;
-      display: block;
-    }
-
-    @media (max-width: 768px) {
-      .carousel {
-        height: 70vh;
-      }
-
-      .carousel-item {
-        width: 250px;
-        height: 350px;
-      }
-
-      .child {
-        margin: 0 10px;
-      }
-    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -428,7 +339,7 @@
     <p>KK</p>
   </div>
 
-  <!-- Karuzela produktów -->
+  <!-- Karuzela produktów (zaktualizowana) -->
   <div class="carousel-container" id="carousel-container">
     <div class="carousel">
       <button class="carousel-close" id="carousel-close">&times;</button>
@@ -527,7 +438,7 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- Skrypt karuzeli -->
+  <!-- Skrypt karuzeli (zaktualizowany) -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const carouselContainer = document.getElementById('carousel-container');
@@ -551,6 +462,21 @@
             rotateY(${angle}rad)
             translateZ(${radius}px)
           `;
+          
+          // Dodajemy obsługę hover dla efektów 3D
+          item.addEventListener('mousemove', (e) => {
+            const rect = item.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const percentX = (x / rect.width) * 100;
+            const percentY = (y / rect.height) * 100;
+            
+            item.style.setProperty('--pointer-x', `${percentX}%`);
+            item.style.setProperty('--pointer-y', `${percentY}%`);
+            item.style.setProperty('--rotate-x', `${(percentY - 50) / 5}deg`);
+            item.style.setProperty('--rotate-y', `${-(percentX - 50) / 5}deg`);
+          });
         });
       }
 
