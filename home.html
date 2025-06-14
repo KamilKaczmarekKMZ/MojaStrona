@@ -116,7 +116,43 @@
       text-align: center;
     }
 
-    /* Nowa pojedyncza karta z obsługą żyroskopu */
+    /* Karuzela kart */
+    .cards-carousel {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px 0;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+
+    .cards-container {
+      display: flex;
+      transition: transform 0.5s ease-out;
+      will-change: transform;
+      padding: 20px 0;
+    }
+
+    .card-wrapper {
+      flex: 0 0 calc(100% - 40px);
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 768px) {
+      .card-wrapper {
+        flex: 0 0 calc(50% - 40px);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .card-wrapper {
+        flex: 0 0 calc(33.333% - 40px);
+      }
+    }
+
+    /* Style dla nowych kart */
     :root {
       --pointer-x: 50%;
       --pointer-y: 50%;
@@ -135,28 +171,21 @@
       --sunpillar-4: hsl(176, 100%, 76%);
       --sunpillar-5: hsl(228, 100%, 74%);
       --sunpillar-6: hsl(283, 100%, 73%);
-    }
-
-    .profile-card-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      touch-action: none;
+      --sunpillar-clr-1: var(--sunpillar-1);
+      --sunpillar-clr-2: var(--sunpillar-2);
+      --sunpillar-clr-3: var(--sunpillar-3);
+      --sunpillar-clr-4: var(--sunpillar-4);
+      --sunpillar-clr-5: var(--sunpillar-5);
+      --sunpillar-clr-6: var(--sunpillar-6);
     }
 
     .profile-card-wrapper {
-      width: 300px;
+      width: 100%;
       height: 400px;
       perspective: 500px;
       transform: translate3d(0, 0, 0.1px);
       position: relative;
+      touch-action: none;
     }
 
     .profile-card-wrapper::before {
@@ -236,25 +265,41 @@
       font-weight: 500;
     }
 
-    .profile-card-close {
+    .profile-card-user {
       position: absolute;
-      top: 30px;
-      right: 30px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-      z-index: 10;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 12px 14px;
+      pointer-events: auto;
     }
 
-    .profile-card-close:hover {
-      background-color: rgba(255, 255, 255, 0.6);
+    .profile-card-button {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+    }
+
+    .profile-card-button:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-1px);
+      transition: all 0.2s ease;
     }
 
     /* Sekcja kontaktowa */
@@ -376,7 +421,6 @@
 
     @media (max-width: 768px) {
       .profile-card-wrapper {
-        width: 250px;
         height: 350px;
       }
 
@@ -395,7 +439,6 @@
 
     @media (max-width: 480px) {
       .profile-card-wrapper {
-        width: 220px;
         height: 320px;
       }
 
@@ -465,17 +508,84 @@
   <!-- Główna zawartość strony -->
   <div class="content">
     <h1>SmartSystems</h1>
-    <p>KK</p>
-  </div>
-
-  <!-- Nowa pojedyncza karta z obsługą żyroskopu -->
-  <div class="profile-card-container" id="profile-card-container">
-    <button class="profile-card-close" id="profile-card-close">&times;</button>
-    <div class="profile-card-wrapper">
-      <div class="profile-card" id="profile-card">
-        <div class="profile-card-inside">
-          <h3>ChatBot – 24/7 Customer Support</h3>
-          <p>An intelligent assistant available around the clock. It automates customer service and integrates with various tools to streamline your business operations.</p>
+    <p>Innovative Solutions</p>
+    
+    <!-- Karuzela z kartami -->
+    <div class="cards-carousel" id="cards-carousel">
+      <div class="cards-container" id="cards-container">
+        <!-- Karta 1 -->
+        <div class="card-wrapper">
+          <div class="profile-card-wrapper">
+            <div class="profile-card">
+              <div class="profile-card-inside">
+                <h3>AI Assistant</h3>
+                <p>24/7 intelligent support with natural language processing and machine learning capabilities.</p>
+                <div class="profile-card-user">
+                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 2 -->
+        <div class="card-wrapper">
+          <div class="profile-card-wrapper">
+            <div class="profile-card">
+              <div class="profile-card-inside">
+                <h3>Data Analytics</h3>
+                <p>Advanced data processing and visualization tools for business intelligence.</p>
+                <div class="profile-card-user">
+                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 3 -->
+        <div class="card-wrapper">
+          <div class="profile-card-wrapper">
+            <div class="profile-card">
+              <div class="profile-card-inside">
+                <h3>Cloud Solutions</h3>
+                <p>Scalable and secure cloud infrastructure tailored to your needs.</p>
+                <div class="profile-card-user">
+                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 4 -->
+        <div class="card-wrapper">
+          <div class="profile-card-wrapper">
+            <div class="profile-card">
+              <div class="profile-card-inside">
+                <h3>IoT Platform</h3>
+                <p>Connect and manage your devices with our powerful IoT platform.</p>
+                <div class="profile-card-user">
+                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Karta 5 -->
+        <div class="card-wrapper">
+          <div class="profile-card-wrapper">
+            <div class="profile-card">
+              <div class="profile-card-inside">
+                <h3>Blockchain</h3>
+                <p>Secure and transparent decentralized solutions for your business.</p>
+                <div class="profile-card-user">
+                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -549,36 +659,122 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- Skrypt dla karty z obsługą żyroskopu -->
+  <!-- Skrypt dla karuzeli kart -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const profileCardContainer = document.getElementById('profile-card-container');
-      const profileCard = document.getElementById('profile-card');
-      const profileCardClose = document.getElementById('profile-card-close');
-      const productsLink = document.getElementById('products-link');
+      // Inicjalizacja karuzeli
+      const carousel = document.getElementById('cards-carousel');
+      const container = document.getElementById('cards-container');
+      const cards = document.querySelectorAll('.card-wrapper');
+      const cardCount = cards.length;
+      let currentIndex = 0;
+      let startX = 0;
+      let isDragging = false;
+      let translateX = 0;
+
+      // Funkcja do aktualizacji pozycji karuzeli
+      function updateCarousel() {
+        container.style.transform = `translateX(${translateX}px)`;
+      }
+
+      // Obsługa dotyku na urządzeniach mobilnych
+      carousel.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        isDragging = true;
+      });
+
+      carousel.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const x = e.touches[0].clientX;
+        const diff = startX - x;
+        translateX = -currentIndex * carousel.offsetWidth - diff;
+        updateCarousel();
+      });
+
+      carousel.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        const x = e.changedTouches[0].clientX;
+        const diff = startX - x;
+        
+        if (diff > 50 && currentIndex < cardCount - 1) {
+          currentIndex++;
+        } else if (diff < -50 && currentIndex > 0) {
+          currentIndex--;
+        }
+        
+        translateX = -currentIndex * carousel.offsetWidth;
+        container.style.transition = 'transform 0.5s ease-out';
+        updateCarousel();
+        
+        setTimeout(() => {
+          container.style.transition = '';
+        }, 500);
+      });
+
+      // Obsługa myszy na desktopach
+      carousel.addEventListener('mousedown', (e) => {
+        startX = e.clientX;
+        isDragging = true;
+        carousel.style.cursor = 'grabbing';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const x = e.clientX;
+        const diff = startX - x;
+        translateX = -currentIndex * carousel.offsetWidth - diff;
+        updateCarousel();
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        carousel.style.cursor = '';
+        
+        const x = e.clientX;
+        const diff = startX - x;
+        
+        if (diff > 50 && currentIndex < cardCount - 1) {
+          currentIndex++;
+        } else if (diff < -50 && currentIndex > 0) {
+          currentIndex--;
+        }
+        
+        translateX = -currentIndex * carousel.offsetWidth;
+        container.style.transition = 'transform 0.5s ease-out';
+        updateCarousel();
+        
+        setTimeout(() => {
+          container.style.transition = '';
+        }, 500);
+      });
+
+      // Skrypt dla karty z obsługą żyroskopu
+      const profileCards = document.querySelectorAll('.profile-card');
       let gyroEnabled = false;
 
       // Funkcja aktualizująca transformację karty
-      function updateCardTransform(x, y) {
-        profileCard.style.setProperty('--pointer-x', `${x}%`);
-        profileCard.style.setProperty('--pointer-y', `${y}%`);
-        profileCard.style.setProperty('--rotate-x', `${(y - 50) / 5}deg`);
-        profileCard.style.setProperty('--rotate-y', `${-(x - 50) / 5}deg`);
-        profileCard.style.setProperty('--card-opacity', '1');
+      function updateCardTransform(card, x, y) {
+        const rect = card.getBoundingClientRect();
+        const percentX = ((x - rect.left) / rect.width) * 100;
+        const percentY = ((y - rect.top) / rect.height) * 100;
+        
+        card.style.setProperty('--pointer-x', `${percentX}%`);
+        card.style.setProperty('--pointer-y', `${percentY}%`);
+        card.style.setProperty('--rotate-x', `${(percentY - 50) / 5}deg`);
+        card.style.setProperty('--rotate-y', `${-(percentX - 50) / 5}deg`);
+        card.style.setProperty('--card-opacity', '1');
       }
 
       // Obsługa ruchu myszy
       function handleMouseMove(e) {
         if (gyroEnabled) return;
         
-        const rect = profileCard.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const percentX = (x / rect.width) * 100;
-        const percentY = (y / rect.height) * 100;
-        
-        updateCardTransform(percentX, percentY);
+        profileCards.forEach(card => {
+          updateCardTransform(card, e.clientX, e.clientY);
+        });
       }
 
       // Obsługa żyroskopu
@@ -600,19 +796,37 @@
         const clampedX = Math.min(Math.max(percentX, 10), 90);
         const clampedY = Math.min(Math.max(percentY, 10), 90);
         
-        updateCardTransform(clampedX, clampedY);
+        profileCards.forEach(card => {
+          card.style.setProperty('--pointer-x', `${clampedX}%`);
+          card.style.setProperty('--pointer-y', `${clampedY}%`);
+          card.style.setProperty('--rotate-x', `${(clampedY - 50) / 5}deg`);
+          card.style.setProperty('--rotate-y', `${-(clampedX - 50) / 5}deg`);
+          card.style.setProperty('--card-opacity', '1');
+        });
       }
 
-      // Obsługa otwierania karty
-      productsLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        profileCardContainer.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        
-        // Dodajemy obsługę żyroskopu jeśli dostępna
-        if (window.DeviceOrientationEvent) {
-          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-            // iOS 13+ wymaga uprawnień
+      // Dodajemy obsługę myszy
+      profileCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          if (gyroEnabled) return;
+          updateCardTransform(card, e.clientX, e.clientY);
+        });
+
+        card.addEventListener('mouseleave', () => {
+          if (!gyroEnabled) {
+            card.style.setProperty('--rotate-x', '0deg');
+            card.style.setProperty('--rotate-y', '0deg');
+            card.style.setProperty('--card-opacity', '0');
+          }
+        });
+      });
+
+      // Dodajemy obsługę żyroskopu jeśli dostępna
+      if (window.DeviceOrientationEvent) {
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          // iOS 13+ wymaga uprawnień
+          document.getElementById('products-link')?.addEventListener('click', function(e) {
+            e.preventDefault();
             DeviceOrientationEvent.requestPermission()
               .then(permissionState => {
                 if (permissionState === 'granted') {
@@ -620,52 +834,14 @@
                 }
               })
               .catch(console.error);
-          } else {
-            // Inne przeglądarki
-            window.addEventListener('deviceorientation', handleDeviceOrientation);
-          }
+          });
+        } else {
+          // Inne przeglądarki
+          window.addEventListener('deviceorientation', handleDeviceOrientation);
         }
-        
-        // Dodajemy też obsługę myszy
-        profileCard.addEventListener('mousemove', handleMouseMove);
-      });
+      }
 
-      // Obsługa zamykania karty
-      profileCardClose.addEventListener('click', function() {
-        profileCardContainer.style.display = 'none';
-        document.body.style.overflow = '';
-        
-        // Usuwamy listenery
-        window.removeEventListener('deviceorientation', handleDeviceOrientation);
-        profileCard.removeEventListener('mousemove', handleMouseMove);
-        gyroEnabled = false;
-      });
-
-      // Reset pozycji karty gdy mysz ją opuści
-      profileCard.addEventListener('mouseleave', () => {
-        if (!gyroEnabled) {
-          profileCard.style.setProperty('--rotate-x', '0deg');
-          profileCard.style.setProperty('--rotate-y', '0deg');
-          profileCard.style.setProperty('--card-opacity', '0');
-        }
-      });
-
-      // Obsługa kliknięcia poza kartą
-      profileCardContainer.addEventListener('click', function(e) {
-        if (e.target === profileCardContainer) {
-          profileCardContainer.style.display = 'none';
-          document.body.style.overflow = '';
-          
-          // Usuwamy listenery
-          window.removeEventListener('deviceorientation', handleDeviceOrientation);
-          profileCard.removeEventListener('mousemove', handleMouseMove);
-          gyroEnabled = false;
-        }
-      });
-    });
-
-    // Skrypt sekcji kontaktowej
-    document.addEventListener('DOMContentLoaded', function() {
+      // Obsługa sekcji kontaktowej
       const contactContainer = document.getElementById('contact-container');
       const contactLink = document.getElementById('contact-link');
       const contactClose = document.getElementById('contact-close');
@@ -687,6 +863,15 @@
           document.body.style.overflow = '';
         }
       });
+
+      // Responsywność karuzeli
+      function handleResize() {
+        translateX = -currentIndex * carousel.offsetWidth;
+        updateCarousel();
+      }
+
+      window.addEventListener('resize', handleResize);
+      handleResize();
     });
   </script>
 </body>
