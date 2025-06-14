@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartSystems</title>
   <style>
-    /* Interaktywne tło */
-    html {
-      -webkit-tap-highlight-color: transparent;
-      tap-highlight-color: transparent;
+    /* Interaktywne tło - Living Gradient */
+    :root {
+      --gradient-color-1: #0f0526;
+      --gradient-color-2: #1a0a3a;
+      --gradient-color-3: #2a0d5a;
+      --gradient-speed: 0.03;
     }
 
     body {
@@ -18,10 +20,23 @@
       font-family: Arial, sans-serif;
       position: relative;
       min-height: 100vh;
-      background-color: #000;
+      background: linear-gradient(
+        135deg,
+        var(--gradient-color-1) 0%,
+        var(--gradient-color-2) 50%,
+        var(--gradient-color-3) 100%
+      );
+      background-size: 400% 400%;
+      animation: gradientFlow 15s ease infinite;
     }
 
-    /* Menu */
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Neuro-Sync Menu */
     .menu {
       padding: 0.5rem;
       background-color: rgba(0, 0, 0, 0.8);
@@ -81,6 +96,19 @@
       opacity: 1;
     }
 
+    /* Neural Connections */
+    .neural-connection {
+      position: absolute;
+      background: rgba(138, 43, 226, 0.3);
+      z-index: 0;
+      transition: all 0.4s ease;
+      pointer-events: none;
+    }
+
+    .menu:hover .neural-connection {
+      background: rgba(138, 43, 226, 0.6);
+    }
+
     .link-icon {
       width: 24px;
       height: 24px;
@@ -116,8 +144,27 @@
       text-align: center;
     }
 
+    /* Karty z efektem DNA */
+    .dna-pattern {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(90deg, transparent 45%, rgba(138, 43, 226, 0.1) 50%, transparent 55%),
+        linear-gradient(transparent 45%, rgba(75, 0, 130, 0.1) 50%, transparent 55%);
+      background-size: 30px 30px;
+      animation: dnaFlow 20s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes dnaFlow {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 600px; }
+    }
+
     /* Karuzela kart */
     .cards-carousel {
+      display: none; /* Początkowo ukryte */
       position: relative;
       width: 100%;
       max-width: 1200px;
@@ -152,33 +199,7 @@
       }
     }
 
-    /* Style dla nowych kart */
-    :root {
-      --pointer-x: 50%;
-      --pointer-y: 50%;
-      --pointer-from-center: 0;
-      --pointer-from-top: 0.5;
-      --pointer-from-left: 0.5;
-      --card-opacity: 0;
-      --rotate-x: 0deg;
-      --rotate-y: 0deg;
-      --background-x: 50%;
-      --background-y: 50%;
-      --card-radius: 30px;
-      --sunpillar-1: hsl(2, 100%, 73%);
-      --sunpillar-2: hsl(53, 100%, 69%);
-      --sunpillar-3: hsl(93, 100%, 69%);
-      --sunpillar-4: hsl(176, 100%, 76%);
-      --sunpillar-5: hsl(228, 100%, 74%);
-      --sunpillar-6: hsl(283, 100%, 73%);
-      --sunpillar-clr-1: var(--sunpillar-1);
-      --sunpillar-clr-2: var(--sunpillar-2);
-      --sunpillar-clr-3: var(--sunpillar-3);
-      --sunpillar-clr-4: var(--sunpillar-4);
-      --sunpillar-clr-5: var(--sunpillar-5);
-      --sunpillar-clr-6: var(--sunpillar-6);
-    }
-
+    /* Style dla kart z efektem Quantum Entanglement */
     .profile-card-wrapper {
       width: 100%;
       height: 400px;
@@ -247,6 +268,45 @@
       text-align: center;
     }
 
+    /* Holograficzny Avatar */
+    .holographic-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+      animation: hologramPulse 3s ease-in-out infinite;
+    }
+
+    .holographic-avatar::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        rgba(138, 43, 226, 0.2),
+        rgba(75, 0, 130, 0.4),
+        rgba(138, 43, 226, 0.2)
+      );
+      transform: rotate(45deg);
+      animation: hologramScan 4s linear infinite;
+    }
+
+    @keyframes hologramPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(138, 43, 226, 0.8); }
+    }
+
+    @keyframes hologramScan {
+      0% { transform: rotate(45deg) translateY(-100%); }
+      100% { transform: rotate(45deg) translateY(100%); }
+    }
+
     .profile-card h3 {
       font-size: 24px;
       margin-bottom: 20px;
@@ -265,23 +325,6 @@
       font-weight: 500;
     }
 
-    .profile-card-user {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      right: 20px;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(30px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      padding: 12px 14px;
-      pointer-events: auto;
-    }
-
     .profile-card-button {
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
@@ -294,6 +337,7 @@
       backdrop-filter: blur(10px);
       background: rgba(0, 0, 0, 0.3);
       text-decoration: none;
+      margin-top: 20px;
     }
 
     .profile-card-button:hover {
@@ -302,121 +346,80 @@
       transition: all 0.2s ease;
     }
 
-    /* Sekcja kontaktowa */
-    .contact-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .contact-close {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-    }
-
-    .contact-close:hover {
-      background-color: rgba(255, 255, 255, 0.6);
-    }
-
-    .contact-title {
-      color: white;
-      margin-bottom: 30px;
-      font-size: 28px;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-
-    /* Style dla przycisków social media */
+    /* Ulepszone Social Media - Monety */
     .social-container {
       display: flex;
-      justify-content: center;
-      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      margin-top: 40px;
     }
 
-    .parent {
+    .social-coin {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.5),
+        inset 0 0 10px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .social-coin::before {
+      content: '';
+      position: absolute;
       width: 100%;
       height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 30% 30%,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+      );
+      z-index: -1;
     }
 
-    .child {
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-style: preserve-3d;
-      transition: all 0.3s cubic-bezier(0.68, 0.85, 0.265, 1.85);
-      border-radius: 5px;
-      margin: 0 15px;
-      box-shadow:
-        inset 1px 1px 2px #fff,
-        0 0 5px #4442;
-      background-color: rgba(0, 0, 0, 0.8);
+    .social-coin:hover {
+      transform: scale(1.1) rotateY(180deg);
+      box-shadow: 
+        0 0 20px currentColor,
+        inset 0 0 15px rgba(0, 0, 0, 0.7);
     }
 
-    .child:hover {
-      background-color: black;
-      background-position:
-        -100px 100px,
-        -100px 100px;
-      transform: perspective(180px) rotateX(60deg) translateY(2px);
+    .social-coin:nth-child(1) {
+      background: linear-gradient(135deg, #833ab4, #fd1d1d);
+      color: #fd1d1d;
     }
 
-    .child-2:hover {
-      box-shadow: 0px 10px 10px #ff00ff;
-    }
-    .child-3:hover {
-      box-shadow: 0px 10px 10px #EA4335;
-    }
-    .child-4:hover {
-      box-shadow: 0px 10px 10px #4267B2;
+    .social-coin:nth-child(2) {
+      background: linear-gradient(135deg, #00c3ff, #ffff1c);
+      color: #00c3ff;
+      margin-left: 40px;
     }
 
-    .button {
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: transparent;
-      font-size: 20px;
-      transition-duration: 0.5s;
-      transition-timing-function: cubic-bezier(0.68, -0.85, 0.265, 1.55);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
+    .social-coin:nth-child(3) {
+      background: linear-gradient(135deg, #4267B2, #898F9C);
+      color: #4267B2;
     }
 
-    .child:hover > .button {
-      transform: translate3d(0px, 20px, 30px) perspective(80px) rotateX(-60deg)
-        translateY(2px) translateZ(10px);
+    .social-coin svg {
+      width: 30px;
+      height: 30px;
+      fill: white;
     }
 
-    .button svg {
-      width: 24px;
-      height: 24px;
-      display: block;
+    /* Widget czatu */
+    #chat-widget-root {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
     }
 
     @media (max-width: 768px) {
@@ -432,8 +435,9 @@
         font-size: 14px;
       }
 
-      .child {
-        margin: 0 10px;
+      .holographic-avatar {
+        width: 80px;
+        height: 80px;
       }
     }
 
@@ -453,13 +457,27 @@
       .profile-card-inside {
         padding: 20px;
       }
+
+      .social-coin {
+        width: 50px;
+        height: 50px;
+      }
+
+      .social-coin svg {
+        width: 25px;
+        height: 25px;
+      }
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Menu -->
-  <div class="menu">
+  <!-- Neuro-Sync Menu -->
+  <div class="menu" id="main-menu">
+    <div class="neural-connection" id="connection-1"></div>
+    <div class="neural-connection" id="connection-2"></div>
+    <div class="neural-connection" id="connection-3"></div>
+    
     <a href="#" class="link">
       <span class="link-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
@@ -510,19 +528,19 @@
     <h1>SmartSystems</h1>
     <p>Innovative Solutions</p>
     
-    <!-- Karuzela z kartami -->
+    <!-- Karuzela z kartami (początkowo ukryta) -->
     <div class="cards-carousel" id="cards-carousel">
+      <div class="dna-pattern"></div>
       <div class="cards-container" id="cards-container">
         <!-- Karta 1 -->
         <div class="card-wrapper">
           <div class="profile-card-wrapper">
             <div class="profile-card">
               <div class="profile-card-inside">
+                <div class="holographic-avatar"></div>
                 <h3>AI Assistant</h3>
                 <p>24/7 intelligent support with natural language processing and machine learning capabilities.</p>
-                <div class="profile-card-user">
-                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
-                </div>
+                <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
               </div>
             </div>
           </div>
@@ -533,11 +551,10 @@
           <div class="profile-card-wrapper">
             <div class="profile-card">
               <div class="profile-card-inside">
+                <div class="holographic-avatar"></div>
                 <h3>Data Analytics</h3>
                 <p>Advanced data processing and visualization tools for business intelligence.</p>
-                <div class="profile-card-user">
-                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
-                </div>
+                <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
               </div>
             </div>
           </div>
@@ -548,11 +565,10 @@
           <div class="profile-card-wrapper">
             <div class="profile-card">
               <div class="profile-card-inside">
+                <div class="holographic-avatar"></div>
                 <h3>Cloud Solutions</h3>
                 <p>Scalable and secure cloud infrastructure tailored to your needs.</p>
-                <div class="profile-card-user">
-                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
-                </div>
+                <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
               </div>
             </div>
           </div>
@@ -563,11 +579,10 @@
           <div class="profile-card-wrapper">
             <div class="profile-card">
               <div class="profile-card-inside">
+                <div class="holographic-avatar"></div>
                 <h3>IoT Platform</h3>
                 <p>Connect and manage your devices with our powerful IoT platform.</p>
-                <div class="profile-card-user">
-                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
-                </div>
+                <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
               </div>
             </div>
           </div>
@@ -578,11 +593,10 @@
           <div class="profile-card-wrapper">
             <div class="profile-card">
               <div class="profile-card-inside">
+                <div class="holographic-avatar"></div>
                 <h3>Blockchain</h3>
                 <p>Secure and transparent decentralized solutions for your business.</p>
-                <div class="profile-card-user">
-                  <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
-                </div>
+                <a href="https://www.google.com" class="profile-card-button" target="_blank">Read More</a>
               </div>
             </div>
           </div>
@@ -591,40 +605,32 @@
     </div>
   </div>
 
-  <!-- Sekcja kontaktowa z przyciskami social media -->
+  <!-- Sekcja kontaktowa z ulepszonymi monetami -->
   <div class="contact-container" id="contact-container">
     <button class="contact-close" id="contact-close">&times;</button>
-    <h2 class="contact-title">Contact</h2>
     <div class="social-container">
-      <div class="parent">
-        <div class="child child-2">
-          <a href="https://www.instagram.com/direct/t/17847947670435948/" class="button btn-2" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ff00ff">
-              <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
-            </svg>
-          </a>
-        </div>
-        <div class="child child-3">
-          <a href="mailto:ceo@smartsystems.com" class="button btn-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#EA4335">
-              <path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"></path>
-            </svg>
-          </a>
-        </div>
-        <div class="child child-4">
-          <button class="button btn-4">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="#4267B2">
-              <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
+      <a href="https://www.instagram.com/direct/t/17847947670435948/" class="social-coin" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+          <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+        </svg>
+      </a>
+      <a href="mailto:ceo@smartsystems.com" class="social-coin">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"></path>
+        </svg>
+      </a>
+      <a href="#" class="social-coin">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+          <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
+        </svg>
+      </a>
     </div>
   </div>
 
   <!-- Widget czatu -->
   <div id="chat-widget-root"></div>
   <script>
+    // Konfiguracja widgetu czatu
     window.ChatWidgetConfig = {
       webhook: {
         url: 'https://thekamilkaczmarek.app.n8n.cloud/webhook/5800ad3c-860f-44a0-8fd6-b402bb390b74/chat',
@@ -653,81 +659,218 @@
       suggestedQuestions: []
     };
     
+    // Inicjalizacja widgetu czatu
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/gh/KamilKaczmarekKMZ/SmartSystemsKKwidget@latest/chat-widget.js';
     script.defer = true;
     document.body.appendChild(script);
-  </script>
 
-  <!-- Skrypt dla karuzeli kart -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Inicjalizacja karuzeli
-      const carousel = document.getElementById('cards-carousel');
-      const container = document.getElementById('cards-container');
-      const cards = document.querySelectorAll('.card-wrapper');
-      const cardCount = cards.length;
-      let currentIndex = 0;
-      let startX = 0;
-      let isDragging = false;
-      let translateX = 0;
+    // Funkcje dla żywego gradientu
+    function updateGradientColors(e) {
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      
+      document.documentElement.style.setProperty('--gradient-color-1', 
+        `hsl(${Math.round(240 + x * 60)}, 80%, ${Math.round(10 + y * 10)}%)`);
+      document.documentElement.style.setProperty('--gradient-color-2', 
+        `hsl(${Math.round(260 + x * 40)}, 80%, ${Math.round(15 + y * 10)}%)`);
+      document.documentElement.style.setProperty('--gradient-color-3', 
+        `hsl(${Math.round(280 + x * 20)}, 80%, ${Math.round(20 + y * 10)}%)`);
+    }
 
-      // Funkcja do aktualizacji pozycji karuzeli
-      function updateCarousel() {
-        container.style.transform = `translateX(${translateX}px)`;
+    // Funkcje dla Neuro-Sync Menu
+    function updateNeuralConnections() {
+      const links = document.querySelectorAll('.link');
+      const connections = document.querySelectorAll('.neural-connection');
+      
+      if (links.length >= 2) {
+        const rect1 = links[0].getBoundingClientRect();
+        const rect2 = links[1].getBoundingClientRect();
+        
+        connections[0].style.width = `${Math.hypot(rect2.left - rect1.left, rect2.top - rect1.top)}px`;
+        connections[0].style.left = `${rect1.left + rect1.width/2}px`;
+        connections[0].style.top = `${rect1.top + rect1.height/2}px`;
+        connections[0].style.transform = `rotate(${Math.atan2(rect2.top - rect1.top, rect2.left - rect1.left)}rad)`;
       }
+      
+      if (links.length >= 3) {
+        const rect1 = links[1].getBoundingClientRect();
+        const rect2 = links[2].getBoundingClientRect();
+        
+        connections[1].style.width = `${Math.hypot(rect2.left - rect1.left, rect2.top - rect1.top)}px`;
+        connections[1].style.left = `${rect1.left + rect1.width/2}px`;
+        connections[1].style.top = `${rect1.top + rect1.height/2}px`;
+        connections[1].style.transform = `rotate(${Math.atan2(rect2.top - rect1.top, rect2.left - rect1.left)}rad)`;
+      }
+      
+      if (links.length >= 4) {
+        const rect1 = links[2].getBoundingClientRect();
+        const rect2 = links[3].getBoundingClientRect();
+        
+        connections[2].style.width = `${Math.hypot(rect2.left - rect1.left, rect2.top - rect1.top)}px`;
+        connections[2].style.left = `${rect1.left + rect1.width/2}px`;
+        connections[2].style.top = `${rect1.top + rect1.height/2}px`;
+        connections[2].style.transform = `rotate(${Math.atan2(rect2.top - rect1.top, rect2.left - rect1.left)}rad)`;
+      }
+    }
 
-      // Obsługa dotyku na urządzeniach mobilnych
-      carousel.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
-        isDragging = true;
+    // Funkcje dla Quantum Entanglement
+    function updateQuantumEffect() {
+      const cards = document.querySelectorAll('.profile-card');
+      if (cards.length < 2) return;
+      
+      cards.forEach((card, index) => {
+        const x = card.getBoundingClientRect().left;
+        const y = card.getBoundingClientRect().top;
+        
+        cards.forEach((otherCard, otherIndex) => {
+          if (index !== otherIndex) {
+            const otherX = otherCard.getBoundingClientRect().left;
+            const otherY = otherCard.getBoundingClientRect().top;
+            const distance = Math.hypot(otherX - x, otherY - y);
+            const influence = 1 - Math.min(distance / 500, 1);
+            
+            if (influence > 0.1) {
+              const rotateX = parseFloat(otherCard.style.getPropertyValue('--rotate-y') || '0');
+              const rotateY = parseFloat(otherCard.style.getPropertyValue('--rotate-x') || '0');
+              
+              card.style.setProperty('--rotate-x', `${rotateX * influence * -0.5}deg`);
+              card.style.setProperty('--rotate-y', `${rotateY * influence * 0.5}deg`);
+            }
+          }
+        });
       });
+    }
 
-      carousel.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
-        const x = e.touches[0].clientX;
-        const diff = startX - x;
-        translateX = -currentIndex * carousel.offsetWidth - diff;
-        updateCarousel();
+    // Funkcje dla karuzeli
+    let currentIndex = 0;
+    let isDragging = false;
+    let startX = 0;
+    let translateX = 0;
+
+    function updateCarousel() {
+      const container = document.getElementById('cards-container');
+      container.style.transform = `translateX(${translateX}px)`;
+    }
+
+    function handleTouchStart(e) {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+    }
+
+    function handleTouchMove(e) {
+      if (!isDragging) return;
+      const x = e.touches[0].clientX;
+      const diff = startX - x;
+      translateX = -currentIndex * document.getElementById('cards-carousel').offsetWidth - diff;
+      updateCarousel();
+      updateQuantumEffect();
+    }
+
+    function handleTouchEnd(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      const x = e.changedTouches[0].clientX;
+      const diff = startX - x;
+      const carousel = document.getElementById('cards-carousel');
+      const cardCount = document.querySelectorAll('.card-wrapper').length;
+      
+      if (diff > 50 && currentIndex < cardCount - 1) {
+        currentIndex++;
+      } else if (diff < -50 && currentIndex > 0) {
+        currentIndex--;
+      }
+      
+      translateX = -currentIndex * carousel.offsetWidth;
+      document.getElementById('cards-container').style.transition = 'transform 0.5s ease-out';
+      updateCarousel();
+      
+      setTimeout(() => {
+        document.getElementById('cards-container').style.transition = '';
+      }, 500);
+    }
+
+    // Funkcje dla żyroskopu
+    let gyroEnabled = false;
+
+    function handleDeviceOrientation(e) {
+      if (!e.beta || !e.gamma) return;
+      
+      gyroEnabled = true;
+      const beta = e.beta;
+      const gamma = e.gamma;
+      
+      const percentX = 50 + (gamma / 90 * 50);
+      const percentY = 50 + (beta / 180 * 50);
+      
+      const clampedX = Math.min(Math.max(percentX, 10), 90);
+      const clampedY = Math.min(Math.max(percentY, 10), 90);
+      
+      document.querySelectorAll('.profile-card').forEach(card => {
+        card.style.setProperty('--pointer-x', `${clampedX}%`);
+        card.style.setProperty('--pointer-y', `${clampedY}%`);
+        card.style.setProperty('--rotate-x', `${(clampedY - 50) / 5}deg`);
+        card.style.setProperty('--rotate-y', `${-(clampedX - 50) / 5}deg`);
+        card.style.setProperty('--card-opacity', '1');
       });
+      
+      updateQuantumEffect();
+    }
 
-      carousel.addEventListener('touchend', (e) => {
-        if (!isDragging) return;
-        isDragging = false;
+    function handleMouseMove(e) {
+      if (gyroEnabled) return;
+      
+      document.querySelectorAll('.profile-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
         
-        const x = e.changedTouches[0].clientX;
-        const diff = startX - x;
+        const percentX = (x / rect.width) * 100;
+        const percentY = (y / rect.height) * 100;
         
-        if (diff > 50 && currentIndex < cardCount - 1) {
-          currentIndex++;
-        } else if (diff < -50 && currentIndex > 0) {
-          currentIndex--;
-        }
-        
-        translateX = -currentIndex * carousel.offsetWidth;
-        container.style.transition = 'transform 0.5s ease-out';
-        updateCarousel();
-        
-        setTimeout(() => {
-          container.style.transition = '';
-        }, 500);
+        card.style.setProperty('--pointer-x', `${percentX}%`);
+        card.style.setProperty('--pointer-y', `${percentY}%`);
+        card.style.setProperty('--rotate-x', `${(percentY - 50) / 5}deg`);
+        card.style.setProperty('--rotate-y', `${-(percentX - 50) / 5}deg`);
+        card.style.setProperty('--card-opacity', '1');
       });
+      
+      updateQuantumEffect();
+      updateGradientColors(e);
+    }
 
-      // Obsługa myszy na desktopach
+    // Inicjalizacja eventów
+    document.addEventListener('DOMContentLoaded', function() {
+      // Living Gradient
+      document.addEventListener('mousemove', updateGradientColors);
+      
+      // Neuro-Sync Menu
+      const menu = document.getElementById('main-menu');
+      menu.addEventListener('mouseenter', updateNeuralConnections);
+      window.addEventListener('resize', updateNeuralConnections);
+      
+      // Karuzela
+      const carousel = document.getElementById('cards-carousel');
+      carousel.addEventListener('touchstart', handleTouchStart);
+      carousel.addEventListener('touchmove', handleTouchMove);
+      carousel.addEventListener('touchend', handleTouchEnd);
+      
       carousel.addEventListener('mousedown', (e) => {
         startX = e.clientX;
         isDragging = true;
         carousel.style.cursor = 'grabbing';
       });
-
+      
       window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         const x = e.clientX;
         const diff = startX - x;
         translateX = -currentIndex * carousel.offsetWidth - diff;
         updateCarousel();
+        updateQuantumEffect();
       });
-
+      
       window.addEventListener('mouseup', (e) => {
         if (!isDragging) return;
         isDragging = false;
@@ -735,6 +878,7 @@
         
         const x = e.clientX;
         const diff = startX - x;
+        const cardCount = document.querySelectorAll('.card-wrapper').length;
         
         if (diff > 50 && currentIndex < cardCount - 1) {
           currentIndex++;
@@ -743,136 +887,83 @@
         }
         
         translateX = -currentIndex * carousel.offsetWidth;
-        container.style.transition = 'transform 0.5s ease-out';
+        document.getElementById('cards-container').style.transition = 'transform 0.5s ease-out';
         updateCarousel();
         
         setTimeout(() => {
-          container.style.transition = '';
+          document.getElementById('cards-container').style.transition = '';
         }, 500);
       });
-
-      // Skrypt dla karty z obsługą żyroskopu
-      const profileCards = document.querySelectorAll('.profile-card');
-      let gyroEnabled = false;
-
-      // Funkcja aktualizująca transformację karty
-      function updateCardTransform(card, x, y) {
-        const rect = card.getBoundingClientRect();
-        const percentX = ((x - rect.left) / rect.width) * 100;
-        const percentY = ((y - rect.top) / rect.height) * 100;
-        
-        card.style.setProperty('--pointer-x', `${percentX}%`);
-        card.style.setProperty('--pointer-y', `${percentY}%`);
-        card.style.setProperty('--rotate-x', `${(percentY - 50) / 5}deg`);
-        card.style.setProperty('--rotate-y', `${-(percentX - 50) / 5}deg`);
-        card.style.setProperty('--card-opacity', '1');
-      }
-
-      // Obsługa ruchu myszy
-      function handleMouseMove(e) {
-        if (gyroEnabled) return;
-        
-        profileCards.forEach(card => {
-          updateCardTransform(card, e.clientX, e.clientY);
-        });
-      }
-
-      // Obsługa żyroskopu
-      function handleDeviceOrientation(e) {
-        if (!e.beta || !e.gamma) return;
-        
-        gyroEnabled = true;
-        
-        // Beta to przechylenie przód/tył (zakres -180 do 180)
-        // Gamma to przechylenie lewo/prawo (zakres -90 do 90)
-        const beta = e.beta;  // przechylenie przód/tył
-        const gamma = e.gamma; // przechylenie lewo/prawo
-        
-        // Normalizujemy wartości do zakresu 0-100%
-        const percentX = 50 + (gamma / 90 * 50);
-        const percentY = 50 + (beta / 180 * 50);
-        
-        // Ograniczamy wartości do 10-90% aby uniknąć skrajnych efektów
-        const clampedX = Math.min(Math.max(percentX, 10), 90);
-        const clampedY = Math.min(Math.max(percentY, 10), 90);
-        
-        profileCards.forEach(card => {
-          card.style.setProperty('--pointer-x', `${clampedX}%`);
-          card.style.setProperty('--pointer-y', `${clampedY}%`);
-          card.style.setProperty('--rotate-x', `${(clampedY - 50) / 5}deg`);
-          card.style.setProperty('--rotate-y', `${-(clampedX - 50) / 5}deg`);
-          card.style.setProperty('--card-opacity', '1');
-        });
-      }
-
-      // Dodajemy obsługę myszy
-      profileCards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-          if (gyroEnabled) return;
-          updateCardTransform(card, e.clientX, e.clientY);
-        });
-
-        card.addEventListener('mouseleave', () => {
-          if (!gyroEnabled) {
-            card.style.setProperty('--rotate-x', '0deg');
-            card.style.setProperty('--rotate-y', '0deg');
-            card.style.setProperty('--card-opacity', '0');
-          }
-        });
-      });
-
-      // Dodajemy obsługę żyroskopu jeśli dostępna
+      
+      // Żyroskop
       if (window.DeviceOrientationEvent) {
         if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-          // iOS 13+ wymaga uprawnień
-          document.getElementById('products-link')?.addEventListener('click', function(e) {
+          document.getElementById('products-link').addEventListener('click', function(e) {
             e.preventDefault();
             DeviceOrientationEvent.requestPermission()
               .then(permissionState => {
                 if (permissionState === 'granted') {
                   window.addEventListener('deviceorientation', handleDeviceOrientation);
+                  showCards();
                 }
               })
               .catch(console.error);
           });
         } else {
-          // Inne przeglądarki
           window.addEventListener('deviceorientation', handleDeviceOrientation);
         }
       }
-
-      // Obsługa sekcji kontaktowej
-      const contactContainer = document.getElementById('contact-container');
-      const contactLink = document.getElementById('contact-link');
-      const contactClose = document.getElementById('contact-close');
-
-      contactLink.addEventListener('click', function(e) {
+      
+      // Pokazanie kart po kliknięciu Products
+      document.getElementById('products-link').addEventListener('click', function(e) {
+        if (typeof DeviceOrientationEvent.requestPermission !== 'function') {
+          e.preventDefault();
+          showCards();
+        }
+      });
+      
+      // Sekcja kontaktowa
+      document.getElementById('contact-link').addEventListener('click', function(e) {
         e.preventDefault();
-        contactContainer.style.display = 'flex';
+        document.getElementById('contact-container').style.display = 'flex';
         document.body.style.overflow = 'hidden';
       });
-
-      contactClose.addEventListener('click', function() {
-        contactContainer.style.display = 'none';
+      
+      document.getElementById('contact-close').addEventListener('click', function() {
+        document.getElementById('contact-container').style.display = 'none';
         document.body.style.overflow = '';
       });
-
-      contactContainer.addEventListener('click', function(e) {
-        if (e.target === contactContainer) {
-          contactContainer.style.display = 'none';
+      
+      document.getElementById('contact-container').addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.style.display = 'none';
           document.body.style.overflow = '';
         }
       });
-
-      // Responsywność karuzeli
-      function handleResize() {
-        translateX = -currentIndex * carousel.offsetWidth;
-        updateCarousel();
-      }
-
-      window.addEventListener('resize', handleResize);
-      handleResize();
+      
+      // Inicjalne ustawienia
+      updateNeuralConnections();
     });
+
+    function showCards() {
+      const carousel = document.getElementById('cards-carousel');
+      carousel.style.display = 'block';
+      
+      // Efekt pojawiania się
+      carousel.style.opacity = '0';
+      carousel.style.transform = 'translateY(50px)';
+      carousel.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      
+      setTimeout(() => {
+        carousel.style.opacity = '1';
+        carousel.style.transform = 'translateY(0)';
+      }, 100);
+      
+      // Ustawienie początkowej pozycji karuzeli
+      currentIndex = 0;
+      translateX = 0;
+      updateCarousel();
+    }
   </script>
 </body>
 </html>
