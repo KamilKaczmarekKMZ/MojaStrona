@@ -149,6 +149,7 @@
       justify-content: center;
       align-items: center;
       touch-action: none;
+      animation: fadeIn 0.3s ease-out;
     }
 
     .profile-card-wrapper {
@@ -185,7 +186,7 @@
       position: relative;
       background-blend-mode: color-dodge, normal, normal, normal;
       box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
-      transition: transform 0.3s ease-out;
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease;
       transform: translate3d(0, 0, 0.1px) rotateX(0deg) rotateY(0deg);
       background-image: radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y), 
                         hsla(266, 100%, 90%, var(--card-opacity)) 4%, 
@@ -270,6 +271,7 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      animation: fadeIn 0.3s ease-out;
     }
 
     .contact-close {
@@ -374,6 +376,17 @@
       display: block;
     }
 
+    /* Animacje */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Efekty dotykowe */
+    .child:active {
+      transform: scale(0.95);
+    }
+
     @media (max-width: 768px) {
       .profile-card-wrapper {
         width: 250px;
@@ -395,10 +408,10 @@
 
     @media (max-width: 480px) {
       .profile-card-wrapper {
-        width: 220px;
-        height: 320px;
+        width: 90vw;
+        height: 60vh;
       }
-
+      
       .profile-card h3 {
         font-size: 18px;
       }
@@ -408,6 +421,10 @@
       }
 
       .profile-card-inside {
+        padding: 20px;
+      }
+      
+      .contact-container {
         padding: 20px;
       }
     }
@@ -488,7 +505,7 @@
     <div class="social-container">
       <div class="parent">
         <div class="child child-2">
-          <a href="https://www.instagram.com/direct/t/17847947670435948/" class="button btn-2" target="_blank">
+          <a href="https://www.instagram.com/direct/t/17847947670435948/" class="button btn-2" target="_blank" rel="noopener noreferrer">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ff00ff">
               <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
             </svg>
@@ -549,9 +566,10 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- Skrypt dla karty z obsługą żyroskopu -->
+  <!-- Skrypty -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Obsługa karty produktu
       const profileCardContainer = document.getElementById('profile-card-container');
       const profileCard = document.getElementById('profile-card');
       const profileCardClose = document.getElementById('profile-card-close');
@@ -587,21 +605,36 @@
         
         gyroEnabled = true;
         
-        // Beta to przechylenie przód/tył (zakres -180 do 180)
-        // Gamma to przechylenie lewo/prawo (zakres -90 do 90)
-        const beta = e.beta;  // przechylenie przód/tył
-        const gamma = e.gamma; // przechylenie lewo/prawo
+        const beta = Math.min(Math.max(e.beta, -30), 30);
+        const gamma = Math.min(Math.max(e.gamma, -30), 30);
         
-        // Normalizujemy wartości do zakresu 0-100%
-        const percentX = 50 + (gamma / 90 * 50);
-        const percentY = 50 + (beta / 180 * 50);
-        
-        // Ograniczamy wartości do 10-90% aby uniknąć skrajnych efektów
-        const clampedX = Math.min(Math.max(percentX, 10), 90);
-        const clampedY = Math.min(Math.max(percentY, 10), 90);
-        
-        updateCardTransform(clampedX, clampedY);
+        profileCard.style.setProperty('--rotate-x', `${gamma * 0.5}deg`);
+        profileCard.style.setProperty('--rotate-y', `${beta * 0.5}deg`);
       }
+
+      // Efekt głębi przy hoverze
+      profileCard.addEventListener('mouseenter', () => {
+        profileCard.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+        profileCard.style.boxShadow = '0 20px 40px rgba(0,0,0,0.3)';
+      });
+      
+      profileCard.addEventListener('mouseleave', () => {
+        profileCard.style.boxShadow = '';
+        if (!gyroEnabled) {
+          profileCard.style.setProperty('--rotate-x', '0deg');
+          profileCard.style.setProperty('--rotate-y', '0deg');
+          profileCard.style.setProperty('--card-opacity', '0');
+        }
+      });
+
+      // Responsywność dla touch devices
+      profileCard.addEventListener('touchstart', () => {
+        profileCard.classList.add('active');
+      });
+      
+      document.addEventListener('touchend', () => {
+        profileCard.classList.remove('active'); 
+      });
 
       // Obsługa otwierania karty
       productsLink.addEventListener('click', function(e) {
@@ -616,13 +649,13 @@
             DeviceOrientationEvent.requestPermission()
               .then(permissionState => {
                 if (permissionState === 'granted') {
-                  window.addEventListener('deviceorientation', handleDeviceOrientation);
+                  window.addEventListener('deviceorientation', handleDeviceOrientation, true);
                 }
               })
               .catch(console.error);
           } else {
             // Inne przeglądarki
-            window.addEventListener('deviceorientation', handleDeviceOrientation);
+            window.addEventListener('deviceorientation', handleDeviceOrientation, true);
           }
         }
         
@@ -636,18 +669,9 @@
         document.body.style.overflow = '';
         
         // Usuwamy listenery
-        window.removeEventListener('deviceorientation', handleDeviceOrientation);
+        window.removeEventListener('deviceorientation', handleDeviceOrientation, true);
         profileCard.removeEventListener('mousemove', handleMouseMove);
         gyroEnabled = false;
-      });
-
-      // Reset pozycji karty gdy mysz ją opuści
-      profileCard.addEventListener('mouseleave', () => {
-        if (!gyroEnabled) {
-          profileCard.style.setProperty('--rotate-x', '0deg');
-          profileCard.style.setProperty('--rotate-y', '0deg');
-          profileCard.style.setProperty('--card-opacity', '0');
-        }
       });
 
       // Obsługa kliknięcia poza kartą
@@ -657,22 +681,27 @@
           document.body.style.overflow = '';
           
           // Usuwamy listenery
-          window.removeEventListener('deviceorientation', handleDeviceOrientation);
+          window.removeEventListener('deviceorientation', handleDeviceOrientation, true);
           profileCard.removeEventListener('mousemove', handleMouseMove);
           gyroEnabled = false;
         }
       });
-    });
 
-    // Skrypt sekcji kontaktowej
-    document.addEventListener('DOMContentLoaded', function() {
+      // Obsługa sekcji kontaktowej
       const contactContainer = document.getElementById('contact-container');
       const contactLink = document.getElementById('contact-link');
       const contactClose = document.getElementById('contact-close');
 
+      // Ulepszona animacja pojawiania się
+      contactContainer.style.transition = 'opacity 0.3s ease';
+      
       contactLink.addEventListener('click', function(e) {
         e.preventDefault();
+        contactContainer.style.opacity = '0';
         contactContainer.style.display = 'flex';
+        setTimeout(() => {
+          contactContainer.style.opacity = '1';
+        }, 10);
         document.body.style.overflow = 'hidden';
       });
 
@@ -686,6 +715,34 @@
           contactContainer.style.display = 'none';
           document.body.style.overflow = '';
         }
+      });
+
+      // Efekty dotykowe dla przycisków social media
+      document.querySelectorAll('.child').forEach(child => {
+        child.addEventListener('touchstart', () => {
+          child.style.transform = 'scale(0.95)';
+        });
+        
+        child.addEventListener('touchend', () => {
+          child.style.transform = '';
+        });
+      });
+
+      // Śledzenie interakcji
+      document.querySelectorAll('.link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'navigation', {
+              'event_category': 'Menu',
+              'event_label': e.target.innerText
+            });
+          }
+        });
+      });
+
+      // Lepsza obsługa błędów
+      window.addEventListener('error', (e) => {
+        console.error('Global error:', e.error);
       });
     });
   </script>
