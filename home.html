@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Model Scroll Animation</title>
+    <title>Enhanced 3D Model Scroll Animation</title>
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             color: #333;
             line-height: 1.6;
+            overflow-x: hidden;
         }
         
         .container {
@@ -17,7 +18,7 @@
             margin: 0 auto;
             padding: 40px 20px;
             position: relative;
-            min-height: 150vh;
+            min-height: 200vh;
         }
         
         h1 {
@@ -40,18 +41,49 @@
             transform: translateY(-50%);
             transition: all 0.3s ease-out;
             z-index: 100;
+            cursor: grab;
+            touch-action: none;
+        }
+        
+        #model-container.grabbing {
+            cursor: grabbing;
         }
         
         .section {
-            padding: 80px 0;
+            padding: 100px 0;
             border-bottom: 1px solid #eee;
             position: relative;
             z-index: 10;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            z-index: -1;
+            opacity: 0.1;
+            transform: translateZ(-1px) scale(1.2);
         }
         
         .section-content {
             max-width: 50%;
-            transition: all 0.3s ease-out;
+            transition: all 0.5s ease-out;
+            opacity: 0.6;
+            transform: translateY(20px);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section.active .section-content {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         .section.left-align .section-content {
@@ -72,6 +104,19 @@
             background: #3498db;
             width: 0%;
             z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            #model-container {
+                width: 200px;
+                height: 200px;
+                right: 5%;
+            }
+            
+            .section-content {
+                max-width: 70%;
+            }
         }
     </style>
 </head>
@@ -79,36 +124,36 @@
     <div class="progress-bar"></div>
     
     <div class="container">
-        <h1>Interactive 3D Model Scroll</h1>
+        <h1>Enhanced 3D Model Scroll Experience</h1>
         
         <div id="model-container"></div>
         
         <div class="content">
             <div class="section left-align" id="section1">
                 <div class="section-content">
-                    <h2>Section 1</h2>
-                    <p>Scroll down to see the 3D model move from right to left. The text will switch sides as the model moves.</p>
+                    <h2>Interactive Design</h2>
+                    <p>Drag the 3D model to rotate it. Scroll to see it move across the screen while content dynamically repositions.</p>
                 </div>
             </div>
             
             <div class="section left-align" id="section2">
                 <div class="section-content">
-                    <h2>Section 2</h2>
-                    <p>When the model is on the right, text is on the left. When model moves left, text moves right.</p>
+                    <h2>Dynamic Layout</h2>
+                    <p>Text content automatically switches sides based on model position for optimal readability.</p>
                 </div>
             </div>
             
             <div class="section left-align" id="section3">
                 <div class="section-content">
-                    <h2>Section 3</h2>
-                    <p>Dynamic text positioning creates a more balanced layout as you scroll.</p>
+                    <h2>Smooth Transitions</h2>
+                    <p>Notice the subtle parallax effect and smooth fading between sections as you scroll.</p>
                 </div>
             </div>
             
             <div class="section left-align" id="section4">
                 <div class="section-content">
-                    <h2>Section 4</h2>
-                    <p>Smooth transitions between positions enhance the user experience.</p>
+                    <h2>Mobile Optimized</h2>
+                    <p>Fully responsive design that works perfectly on all device sizes.</p>
                 </div>
             </div>
         </div>
@@ -121,25 +166,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/ScrollTrigger.min.js"></script>
     
     <script>
-        // Initialize Three.js scene
-        const container = document.getElementById('model-container');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        // Global variables
+        let scene, camera, renderer, model;
+        let container = document.getElementById('model-container');
+        let currentActiveSection = 0;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let animationId;
         
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        container.appendChild(renderer.domElement);
+        // Initialize 3D scene
+        function init3D() {
+            // Scene setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Create model
+            model = createModel();
+            scene.add(model);
+            
+            // Camera position
+            camera.position.z = 2;
+        }
         
-        // Add lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(1, 1, 1);
-        scene.add(directionalLight);
-        
-        // Create a simple 3D model
-        const createModel = () => {
+        // Create 3D model
+        function createModel() {
             // Head
             const headGeometry = new THREE.BoxGeometry(1, 1, 1);
             const headMaterial = new THREE.MeshPhongMaterial({ 
@@ -177,94 +241,210 @@
             mouth.rotation.x = Math.PI;
             
             // Group everything together
-            const model = new THREE.Group();
-            model.add(head);
-            model.add(leftEye);
-            model.add(rightEye);
-            model.add(leftPupil);
-            model.add(rightPupil);
-            model.add(mouth);
+            const modelGroup = new THREE.Group();
+            modelGroup.add(head);
+            modelGroup.add(leftEye);
+            modelGroup.add(rightEye);
+            modelGroup.add(leftPupil);
+            modelGroup.add(rightPupil);
+            modelGroup.add(mouth);
             
-            return model;
-        };
-        
-        const model = createModel();
-        scene.add(model);
-        
-        camera.position.z = 2;
+            return modelGroup;
+        }
         
         // Animation loop
-        const animate = () => {
-            requestAnimationFrame(animate);
-            model.rotation.y += 0.005;
+        function animate() {
+            animationId = requestAnimationFrame(animate);
+            
+            // Only auto-rotate when not dragging
+            if (!isDragging) {
+                model.rotation.y += 0.005;
+            }
+            
             renderer.render(scene, camera);
-        };
+        }
         
-        animate();
+        // Handle resize
+        function handleResize() {
+            const isMobile = window.innerWidth < 768;
+            
+            // Update model container size
+            gsap.set("#model-container", {
+                width: isMobile ? 200 : 300,
+                height: isMobile ? 200 : 300
+            });
+            
+            // Update Three.js renderer
+            if (renderer) {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        }
         
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
+        // Clean up Three.js resources
+        function cleanUp() {
+            if (renderer) {
+                cancelAnimationFrame(animationId);
+                renderer.dispose();
+                renderer.forceContextLoss();
+                container.removeChild(renderer.domElement);
+            }
+            scene = null;
+            model = null;
+        }
         
-        // Scroll animation with GSAP
-        gsap.registerPlugin(ScrollTrigger);
+        // Initialize drag interaction
+        function initDragInteraction() {
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                container.classList.add('grabbing');
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            container.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.classList.remove('grabbing');
+            });
+            
+            container.addEventListener('mouseleave', () => {
+                isDragging = false;
+                container.classList.remove('grabbing');
+            });
+            
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaMove = {
+                    x: e.clientX - previousMousePosition.x,
+                    y: e.clientY - previousMousePosition.y
+                };
+                
+                model.rotation.y += deltaMove.x * 0.01;
+                model.rotation.x += deltaMove.y * 0.01;
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            // Touch support
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                previousMousePosition = { 
+                    x: e.touches[0].clientX, 
+                    y: e.touches[0].clientY 
+                };
+                e.preventDefault();
+            });
+            
+            container.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+            
+            container.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaMove = {
+                    x: e.touches[0].clientX - previousMousePosition.x,
+                    y: e.touches[0].clientY - previousMousePosition.y
+                };
+                
+                model.rotation.y += deltaMove.x * 0.01;
+                model.rotation.x += deltaMove.y * 0.01;
+                
+                previousMousePosition = { 
+                    x: e.touches[0].clientX, 
+                    y: e.touches[0].clientY 
+                };
+                e.preventDefault();
+            });
+        }
         
-        // Calculate animation distance
-        const containerWidth = document.querySelector('.container').offsetWidth;
-        const startPosition = containerWidth * 0.8; // Start at 80% from left (right side)
-        const endPosition = containerWidth * 0.2; // End at 20% from left (left side)
-        const middlePosition = containerWidth * 0.5; // Middle point
-        
-        // Get all sections
-        const sections = document.querySelectorAll('.section');
-        
-        // Model movement animation
-        const modelAnimation = gsap.to("#model-container", {
-            scrollTrigger: {
-                trigger: ".container",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 1,
-                onUpdate: self => {
-                    // Update progress bar
-                    document.querySelector('.progress-bar').style.width = `${self.progress * 100}%`;
-                    
-                    // Get current model position
-                    const modelRect = document.getElementById('model-container').getBoundingClientRect();
-                    const modelCenter = modelRect.left + modelRect.width / 2;
-                    
-                    // Update text alignment based on model position
-                    sections.forEach(section => {
-                        const sectionRect = section.getBoundingClientRect();
-                        const sectionCenter = sectionRect.top + sectionRect.height / 2;
+        // Initialize scroll animation
+        function initScrollAnimation() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            const containerWidth = document.querySelector('.container').offsetWidth;
+            const startPosition = containerWidth * 0.8;
+            const endPosition = containerWidth * 0.2;
+            const middlePosition = containerWidth * 0.5;
+            
+            const sections = document.querySelectorAll('.section');
+            
+            // Model movement animation
+            gsap.to("#model-container", {
+                scrollTrigger: {
+                    trigger: ".container",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1,
+                    onUpdate: self => {
+                        // Update progress bar
+                        document.querySelector('.progress-bar').style.width = `${self.progress * 100}%`;
                         
-                        // If section is in view and model is to its left or right
-                        if (sectionRect.top < window.innerHeight && sectionRect.bottom > 0) {
+                        // Get current model position
+                        const modelRect = container.getBoundingClientRect();
+                        const modelCenter = modelRect.left + modelRect.width / 2;
+                        
+                        // Update text alignment and section states
+                        sections.forEach((section, index) => {
+                            const sectionRect = section.getBoundingClientRect();
+                            const isActive = sectionRect.top < window.innerHeight * 0.7 && 
+                                           sectionRect.bottom > window.innerHeight * 0.3;
+                            
+                            // Update active state
+                            if (isActive) {
+                                section.classList.add('active');
+                                
+                                // Update progress bar color
+                                if (index !== currentActiveSection) {
+                                    currentActiveSection = index;
+                                    gsap.to(".progress-bar", {
+                                        backgroundColor: `hsl(${index * 60}, 70%, 50%)`,
+                                        duration: 0.3
+                                    });
+                                }
+                            } else {
+                                section.classList.remove('active');
+                            }
+                            
+                            // Update text alignment
                             if (modelCenter < middlePosition) {
-                                // Model is on the left - align text to right
                                 section.classList.remove('left-align');
                                 section.classList.add('right-align');
                             } else {
-                                // Model is on the right - align text to left
                                 section.classList.remove('right-align');
                                 section.classList.add('left-align');
                             }
-                        }
-                    });
-                }
-            },
-            left: endPosition,
-            x: "-50%",
-            ease: "none"
-        });
+                        });
+                    }
+                },
+                left: endPosition,
+                x: "-50%",
+                ease: "none"
+            });
+            
+            // Initial position
+            gsap.set("#model-container", {
+                left: startPosition
+            });
+        }
         
-        // Initial position
-        gsap.set("#model-container", {
-            left: startPosition
-        });
+        // Main initialization
+        function init() {
+            init3D();
+            animate();
+            handleResize();
+            initDragInteraction();
+            initScrollAnimation();
+            
+            window.addEventListener('resize', handleResize);
+            ScrollTrigger.addEventListener("refreshInit", cleanUp);
+            ScrollTrigger.addEventListener("refresh", init3D);
+            ScrollTrigger.refresh();
+        }
+        
+        // Start everything
+        init();
     </script>
 </body>
 </html>
