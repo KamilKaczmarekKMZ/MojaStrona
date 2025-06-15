@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js - Static Light Panels</title>
+    <title>Three.js - Epic Light Panels</title>
     <style>
         body { 
             margin: 0; 
@@ -18,102 +18,170 @@
             color: white;
             font-family: Arial, sans-serif;
             pointer-events: none;
-            text-shadow: 0 0 5px black;
+            text-shadow: 0 0 10px #fff, 0 0 20px #fff;
+            z-index: 100;
+        }
+        canvas {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div id="info">Three.js - Static Light Panels</div>
+    <div id="info">THREE.JS - EPIC LIGHT SHOW</div>
 
-    <!-- Biblioteki Three.js z CDN -->
+    <!-- Biblioteki z CDN -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/postprocessing/EffectComposer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/shaders/CopyShader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/shaders/LuminosityHighPassShader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/postprocessing/UnrealBloomPass.min.js"></script>
 
     <script>
-        // Inicjalizacja sceny, kamery i renderera
+        // SCENA
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x111111);
-        
+        scene.background = new THREE.Color(0x000000);
+        scene.fog = new THREE.FogExp2(0x000000, 0.002);
+
+        // KAMERA
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 10, 20);
-        
+        camera.position.set(0, 8, 25);
+
+        // RENDERER
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.5;
         document.body.appendChild(renderer.domElement);
 
-        // Kontrola kamery (możliwość obracania widoku)
+        // KONTROLA KAMERY
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 5, 0);
-        controls.update();
+        controls.target.set(0, 3, 0);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
 
-        // Trzy statyczne panele świetlne (bez animacji obrotu)
-        const rectLight1 = new THREE.RectAreaLight(0xff0000, 5, 4, 10);
-        rectLight1.position.set(-5, 5, 0);
-        rectLight1.rotation.y = Math.PI / 4; // Lekkie pochylenie dla efektu
-        scene.add(rectLight1);
+        // BLOOM EFFECT
+        const bloomParams = {
+            exposure: 1.5,
+            bloomStrength: 2.5,
+            bloomThreshold: 0,
+            bloomRadius: 1
+        };
 
-        const rectLight2 = new THREE.RectAreaLight(0x00ff00, 5, 4, 10);
-        rectLight2.position.set(0, 5, 0);
-        rectLight2.rotation.y = Math.PI / 4;
-        scene.add(rectLight2);
+        const bloomComposer = new THREE.EffectComposer(renderer);
+        bloomComposer.renderToScreen = true;
 
-        const rectLight3 = new THREE.RectAreaLight(0x0000ff, 5, 4, 10);
-        rectLight3.position.set(5, 5, 0);
-        rectLight3.rotation.y = Math.PI / 4;
-        scene.add(rectLight3);
+        const renderPass = new THREE.RenderPass(scene, camera);
+        bloomComposer.addPass(renderPass);
 
-        // Wizualne reprezentacje świateł (panele)
-        const createLightPanel = (color, width, height) => {
-            const geometry = new THREE.PlaneGeometry(width, height);
-            const material = new THREE.MeshBasicMaterial({ 
+        const bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            bloomParams.bloomStrength,
+            bloomParams.bloomRadius,
+            bloomParams.bloomThreshold
+        );
+        bloomComposer.addPass(bloomPass);
+
+        // ŚWIATŁA
+        const createLightPanel = (color, intensity, xPos) => {
+            // Główne światło
+            const light = new THREE.RectAreaLight(color, intensity, 6, 12);
+            light.position.set(xPos, 4, 0);
+            light.rotation.y = Math.PI / 4;
+            
+            // Wizualizacja światła
+            const lightMat = new THREE.MeshBasicMaterial({
                 color: color,
                 side: THREE.DoubleSide,
                 transparent: true,
-                opacity: 0.8
+                opacity: 0.3
             });
-            return new THREE.Mesh(geometry, material);
+            const lightMesh = new THREE.Mesh(new THREE.PlaneGeometry(6, 12), lightMat);
+            lightMesh.position.copy(light.position);
+            lightMesh.rotation.copy(light.rotation);
+            
+            // Efekt "glow"
+            const glowMat = new THREE.MeshBasicMaterial({
+                color: color,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.1,
+                blending: THREE.AdditiveBlending
+            });
+            const glowMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 14), glowMat);
+            glowMesh.position.copy(light.position);
+            glowMesh.rotation.copy(light.rotation);
+            
+            scene.add(light, lightMesh, glowMesh);
+            return light;
         };
 
-        const panel1 = createLightPanel(0xff0000, 4, 10);
-        panel1.position.copy(rectLight1.position);
-        panel1.rotation.copy(rectLight1.rotation);
-        scene.add(panel1);
+        // Trzy mocne panele świetlne
+        const lights = [
+            createLightPanel(0xff0066, 30, -8),
+            createLightPanel(0x00ffcc, 30, 0),
+            createLightPanel(0xcc00ff, 30, 8)
+        ];
 
-        const panel2 = createLightPanel(0x00ff00, 4, 10);
-        panel2.position.copy(rectLight2.position);
-        panel2.rotation.copy(rectLight2.rotation);
-        scene.add(panel2);
-
-        const panel3 = createLightPanel(0x0000ff, 4, 10);
-        panel3.position.copy(rectLight3.position);
-        panel3.rotation.copy(rectLight3.rotation);
-        scene.add(panel3);
-
-        // Podłoga z odbiciami
-        const floorGeometry = new THREE.PlaneGeometry(20, 20);
-        const floorMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x333333,
-            roughness: 0.1,
-            metalness: 0.9
+        // PODŁOGA (super odbijająca)
+        const floorGeometry = new THREE.PlaneGeometry(50, 50);
+        const floorMaterial = new THREE.MeshStandardMaterial({
+            color: 0x111122,
+            roughness: 0.01,
+            metalness: 1.0,
+            side: THREE.DoubleSide
         });
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.rotation.x = -Math.PI / 2;
         floor.receiveShadow = true;
         scene.add(floor);
 
-        // Obsługa zmiany rozmiaru okna
+        // CZĄSTECZKI ATMOSFERY
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particleCount = 2000;
+        const posArray = new Float32Array(particleCount * 3);
+        
+        for(let i = 0; i < particleCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 50;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.2,
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+        
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // ANIMACJA
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Efekt pulsowania świateł
+            const time = Date.now() * 0.001;
+            lights[0].intensity = 25 + Math.sin(time * 1.5) * 10;
+            lights[1].intensity = 25 + Math.sin(time * 2.0) * 10;
+            lights[2].intensity = 25 + Math.sin(time * 1.2) * 10;
+            
+            controls.update();
+            bloomComposer.render();
+        }
+
+        // RESPONSYWNOŚĆ
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            bloomComposer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Renderowanie sceny
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
         animate();
     </script>
 </body>
