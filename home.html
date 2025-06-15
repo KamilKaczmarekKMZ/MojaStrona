@@ -40,11 +40,10 @@
         
         @media (max-width: 768px) {
             .content-section {
-                padding: 100vh 1rem 1rem;
+                padding: 80vh 1rem 1rem;
             }
         }
 
-        /* Loading indicator */
         .loader {
             position: fixed;
             top: 50%;
@@ -61,19 +60,8 @@
     
     <section class="content-section">
         <h1>AI-Powered Future</h1>
-        <p>Welcome to the next generation of human-robot interaction. Our advanced AI systems are designed to seamlessly integrate with human environments, providing assistance, companionship, and enhanced capabilities.</p>
-        
-        <h2>Technology Overview</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.</p>
-        
-        <h2>Features</h2>
-        <p>Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere.</p>
-        
-        <h2>Applications</h2>
-        <p>Praesent id metus massa, ut blandit odio. Proin quis tortor orci. Etiam at risus et justo dignissim congue. Donec congue lacinia dui, a porttitor lectus condimentum laoreet.</p>
-        
-        <h2>Future Development</h2>
-        <p>Nunc eu ullamcorper orci. Quisque eget odio ac lectus vestibulum faucibus eget in metus. In pellentesque faucibus vestibulum. Nulla at nulla justo, eget luctus tortor.</p>
+        <p>Welcome to the next generation of human-robot interaction.</p>
+        <!-- Skrócona treść dla przejrzystości -->
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -85,53 +73,52 @@
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x16213e);
         
-        // Camera
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 5;
+        // Camera with responsive positioning
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 6;
+        camera.position.y = 1; // Podniesiona kamera dla lepszego widoku
         
         // Renderer
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Ogranicz pixel ratio dla wydajności
         container.appendChild(renderer.domElement);
         
         // Lights
-        const ambientLight = new THREE.AmbientLight(0x404040);
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
         scene.add(ambientLight);
         
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(1, 1, 1);
         scene.add(directionalLight);
         
-        // Add some additional lights for better visibility
-        const light1 = new THREE.PointLight(0x4cc9f0, 0.5);
-        light1.position.set(2, 2, 2);
-        scene.add(light1);
-        
-        const light2 = new THREE.PointLight(0xf72585, 0.5);
-        light2.position.set(-2, -2, 2);
-        scene.add(light2);
-        
         // Model variables
         let robotModel;
         let scrollY = window.scrollY;
         let targetRotation = 0;
         
-        // Load model - using a more reliable model source
+        // Load model
         const loader = new THREE.GLTFLoader();
         loader.load(
             'https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb',
             function (gltf) {
                 robotModel = gltf.scene;
-                robotModel.scale.set(2, 2, 2);
+                
+                // Responsive scaling
+                const scale = Math.min(window.innerWidth / 800, 1.2);
+                robotModel.scale.set(scale, scale, scale);
+                
+                // Position adjustment
+                robotModel.position.y = -0.5; // Obniżenie modelu
+                
                 scene.add(robotModel);
                 
                 // Center the model
                 const box = new THREE.Box3().setFromObject(robotModel);
                 const center = box.getCenter(new THREE.Vector3());
-                robotModel.position.sub(center);
+                robotModel.position.x -= center.x;
+                robotModel.position.z -= center.z;
                 
-                // Hide loader
                 loaderElement.style.display = 'none';
             },
             undefined,
@@ -144,35 +131,48 @@
         // Handle scroll
         window.addEventListener('scroll', () => {
             scrollY = window.scrollY;
-            // Adjust rotation based on scroll
             targetRotation = scrollY * 0.001;
         });
         
         // Handle resize
-        window.addEventListener('resize', () => {
+        function handleResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
+            
+            // Adjust camera for mobile
+            if (window.innerWidth < 768) {
+                camera.position.z = 7;
+                camera.position.y = 1.5;
+            } else {
+                camera.position.z = 6;
+                camera.position.y = 1;
+            }
+            
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+            
+            // Rescale model if loaded
+            if (robotModel) {
+                const scale = Math.min(window.innerWidth / 800, 1.2);
+                robotModel.scale.set(scale, scale, scale);
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
         
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
             
             if (robotModel) {
-                // Smooth rotation
                 robotModel.rotation.y += (targetRotation - robotModel.rotation.y) * 0.05;
-                
-                // Vertical movement based on scroll
-                robotModel.position.y = Math.sin(scrollY * 0.005) * 0.5;
-                
-                // Add some subtle animation
-                robotModel.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
+                robotModel.position.y = -0.5 + Math.sin(scrollY * 0.005) * 0.3;
             }
             
             renderer.render(scene, camera);
         }
         
+        // Initial setup
+        handleResize();
         animate();
     </script>
 </body>
