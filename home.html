@@ -17,7 +17,7 @@
             margin: 0 auto;
             padding: 40px 20px;
             position: relative;
-            min-height: 150vh; /* Dodatkowa przestrzeń do scrollowania */
+            min-height: 150vh;
         }
         
         h1 {
@@ -45,6 +45,23 @@
         .section {
             padding: 80px 0;
             border-bottom: 1px solid #eee;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .section-content {
+            max-width: 50%;
+            transition: all 0.3s ease-out;
+        }
+        
+        .section.left-align .section-content {
+            margin-right: auto;
+            margin-left: 0;
+        }
+        
+        .section.right-align .section-content {
+            margin-left: auto;
+            margin-right: 0;
         }
         
         .progress-bar {
@@ -67,24 +84,32 @@
         <div id="model-container"></div>
         
         <div class="content">
-            <div class="section">
-                <h2>Section 1</h2>
-                <p>Scroll down to see the 3D model move from right to left. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris.</p>
+            <div class="section left-align" id="section1">
+                <div class="section-content">
+                    <h2>Section 1</h2>
+                    <p>Scroll down to see the 3D model move from right to left. The text will switch sides as the model moves.</p>
+                </div>
             </div>
             
-            <div class="section">
-                <h2>Section 2</h2>
-                <p>Continue scrolling to observe the animation. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>
+            <div class="section left-align" id="section2">
+                <div class="section-content">
+                    <h2>Section 2</h2>
+                    <p>When the model is on the right, text is on the left. When model moves left, text moves right.</p>
+                </div>
             </div>
             
-            <div class="section">
-                <h2>Section 3</h2>
-                <p>Pellentesque in ipsum id orci porta dapibus. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi.</p>
+            <div class="section left-align" id="section3">
+                <div class="section-content">
+                    <h2>Section 3</h2>
+                    <p>Dynamic text positioning creates a more balanced layout as you scroll.</p>
+                </div>
             </div>
             
-            <div class="section">
-                <h2>Section 4</h2>
-                <p>Curabitur aliquet quam id dui posuere blandit. Donec sollicitudin molestie malesuada. Donec rutrum congue leo eget malesuada.</p>
+            <div class="section left-align" id="section4">
+                <div class="section-content">
+                    <h2>Section 4</h2>
+                    <p>Smooth transitions between positions enhance the user experience.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -113,7 +138,7 @@
         directionalLight.position.set(1, 1, 1);
         scene.add(directionalLight);
         
-        // Create a simple 3D model (placeholder cube with AI face)
+        // Create a simple 3D model
         const createModel = () => {
             // Head
             const headGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -189,11 +214,15 @@
         
         // Calculate animation distance
         const containerWidth = document.querySelector('.container').offsetWidth;
-        const startPosition = containerWidth * 0.8; // 80% from left (right side)
-        const endPosition = containerWidth * 0.2; // 20% from left (left side)
+        const startPosition = containerWidth * 0.8; // Start at 80% from left (right side)
+        const endPosition = containerWidth * 0.2; // End at 20% from left (left side)
+        const middlePosition = containerWidth * 0.5; // Middle point
+        
+        // Get all sections
+        const sections = document.querySelectorAll('.section');
         
         // Model movement animation
-        gsap.to("#model-container", {
+        const modelAnimation = gsap.to("#model-container", {
             scrollTrigger: {
                 trigger: ".container",
                 start: "top top",
@@ -202,6 +231,29 @@
                 onUpdate: self => {
                     // Update progress bar
                     document.querySelector('.progress-bar').style.width = `${self.progress * 100}%`;
+                    
+                    // Get current model position
+                    const modelRect = document.getElementById('model-container').getBoundingClientRect();
+                    const modelCenter = modelRect.left + modelRect.width / 2;
+                    
+                    // Update text alignment based on model position
+                    sections.forEach(section => {
+                        const sectionRect = section.getBoundingClientRect();
+                        const sectionCenter = sectionRect.top + sectionRect.height / 2;
+                        
+                        // If section is in view and model is to its left or right
+                        if (sectionRect.top < window.innerHeight && sectionRect.bottom > 0) {
+                            if (modelCenter < middlePosition) {
+                                // Model is on the left - align text to right
+                                section.classList.remove('left-align');
+                                section.classList.add('right-align');
+                            } else {
+                                // Model is on the right - align text to left
+                                section.classList.remove('right-align');
+                                section.classList.add('left-align');
+                            }
+                        }
+                    });
                 }
             },
             left: endPosition,
