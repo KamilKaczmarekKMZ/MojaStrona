@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Robot 3D</title>
+    <title>AI Robot 3D with Head Tracking</title>
     <style>
         body {
             margin: 0;
@@ -13,6 +13,7 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             overflow-x: hidden;
             height: 100%;
+            cursor: none;
         }
         
         #canvas-container {
@@ -57,21 +58,29 @@
             color: #4cc9f0;
             font-size: 1.5rem;
         }
+        
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f72585;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
     <div class="loader" id="loader">Loading 3D model...</div>
+    <div class="cursor" id="cursor"></div>
     
     <section class="content-section">
-        <h1>AI-Powered Future</h1>
-        <p>Scroll down to see the animation effect...</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.</p>
-        <p>Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere.</p>
-        <p>Praesent id metus massa, ut blandit odio. Proin quis tortor orci. Etiam at risus et justo dignissim congue. Donec congue lacinia dui, a porttitor lectus condimentum laoreet.</p>
-        <p>Nunc eu ullamcorper orci. Quisque eget odio ac lectus vestibulum faucibus eget in metus. In pellentesque faucibus vestibulum. Nulla at nulla justo, eget luctus tortor.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.</p>
-        <p>Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere.</p>
+        <h1>AI Robot with Head Tracking</h1>
+        <p>Move your mouse around to see the robot's head follow the cursor...</p>
+        <!-- Skrócona treść -->
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -80,6 +89,7 @@
         // Scene setup
         const container = document.getElementById('canvas-container');
         const loaderElement = document.getElementById('loader');
+        const cursor = document.getElementById('cursor');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x16213e);
         
@@ -102,11 +112,12 @@
         directionalLight.position.set(1, 1, 1);
         scene.add(directionalLight);
         
-        // Model and animation variables
+        // Model variables
         let robotModel;
+        let headBone; // Do przechowywania kości głowy
+        let mouseX = 0;
+        let mouseY = 0;
         let scrollProgress = 0;
-        let targetRotation = 0;
-        let targetYPosition = 0;
         
         // Load model
         const loader = new THREE.GLTFLoader();
@@ -115,14 +126,21 @@
             function (gltf) {
                 robotModel = gltf.scene;
                 
-                // Initial scale and position
+                // Skalowanie
                 const scale = Math.min(window.innerWidth / 800, 1.2);
                 robotModel.scale.set(scale, scale, scale);
                 robotModel.position.y = -0.5;
                 
                 scene.add(robotModel);
                 
-                // Center the model
+                // Znajdź kość głowy (dla tego modelu to 'Head')
+                robotModel.traverse(function(child) {
+                    if (child.isBone && child.name === 'Head') {
+                        headBone = child;
+                    }
+                });
+                
+                // Wyśrodkuj model
                 const box = new THREE.Box3().setFromObject(robotModel);
                 const center = box.getCenter(new THREE.Vector3());
                 robotModel.position.x -= center.x;
@@ -137,18 +155,25 @@
             }
         );
         
+        // Track mouse movement
+        function onMouseMove(event) {
+            // Normalizuj pozycję myszy (-1 do 1)
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            // Aktualizuj pozycję kursora
+            cursor.style.left = event.clientX + 'px';
+            cursor.style.top = event.clientY + 'px';
+        }
+        
+        window.addEventListener('mousemove', onMouseMove);
+        
         // Scroll handler
         function handleScroll() {
             const scrollY = window.scrollY || window.pageYOffset;
             const documentHeight = document.documentElement.scrollHeight;
             const windowHeight = window.innerHeight;
-            
-            // Calculate scroll progress (0 to 1)
             scrollProgress = Math.min(scrollY / (documentHeight - windowHeight), 1);
-            
-            // Update animation targets based on scroll
-            targetRotation = scrollProgress * Math.PI * 2; // Full rotation
-            targetYPosition = Math.sin(scrollProgress * Math.PI) * 1.5; // Up and down movement
         }
         
         window.addEventListener('scroll', handleScroll);
@@ -180,13 +205,16 @@
         function animate() {
             requestAnimationFrame(animate);
             
-            if (robotModel) {
-                // Smooth animations
-                robotModel.rotation.y += (targetRotation - robotModel.rotation.y) * 0.05;
-                robotModel.position.y += (targetYPosition - robotModel.position.y) * 0.05;
+            if (robotModel && headBone) {
+                // Obracaj głowę w kierunku kursora (z ograniczeniami)
+                const headRotationX = THREE.MathUtils.clamp(mouseY * 0.5, -0.5, 0.5);
+                const headRotationY = THREE.MathUtils.clamp(mouseX * 0.5, -0.5, 0.5);
                 
-                // Additional subtle animation
-                robotModel.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
+                headBone.rotation.x = headRotationX;
+                headBone.rotation.y = headRotationY;
+                
+                // Efekt scrollowania - obrót całego ciała
+                robotModel.rotation.y = scrollProgress * Math.PI * 2;
             }
             
             renderer.render(scene, camera);
@@ -194,7 +222,7 @@
         
         // Initial setup
         handleResize();
-        handleScroll(); // Initialize scroll position
+        handleScroll();
         animate();
     </script>
 </body>
