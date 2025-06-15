@@ -11,6 +11,7 @@
             color: #333;
             line-height: 1.6;
             overflow-x: hidden;
+            background-color: #f8f9fa;
         }
         
         .container {
@@ -76,7 +77,7 @@
             opacity: 0.6;
             transform: translateY(20px);
             padding: 20px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
@@ -178,76 +179,85 @@
         function init3D() {
             // Scene setup
             scene = new THREE.Scene();
+            scene.background = null; // Transparent background
             camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
             
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            // Renderer with better antialiasing
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true, 
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
             container.innerHTML = '';
             container.appendChild(renderer.domElement);
             
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            // Improved lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(1, 1, 1);
-            scene.add(directionalLight);
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight1.position.set(1, 1, 1);
+            directionalLight1.castShadow = true;
+            scene.add(directionalLight1);
             
-            // Create model
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight2.position.set(-1, -1, -1);
+            scene.add(directionalLight2);
+            
+            // Create more visible 3D model
             model = createModel();
             scene.add(model);
             
-            // Camera position
-            camera.position.z = 2;
+            // Better camera position
+            camera.position.z = 3;
         }
         
-        // Create 3D model
+        // Create better visible 3D model
         function createModel() {
-            // Head
-            const headGeometry = new THREE.BoxGeometry(1, 1, 1);
-            const headMaterial = new THREE.MeshPhongMaterial({ 
+            // Main shape - using a more interesting geometry
+            const geometry = new THREE.IcosahedronGeometry(1, 2);
+            const material = new THREE.MeshPhongMaterial({ 
                 color: 0x3498db,
-                specular: 0x111111,
-                shininess: 30
+                specular: 0xffffff,
+                shininess: 100,
+                flatShading: false,
+                wireframe: false
             });
-            const head = new THREE.Mesh(headGeometry, headMaterial);
             
-            // Eyes
-            const eyeGeometry = new THREE.SphereGeometry(0.15, 32, 32);
-            const eyeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            const mainShape = new THREE.Mesh(geometry, material);
+            mainShape.castShadow = true;
+            mainShape.receiveShadow = true;
             
-            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-            leftEye.position.set(-0.3, 0.2, 0.51);
+            // Add some details
+            const wireframe = new THREE.LineSegments(
+                new THREE.EdgesGeometry(geometry),
+                new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 })
+            );
+            wireframe.scale.set(1.01, 1.01, 1.01);
+            mainShape.add(wireframe);
             
-            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-            rightEye.position.set(0.3, 0.2, 0.51);
-            
-            // Pupils
-            const pupilGeometry = new THREE.SphereGeometry(0.07, 32, 32);
-            const pupilMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
-            
-            const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
-            leftPupil.position.set(-0.3, 0.2, 0.52);
-            
-            const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
-            rightPupil.position.set(0.3, 0.2, 0.52);
-            
-            // Mouth
-            const mouthGeometry = new THREE.TorusGeometry(0.2, 0.05, 16, 32, Math.PI);
-            const mouthMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
-            const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
-            mouth.position.set(0, -0.2, 0.51);
-            mouth.rotation.x = Math.PI;
+            // Add some floating spheres around
+            const spheres = new THREE.Group();
+            for (let i = 0; i < 6; i++) {
+                const sphereGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const sphereMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xffffff,
+                    shininess: 50
+                });
+                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                
+                const angle = (i / 6) * Math.PI * 2;
+                sphere.position.set(Math.cos(angle) * 1.5, Math.sin(angle) * 1.5, 0);
+                spheres.add(sphere);
+            }
             
             // Group everything together
             const modelGroup = new THREE.Group();
-            modelGroup.add(head);
-            modelGroup.add(leftEye);
-            modelGroup.add(rightEye);
-            modelGroup.add(leftPupil);
-            modelGroup.add(rightPupil);
-            modelGroup.add(mouth);
+            modelGroup.add(mainShape);
+            modelGroup.add(spheres);
             
             return modelGroup;
         }
@@ -257,11 +267,14 @@
             animationId = requestAnimationFrame(animate);
             
             // Only auto-rotate when not dragging
-            if (!isDragging) {
+            if (!isDragging && model) {
                 model.rotation.y += 0.005;
+                model.rotation.x += 0.001;
             }
             
-            renderer.render(scene, camera);
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
         }
         
         // Handle resize
@@ -275,7 +288,7 @@
             });
             
             // Update Three.js renderer
-            if (renderer) {
+            if (renderer && camera) {
                 camera.aspect = container.clientWidth / container.clientHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(container.clientWidth, container.clientHeight);
@@ -288,7 +301,9 @@
                 cancelAnimationFrame(animationId);
                 renderer.dispose();
                 renderer.forceContextLoss();
-                container.removeChild(renderer.domElement);
+                if (renderer.domElement.parentNode === container) {
+                    container.removeChild(renderer.domElement);
+                }
             }
             scene = null;
             model = null;
@@ -313,7 +328,7 @@
             });
             
             container.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
+                if (!isDragging || !model) return;
                 
                 const deltaMove = {
                     x: e.clientX - previousMousePosition.x,
@@ -341,7 +356,7 @@
             });
             
             container.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
+                if (!isDragging || !model) return;
                 
                 const deltaMove = {
                     x: e.touches[0].clientX - previousMousePosition.x,
@@ -439,12 +454,16 @@
             
             window.addEventListener('resize', handleResize);
             ScrollTrigger.addEventListener("refreshInit", cleanUp);
-            ScrollTrigger.addEventListener("refresh", init3D);
+            ScrollTrigger.addEventListener("refresh", () => {
+                cleanUp();
+                init3D();
+                animate();
+            });
             ScrollTrigger.refresh();
         }
         
         // Start everything
-        init();
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
