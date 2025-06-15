@@ -1,229 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Robot 3D with Head Tracking</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            color: #fff;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            overflow-x: hidden;
-            height: 100%;
-            cursor: none;
-        }
-        
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: -1;
-        }
-        
-        .content-section {
-            padding-top: 100vh;
-            padding-left: 2rem;
-            padding-right: 2rem;
-            padding-bottom: 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-        
-        h1, h2 {
-            color: #4cc9f0;
-        }
-        
-        p {
-            margin-bottom: 2rem;
-        }
-        
-        @media (max-width: 768px) {
-            .content-section {
-                padding: 80vh 1rem 1rem;
-            }
-        }
+	<head>
+		<title>three.js webgl - materials - UltraHDR texture loader</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
 
-        .loader {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #4cc9f0;
-            font-size: 1.5rem;
-        }
-        
-        .cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f72585;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 100;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: difference;
-        }
-    </style>
-</head>
-<body>
-    <div id="canvas-container"></div>
-    <div class="loader" id="loader">Loading 3D model...</div>
-    <div class="cursor" id="cursor"></div>
-    
-    <section class="content-section">
-        <h1>AI Robot with Head Tracking</h1>
-        <p>Move your mouse around to see the robot's head follow the cursor...</p>
-        <!-- Skrócona treść -->
-    </section>
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - UltraHDR texture loader <br/>
+			Converted from hdr with <a href="https://gainmap-creator.mono-grid.com/" target="_blank" rel="noopener">converter</a>. <br />
+		</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
-    <script>
-        // Scene setup
-        const container = document.getElementById('canvas-container');
-        const loaderElement = document.getElementById('loader');
-        const cursor = document.getElementById('cursor');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x16213e);
-        
-        // Camera
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 6;
-        camera.position.y = 1;
-        
-        // Renderer
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-        
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
-        scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(1, 1, 1);
-        scene.add(directionalLight);
-        
-        // Model variables
-        let robotModel;
-        let headBone; // Do przechowywania kości głowy
-        let mouseX = 0;
-        let mouseY = 0;
-        let scrollProgress = 0;
-        
-        // Load model
-        const loader = new THREE.GLTFLoader();
-        loader.load(
-            'https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb',
-            function (gltf) {
-                robotModel = gltf.scene;
-                
-                // Skalowanie
-                const scale = Math.min(window.innerWidth / 800, 1.2);
-                robotModel.scale.set(scale, scale, scale);
-                robotModel.position.y = -0.5;
-                
-                scene.add(robotModel);
-                
-                // Znajdź kość głowy (dla tego modelu to 'Head')
-                robotModel.traverse(function(child) {
-                    if (child.isBone && child.name === 'Head') {
-                        headBone = child;
-                    }
-                });
-                
-                // Wyśrodkuj model
-                const box = new THREE.Box3().setFromObject(robotModel);
-                const center = box.getCenter(new THREE.Vector3());
-                robotModel.position.x -= center.x;
-                robotModel.position.z -= center.z;
-                
-                loaderElement.style.display = 'none';
-            },
-            undefined,
-            function (error) {
-                console.error('Error loading model:', error);
-                loaderElement.textContent = 'Error loading 3D model. Please try again later.';
-            }
-        );
-        
-        // Track mouse movement
-        function onMouseMove(event) {
-            // Normalizuj pozycję myszy (-1 do 1)
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-            
-            // Aktualizuj pozycję kursora
-            cursor.style.left = event.clientX + 'px';
-            cursor.style.top = event.clientY + 'px';
-        }
-        
-        window.addEventListener('mousemove', onMouseMove);
-        
-        // Scroll handler
-        function handleScroll() {
-            const scrollY = window.scrollY || window.pageYOffset;
-            const documentHeight = document.documentElement.scrollHeight;
-            const windowHeight = window.innerHeight;
-            scrollProgress = Math.min(scrollY / (documentHeight - windowHeight), 1);
-        }
-        
-        window.addEventListener('scroll', handleScroll);
-        
-        // Resize handler
-        function handleResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            
-            if (window.innerWidth < 768) {
-                camera.position.z = 7;
-                camera.position.y = 1.5;
-            } else {
-                camera.position.z = 6;
-                camera.position.y = 1;
-            }
-            
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            if (robotModel) {
-                const scale = Math.min(window.innerWidth / 800, 1.2);
-                robotModel.scale.set(scale, scale, scale);
-            }
-        }
-        
-        window.addEventListener('resize', handleResize);
-        
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            if (robotModel && headBone) {
-                // Obracaj głowę w kierunku kursora (z ograniczeniami)
-                const headRotationX = THREE.MathUtils.clamp(mouseY * 0.5, -0.5, 0.5);
-                const headRotationY = THREE.MathUtils.clamp(mouseX * 0.5, -0.5, 0.5);
-                
-                headBone.rotation.x = headRotationX;
-                headBone.rotation.y = headRotationY;
-                
-                // Efekt scrollowania - obrót całego ciała
-                robotModel.rotation.y = scrollProgress * Math.PI * 2;
-            }
-            
-            renderer.render(scene, camera);
-        }
-        
-        // Initial setup
-        handleResize();
-        handleScroll();
-        animate();
-    </script>
-</body>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+			import { UltraHDRLoader } from 'three/addons/loaders/UltraHDRLoader.js';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+			const params = {
+				autoRotate: true,
+				metalness: 1.0,
+				roughness: 0.0,
+				exposure: 1.0,
+				resolution: '2k',
+				type: 'HalfFloatType'
+			};
+
+			let renderer, scene, camera, controls, torusMesh, loader;
+
+			init();
+
+			function init() {
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				renderer.toneMapping = THREE.ACESFilmicToneMapping;
+				renderer.toneMappingExposure = params.exposure;
+
+				renderer.setAnimationLoop( render );
+
+				scene = new THREE.Scene();
+
+				torusMesh = new THREE.Mesh(
+					new THREE.TorusKnotGeometry( 1, 0.4, 128, 128, 1, 3 ),
+					new THREE.MeshStandardMaterial( { roughness: params.roughness, metalness: params.metalness } )
+				 );
+				scene.add( torusMesh );
+
+				camera = new THREE.PerspectiveCamera(
+					50,
+					window.innerWidth / window.innerHeight,
+					1,
+					500
+				);
+				camera.position.set( 0.0, 0.0, - 6.0 );
+
+				controls = new OrbitControls( camera, renderer.domElement );
+			
+				loader = new UltraHDRLoader();
+				loader.setDataType( THREE.FloatType );
+
+				const loadEnvironment = function ( resolution = '2k', type = 'HalfFloatType' ) {
+
+					loader.setDataType( THREE[ type ] );
+
+					loader.load( `textures/equirectangular/spruit_sunrise_${resolution}.hdr.jpg`, function ( texture ) {
+
+						texture.mapping = THREE.EquirectangularReflectionMapping;
+						texture.needsUpdate = true;
+
+						scene.background = texture;
+						scene.environment = texture;
+
+					} );
+
+				};
+
+				loadEnvironment( params.resolution, params.type );
+
+				const gui = new GUI();
+
+				gui.add( params, 'autoRotate' );
+				gui.add( params, 'metalness', 0, 1, 0.01 );
+				gui.add( params, 'roughness', 0, 1, 0.01 );
+				gui.add( params, 'exposure', 0, 4, 0.01 );
+				gui.add( params, 'resolution', [ '2k', '4k' ] ).onChange( ( value ) => {
+
+					loadEnvironment( value, params.type );
+			
+				} );
+				gui.add( params, 'type', [ 'HalfFloatType', 'FloatType' ] ).onChange( ( value ) => {
+
+					loadEnvironment( params.resolution, value );
+			
+				} );
+
+				gui.open();
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function render() {
+
+				torusMesh.material.roughness = params.roughness;
+				torusMesh.material.metalness = params.metalness;
+
+				if ( params.autoRotate ) {
+
+					torusMesh.rotation.y += 0.005;
+
+				}
+
+				renderer.toneMappingExposure = params.exposure;
+
+				controls.update();
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+	</body>
 </html>
