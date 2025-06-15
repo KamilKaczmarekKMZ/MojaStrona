@@ -1,31 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgpu - compute cloth</title>
+		<title>three.js webgpu - postprocessing dof</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body { margin: 0; }
-			#info {
-				position: absolute;
-				top: 10px;
-				width: 100%;
-				text-align: center;
-				color: white;
-				font-family: Arial, sans-serif;
-				background-color: rgba(0,0,0,0.5);
-				padding: 5px;
-				z-index: 100;
-			}
-			#info a { color: #4cc9f0; }
-		</style>
+		<link type="text/css" rel="stylesheet" href="main.css">
 	</head>
 	<body>
-		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgpu - compute cloth<br />
-			Interactive cloth simulation
-		</div>
-
 		<script type="importmap">
 			{
 				"imports": {
@@ -38,203 +19,174 @@
 		</script>
 
 		<script type="module">
+
 			import * as THREE from 'three';
-			import { Fn, If, Return, instancedArray, instanceIndex, uniform, select, attribute, uint, Loop, float, transformNormalToView, cross, triNoise3D, time } from 'three/tsl';
+			import { cubeTexture, positionWorld, oscSine, time, pass, uniform } from 'three/tsl';
+			import { dof } from 'three/addons/tsl/display/DepthOfFieldNode.js';
+
 			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-			import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
-			let renderer, scene, camera, controls;
-			let lastCameraPosition = new THREE.Vector3();
-			let cameraMovement = new THREE.Vector3();
+			import Stats from 'three/addons/libs/stats.module.js';
 
-			const clothWidth = 1;
-			const clothHeight = 1;
-			const clothNumSegmentsX = 30;
-			const clothNumSegmentsY = 30;
+			//
 
-			let vertexPositionBuffer, vertexForceBuffer, vertexParamsBuffer;
-			let springVertexIdBuffer, springRestLengthBuffer, springForceBuffer;
-			let springListBuffer;
-			let computeSpringForces, computeVertexForces;
-			let dampeningUniform, stiffnessUniform, windUniform, cameraMovementUniform;
-			let vertexWireframeObject, springWireframeObject;
-			let clothMesh, clothMaterial;
-			let timeSinceLastStep = 0;
-			let timestamp = 0;
-			const verletVertices = [];
-			const verletSprings = [];
-			const verletVertexColumns = [];
+			let camera, scene, renderer, mesh, stats;
 
-			const clock = new THREE.Clock();
+			let mouseX = 0, mouseY = 0;
 
-			const params = {
-				wireframe: false,
-				wind: 1.0,
-				cameraInfluence: 0.5 // nowy parametr - siła wpływu kamery
-			};
+			let windowHalfX = window.innerWidth / 2;
+			let windowHalfY = window.innerHeight / 2;
+
+			let width = window.innerWidth;
+			let height = window.innerHeight;
+
+			let postProcessing;
 
 			init();
 
-			async function init() {
-				renderer = new THREE.WebGPURenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.toneMapping = THREE.NeutralToneMapping;
-				renderer.toneMappingExposure = 1;
-				document.body.appendChild( renderer.domElement );
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 70, width / height, 1, 3000 );
+				camera.position.z = 200;
 
 				scene = new THREE.Scene();
 
-				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.01, 10 );
-				camera.position.set( -1.6, -0.1, -1.6 );
-				lastCameraPosition.copy(camera.position);
+				const path = 'textures/cube/SwedishRoyalCastle/';
+				const format = '.jpg';
+				const urls = [
+					path + 'px' + format, path + 'nx' + format,
+					path + 'py' + format, path + 'ny' + format,
+					path + 'pz' + format, path + 'nz' + format
+				];
 
-				controls = new OrbitControls( camera, renderer.domElement );
-				controls.minDistance = 1;
-				controls.maxDistance = 3;
-				controls.target.set( 0, -0.1, 0 );
-				controls.update();
+				const xgrid = 14, ygrid = 9, zgrid = 14;
+				const count = xgrid * ygrid * zgrid;
 
-				const rgbeLoader = new RGBELoader().setPath( 'textures/equirectangular/' );
-				const hdrTexture = await rgbeLoader.loadAsync( 'royal_esplanade_1k.hdr' );
-				hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
-				scene.background = hdrTexture;
-				scene.backgroundBlurriness = 0.5;
-				scene.environment = hdrTexture;
+				const textureCube = new THREE.CubeTextureLoader().load( urls );
+				const cubeTextureNode = cubeTexture( textureCube );
+				const oscPos = oscSine( positionWorld.div( 1000 /* scene distance */ ).add( time.mul( .2 ) ) );
 
-				setupCloth();
+				const geometry = new THREE.SphereGeometry( 60, 20, 10 );
+				const material = new THREE.MeshBasicNodeMaterial();
+				material.colorNode = cubeTextureNode.mul( oscPos );
 
-				const gui = new GUI();
-				gui.add( stiffnessUniform, 'value', 0.1, 0.5, 0.01 ).name( 'stiffness' );
-				gui.add( params, 'wireframe' );
-				gui.add( params, 'wind', 0, 5, 0.1 );
-				gui.add( params, 'cameraInfluence', 0, 2, 0.1 ).name('camera influence');
-				
-				const materialFolder = gui.addFolder( 'material' );
-				materialFolder.addColor( clothMaterial, 'color' );
-				materialFolder.add( clothMaterial, 'roughness', 0.0, 1, 0.01 );
-				materialFolder.add( clothMaterial, 'sheen', 0.0, 1, 0.01 );
-				materialFolder.add( clothMaterial, 'sheenRoughness', 0.0, 1, 0.01 );
-				materialFolder.addColor( clothMaterial, 'sheenColor' );
+				mesh = new THREE.InstancedMesh( geometry, material, count );
+				scene.add( mesh );
 
-				window.addEventListener( 'resize', onWindowResize );
-				renderer.setAnimationLoop( render );
-			}
+				const matrix = new THREE.Matrix4();
 
-			// ... (pozostałe funkcje setupVerletGeometry, setupVerletVertexBuffers, 
-			// setupVerletSpringBuffers pozostają bez zmian)
+				let index = 0;
 
-			function setupUniforms() {
-				dampeningUniform = uniform( 0.99 );
-				stiffnessUniform = uniform( 0.2 );
-				windUniform = uniform( 1.0 );
-				cameraMovementUniform = uniform( new THREE.Vector3(0, 0, 0) );
-			}
+				for ( let i = 0; i < xgrid; i ++ ) {
 
-			function setupComputeShaders() {
-				const vertexCount = verletVertices.length;
-				const springCount = verletSprings.length;
+					for ( let j = 0; j < ygrid; j ++ ) {
 
-				computeSpringForces = Fn( () => {
-					If( instanceIndex.greaterThanEqual( uint( springCount ) ), () => {
-						Return();
-					} );
+						for ( let k = 0; k < zgrid; k ++ ) {
 
-					const vertexIds = springVertexIdBuffer.element( instanceIndex );
-					const restLength = springRestLengthBuffer.element( instanceIndex );
+							const x = 200 * ( i - xgrid / 2 );
+							const y = 200 * ( j - ygrid / 2 );
+							const z = 200 * ( k - zgrid / 2 );
 
-					const vertex0Position = vertexPositionBuffer.element( vertexIds.x );
-					const vertex1Position = vertexPositionBuffer.element( vertexIds.y );
+							mesh.setMatrixAt( index, matrix.identity().setPosition( x, y, z ) );
+							index ++;
 
-					const delta = vertex1Position.sub( vertex0Position ).toVar();
-					const dist = delta.length().max( 0.000001 ).toVar();
-					const force = dist.sub( restLength ).mul( stiffnessUniform ).mul( delta ).mul( 0.5 ).div( dist );
-					springForceBuffer.element( instanceIndex ).assign( force );
-				} )().compute( springCount );
+						}
 
-				computeVertexForces = Fn( () => {
-					If( instanceIndex.greaterThanEqual( uint( vertexCount ) ), () => {
-						Return();
-					} );
+					}
 
-					const params = vertexParamsBuffer.element( instanceIndex ).toVar();
-					const isFixed = params.x;
-					const springCount = params.y;
-					const springPointer = params.z;
-
-					If( isFixed, () => {
-						Return();
-					} );
-
-					const position = vertexPositionBuffer.element( instanceIndex ).toVar( 'vertexPosition' );
-					const force = vertexForceBuffer.element( instanceIndex ).toVar( 'vertexForce' );
-
-					force.mulAssign( dampeningUniform );
-
-					const ptrStart = springPointer.toVar( 'ptrStart' );
-					const ptrEnd = ptrStart.add( springCount ).toVar( 'ptrEnd' );
-
-					Loop( { start: ptrStart, end: ptrEnd, type: 'uint', condition: '<' }, ( { i } ) => {
-						const springId = springListBuffer.element( i ).toVar( 'springId' );
-						const springForce = springForceBuffer.element( springId );
-						const springVertexIds = springVertexIdBuffer.element( springId );
-						const factor = select( springVertexIds.x.equal( instanceIndex ), 1.0, -1.0 );
-						force.addAssign( springForce.mul( factor ) );
-					} );
-
-					// gravity
-					force.y.subAssign( 0.00005 );
-
-					// wind
-					const noise = triNoise3D( position, 1, time ).sub( 0.2 ).mul( 0.0001 );
-					const windForce = noise.mul( windUniform );
-					force.z.subAssign( windForce );
-
-					// camera movement influence
-					force.addAssign( cameraMovementUniform.mul(params.cameraInfluence * 0.01) );
-
-					vertexForceBuffer.element( instanceIndex ).assign( force );
-					vertexPositionBuffer.element( instanceIndex ).addAssign( force );
-				} )().compute( vertexCount );
-			}
-
-			// ... (pozostałe funkcje setupWireframe, setupClothMesh, setupCloth pozostają bez zmian)
-
-			function updateCameraMovement() {
-				cameraMovement.subVectors(camera.position, lastCameraPosition);
-				cameraMovementUniform.value.copy(cameraMovement);
-				lastCameraPosition.copy(camera.position);
-			}
-
-			async function render() {
-				updateCameraMovement(); // Aktualizuj wektor ruchu kamery
-				
-				clothMesh.visible = ! params.wireframe;
-				vertexWireframeObject.visible = params.wireframe;
-				springWireframeObject.visible = params.wireframe;
-
-				const deltaTime = Math.min( clock.getDelta(), 1 / 60 );
-				const stepsPerSecond = 360;
-				const timePerStep = 1 / stepsPerSecond;
-
-				timeSinceLastStep += deltaTime;
-
-				while ( timeSinceLastStep >= timePerStep ) {
-					timestamp += timePerStep;
-					timeSinceLastStep -= timePerStep;
-					await renderer.computeAsync( computeSpringForces );
-					await renderer.computeAsync( computeVertexForces );
 				}
 
-				await renderer.renderAsync( scene, camera );
+				// renderer
+
+				renderer = new THREE.WebGPURenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setAnimationLoop( animate );
+				document.body.appendChild( renderer.domElement );
+
+				const effectController = {
+					focus: uniform( 500.0 ),
+					aperture: uniform( 5 ),
+					maxblur: uniform( 0.01 )
+				};
+
+				// post processing
+
+				postProcessing = new THREE.PostProcessing( renderer );
+
+				const scenePass = pass( scene, camera );
+
+				const scenePassColor = scenePass.getTextureNode();
+				const scenePassViewZ = scenePass.getViewZNode();
+
+				const dofPass = dof( scenePassColor, scenePassViewZ, effectController.focus, effectController.aperture.mul( 0.00001 ), effectController.maxblur );
+
+				postProcessing.outputNode = dofPass;
+
+				// controls
+
+				renderer.domElement.style.touchAction = 'none';
+				renderer.domElement.addEventListener( 'pointermove', onPointerMove );
+
+				window.addEventListener( 'resize', onWindowResize );
+
+				// stats
+
+				stats = new Stats();
+				document.body.appendChild( stats.dom );
+
+				// gui
+
+				const gui = new GUI();
+				gui.add( effectController.focus, 'value', 10.0, 3000.0, 10 ).name( 'focus' );
+				gui.add( effectController.aperture, 'value', 0, 10, 0.1 ).name( 'aperture' );
+				gui.add( effectController.maxblur, 'value', 0.0, 0.01, 0.001 ).name( 'maxblur' );
+
+			}
+
+			function onPointerMove( event ) {
+
+				if ( event.isPrimary === false ) return;
+
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+
 			}
 
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				width = window.innerWidth;
+				height = window.innerHeight;
+
+				camera.aspect = width / height;
 				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				renderer.setSize( width, height );
+
 			}
+
+			function animate() {
+
+				render();
+
+				stats.update();
+
+			}
+
+			function render() {
+
+				camera.position.x += ( mouseX - camera.position.x ) * 0.036;
+				camera.position.y += ( - ( mouseY ) - camera.position.y ) * 0.036;
+
+				camera.lookAt( scene.position );
+
+				postProcessing.render();
+
+			}
+
 		</script>
 	</body>
 </html>
