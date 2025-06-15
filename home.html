@@ -43,10 +43,21 @@
                 padding: 100vh 1rem 1rem;
             }
         }
+
+        /* Loading indicator */
+        .loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #4cc9f0;
+            font-size: 1.5rem;
+        }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
+    <div class="loader" id="loader">Loading 3D model...</div>
     
     <section class="content-section">
         <h1>AI-Powered Future</h1>
@@ -70,6 +81,7 @@
     <script>
         // Scene setup
         const container = document.getElementById('canvas-container');
+        const loaderElement = document.getElementById('loader');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x16213e);
         
@@ -91,28 +103,41 @@
         directionalLight.position.set(1, 1, 1);
         scene.add(directionalLight);
         
+        // Add some additional lights for better visibility
+        const light1 = new THREE.PointLight(0x4cc9f0, 0.5);
+        light1.position.set(2, 2, 2);
+        scene.add(light1);
+        
+        const light2 = new THREE.PointLight(0xf72585, 0.5);
+        light2.position.set(-2, -2, 2);
+        scene.add(light2);
+        
         // Model variables
         let robotModel;
         let scrollY = window.scrollY;
         let targetRotation = 0;
         
-        // Load model
+        // Load model - using a more reliable model source
         const loader = new THREE.GLTFLoader();
         loader.load(
-            'https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@2.0/2.0/RobotExpressive/glTF/RobotExpressive.gltf',
+            'https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb',
             function (gltf) {
                 robotModel = gltf.scene;
-                robotModel.scale.set(0.5, 0.5, 0.5);
+                robotModel.scale.set(2, 2, 2);
                 scene.add(robotModel);
                 
                 // Center the model
                 const box = new THREE.Box3().setFromObject(robotModel);
                 const center = box.getCenter(new THREE.Vector3());
                 robotModel.position.sub(center);
+                
+                // Hide loader
+                loaderElement.style.display = 'none';
             },
             undefined,
             function (error) {
                 console.error('Error loading model:', error);
+                loaderElement.textContent = 'Error loading 3D model. Please try again later.';
             }
         );
         
@@ -140,6 +165,9 @@
                 
                 // Vertical movement based on scroll
                 robotModel.position.y = Math.sin(scrollY * 0.005) * 0.5;
+                
+                // Add some subtle animation
+                robotModel.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
             }
             
             renderer.render(scene, camera);
