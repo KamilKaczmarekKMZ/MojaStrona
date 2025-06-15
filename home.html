@@ -3,123 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js - 3 Reflective Panels</title>
+    <title>Three.js - Static Light Panels</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; }
-        #info { 
-            position: absolute; 
-            top: 10px; 
-            width: 100%; 
-            text-align: center; 
-            color: white; 
-            font-family: Arial, sans-serif; 
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000;
         }
-        #error { 
-            position: absolute; 
-            top: 50px; 
-            width: 100%; 
-            text-align: center; 
-            color: red; 
-            font-family: Arial, sans-serif; 
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            pointer-events: none;
+            text-shadow: 0 0 5px black;
         }
     </style>
 </head>
 <body>
-    <div id="info">Three.js - Reflective Panels</div>
-    <div id="error"></div>
+    <div id="info">Three.js - Static Light Panels</div>
 
-    <!-- Ładujemy biblioteki przez CDN (nowsze wersje) -->
+    <!-- Biblioteki Three.js z CDN -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.min.js"></script>
 
     <script>
-        // Sprawdzamy, czy Three.js się załadował
-        if (!window.THREE) {
-            document.getElementById('error').innerText = 'Error: THREE not loaded! Check CDN.';
-            throw new Error('THREE not loaded!');
-        }
+        // Inicjalizacja sceny, kamery i renderera
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x111111);
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 10, 20);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
 
-        let scene, camera, renderer;
-        let rectLight1, rectLight2, rectLight3;
+        // Kontrola kamery (możliwość obracania widoku)
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 5, 0);
+        controls.update();
 
-        init();
-        animate();
+        // Trzy statyczne panele świetlne (bez animacji obrotu)
+        const rectLight1 = new THREE.RectAreaLight(0xff0000, 5, 4, 10);
+        rectLight1.position.set(-5, 5, 0);
+        rectLight1.rotation.y = Math.PI / 4; // Lekkie pochylenie dla efektu
+        scene.add(rectLight1);
 
-        function init() {
-            try {
-                // Scena
-                scene = new THREE.Scene();
-                scene.background = new THREE.Color(0x111111);
+        const rectLight2 = new THREE.RectAreaLight(0x00ff00, 5, 4, 10);
+        rectLight2.position.set(0, 5, 0);
+        rectLight2.rotation.y = Math.PI / 4;
+        scene.add(rectLight2);
 
-                // Kamera
-                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-                camera.position.set(0, 10, 20);
+        const rectLight3 = new THREE.RectAreaLight(0x0000ff, 5, 4, 10);
+        rectLight3.position.set(5, 5, 0);
+        rectLight3.rotation.y = Math.PI / 4;
+        scene.add(rectLight3);
 
-                // Renderer (sprawdzamy WebGL)
-                renderer = new THREE.WebGLRenderer({ antialias: true });
-                if (!renderer) {
-                    document.getElementById('error').innerText = 'WebGL not supported!';
-                    return;
-                }
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.shadowMap.enabled = true;
-                document.body.appendChild(renderer.domElement);
+        // Wizualne reprezentacje świateł (panele)
+        const createLightPanel = (color, width, height) => {
+            const geometry = new THREE.PlaneGeometry(width, height);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: color,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.8
+            });
+            return new THREE.Mesh(geometry, material);
+        };
 
-                // Kontrola kamery
-                const controls = new THREE.OrbitControls(camera, renderer.domElement);
-                controls.target.set(0, 5, 0);
-                controls.update();
+        const panel1 = createLightPanel(0xff0000, 4, 10);
+        panel1.position.copy(rectLight1.position);
+        panel1.rotation.copy(rectLight1.rotation);
+        scene.add(panel1);
 
-                // Światła (3 panele)
-                rectLight1 = new THREE.RectAreaLight(0xff0000, 5, 4, 10);
-                rectLight1.position.set(-5, 5, 0);
-                scene.add(rectLight1);
+        const panel2 = createLightPanel(0x00ff00, 4, 10);
+        panel2.position.copy(rectLight2.position);
+        panel2.rotation.copy(rectLight2.rotation);
+        scene.add(panel2);
 
-                rectLight2 = new THREE.RectAreaLight(0x00ff00, 5, 4, 10);
-                rectLight2.position.set(0, 5, 0);
-                scene.add(rectLight2);
+        const panel3 = createLightPanel(0x0000ff, 4, 10);
+        panel3.position.copy(rectLight3.position);
+        panel3.rotation.copy(rectLight3.rotation);
+        scene.add(panel3);
 
-                rectLight3 = new THREE.RectAreaLight(0x0000ff, 5, 4, 10);
-                rectLight3.position.set(5, 5, 0);
-                scene.add(rectLight3);
+        // Podłoga z odbiciami
+        const floorGeometry = new THREE.PlaneGeometry(20, 20);
+        const floorMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x333333,
+            roughness: 0.1,
+            metalness: 0.9
+        });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
 
-                // Podłoga (metaliczna, odbija światło)
-                const floorGeometry = new THREE.PlaneGeometry(20, 20);
-                const floorMaterial = new THREE.MeshStandardMaterial({ 
-                    color: 0x333333, 
-                    roughness: 0.1,
-                    metalness: 0.9
-                });
-                const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-                floor.rotation.x = -Math.PI / 2;
-                floor.receiveShadow = true;
-                scene.add(floor);
-
-                window.addEventListener('resize', onWindowResize);
-            } catch (e) {
-                document.getElementById('error').innerText = 'Error: ' + e.message;
-                console.error(e);
-            }
-        }
-
-        function onWindowResize() {
+        // Obsługa zmiany rozmiaru okna
+        window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+        });
 
+        // Renderowanie sceny
         function animate() {
             requestAnimationFrame(animate);
-            
-            // Animacja świateł
-            if (rectLight1 && rectLight2 && rectLight3) {
-                rectLight1.rotation.y += 0.01;
-                rectLight2.rotation.y -= 0.005;
-                rectLight3.rotation.y += 0.02;
-            }
-
             renderer.render(scene, camera);
         }
+        animate();
     </script>
 </body>
 </html>
