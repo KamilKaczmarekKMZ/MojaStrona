@@ -19,6 +19,16 @@
       position: relative;
       min-height: 100vh;
       background-color: #000;
+    }
+
+    /* Nowe style dla interaktywnego tła */
+    #particles-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
       background: linear-gradient(135deg, #000000 0%, #0a0a2a 100%);
     }
 
@@ -454,6 +464,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Interaktywne tło -->
+  <canvas id="particles-bg"></canvas>
+
   <!-- Menu -->
   <div class="menu">
     <a href="#" class="link">
@@ -648,6 +661,101 @@
   <!-- Skrypty -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Interaktywne tło cząsteczek
+      const canvas = document.getElementById('particles-bg');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      // Kolorystyka dopasowana do projektu
+      const colors = ['rgba(16, 185, 129, 0.8)', 'rgba(79, 70, 229, 0.8)', 'rgba(99, 102, 241, 0.8)'];
+      
+      // Konfiguracja cząsteczek
+      const particles = [];
+      const particleCount = window.innerWidth < 768 ? 50 : 100;
+      
+      // Tworzenie cząsteczek
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 3 + 1,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedX: Math.random() * 0.5 - 0.25,
+          speedY: Math.random() * 0.5 - 0.25,
+          angle: 0,
+          angleSpeed: Math.random() * 0.01 - 0.005
+        });
+      }
+      
+      // Pozycja kursora
+      let mouseX = null;
+      let mouseY = null;
+      
+      // Reakcja na ruch myszy
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      
+      // Animacja cząsteczek
+      function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach((particle, index) => {
+          // Aktualizacja pozycji
+          particle.x += particle.speedX;
+          particle.y += particle.speedY;
+          particle.angle += particle.angleSpeed;
+          
+          // Odbijanie od krawędzi
+          if (particle.x < 0 || particle.x > canvas.width) {
+            particle.speedX = -particle.speedX;
+          }
+          
+          if (particle.y < 0 || particle.y > canvas.height) {
+            particle.speedY = -particle.speedY;
+          }
+          
+          // Reakcja na kursor
+          if (mouseX && mouseY) {
+            const dx = mouseX - particle.x;
+            const dy = mouseY - particle.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 100) {
+              const forceDirectionX = dx / distance;
+              const forceDirectionY = dy / distance;
+              const force = (100 - distance) / 50;
+              
+              particle.x -= forceDirectionX * force;
+              particle.y -= forceDirectionY * force;
+            }
+          }
+          
+          // Rysowanie cząsteczki
+          ctx.save();
+          ctx.translate(particle.x, particle.y);
+          ctx.rotate(particle.angle);
+          ctx.fillStyle = particle.color;
+          ctx.beginPath();
+          ctx.arc(0, 0, particle.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+        
+        requestAnimationFrame(animateParticles);
+      }
+      
+      // Rozpocznij animację
+      animateParticles();
+      
+      // Obsługa zmiany rozmiaru okna
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
       // Obsługa karty produktu
       const profileCardContainer = document.getElementById('profile-card-container');
       const profileCard = document.getElementById('profile-card');
