@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realistyczna twarz z cząstek</title>
+    <title>Siatka twarzy</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #111; }
-        canvas { display: block; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        canvas {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -17,94 +23,49 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Parametry twarzy
-        const face = {
-            width: 300,
-            height: 400,
-            centerX: canvas.width / 2,
-            centerY: canvas.height / 2,
-            jawWidth: 220,
-            foreheadWidth: 250,
-            chinY: () => face.centerY + face.height * 0.4
-        };
+        // Punkty siatki twarzy (uproszczone)
+        function generateFaceGrid() {
+            const points = [];
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const faceWidth = 200;
+            const faceHeight = 300;
 
-        // Funkcja sprawdzająca przynależność do części twarzy
-        function isInFace(x, y) {
-            // Kontur twarzy (bardziej anatomiczny)
-            const inHead = (
-                y > face.centerY - face.height * 0.4 && // Czoło
-                y < face.chinY() && // Broda
-                Math.abs(x - face.centerX) < (
-                    (y < face.centerY) 
-                        ? face.foreheadWidth * 0.5 * (1 - (face.centerY - y) / (face.height * 0.4)) // Zwężanie ku górze
-                        : face.jawWidth * 0.5 * (1 - (y - face.centerY) / (face.height * 0.4)) // Zwężanie ku dołowi
-            );
+            // Głowa (owal)
+            for (let y = -faceHeight/2; y <= faceHeight/2; y += 15) {
+                for (let x = -faceWidth/2; x <= faceWidth/2; x += 15) {
+                    // Równanie owalu
+                    if ((x*x)/(faceWidth*faceWidth/4) + (y*y)/(faceHeight*faceHeight/4) <= 1) {
+                        points.push({
+                            x: centerX + x,
+                            y: centerY + y,
+                            baseX: centerX + x,
+                            baseY: centerY + y,
+                            size: 2
+                        });
+                    }
+                }
+            }
 
-            // Oczy (migdałowy kształt)
-            const eyeWidth = face.width * 0.12;
-            const eyeHeight = face.width * 0.07;
-            const leftEyeX = face.centerX - face.width * 0.18;
-            const rightEyeX = face.centerX + face.width * 0.18;
-            const eyesY = face.centerY - face.height * 0.1;
+            // Oczy (dwa puste koła)
+            const eyeRadius = 30;
+            const leftEyeX = centerX - faceWidth * 0.2;
+            const rightEyeX = centerX + faceWidth * 0.2;
+            const eyesY = centerY - faceHeight * 0.1;
 
-            const inLeftEye = (
-                Math.pow((x - leftEyeX) / eyeWidth, 2) + 
-                Math.pow((y - eyesY) / eyeHeight, 2) < 1
-            );
-            const inRightEye = (
-                Math.pow((x - rightEyeX) / eyeWidth, 2) + 
-                Math.pow((y - eyesY) / eyeHeight, 2) < 1
-            );
-
-            // Nos (trójkąt)
-            const noseBottomY = face.centerY + face.height * 0.1;
-            const inNose = (
-                y > face.centerY && 
-                y < noseBottomY && 
-                Math.abs(x - face.centerX) < face.width * 0.1 * (1 - (y - face.centerY) / (noseBottomY - face.centerY))
-            );
-
-            // Usta (krzywa Béziera)
-            const mouthWidth = face.width * 0.3;
-            const mouthY = face.centerY + face.height * 0.25;
-            const mouthCurve = (x) => {
-                const t = (x - (face.centerX - mouthWidth/2)) / mouthWidth;
-                if (t < 0 || t > 1) return Infinity;
-                return mouthY + 15 * Math.sin(t * Math.PI);
-            };
-            const inMouth = (
-                x > face.centerX - mouthWidth/2 && 
-                x < face.centerX + mouthWidth/2 && 
-                y > mouthY - 10 && 
-                y < mouthCurve(x)
-            );
-
-            return inHead && !inLeftEye && !inRightEye && !inNose && !inMouth;
-        }
-
-        // Generowanie cząstek
-        const particles = [];
-        const particleCount = 3000;
-
-        for (let i = 0; i < particleCount; i++) {
-            let x, y;
-            do {
-                x = Math.random() * canvas.width;
-                y = Math.random() * canvas.height;
-            } while (!isInFace(x, y));
-            
-            particles.push({
-                x, y,
-                baseX: x,
-                baseY: y,
-                size: Math.random() * 2 + 1,
-                density: Math.random() * 10 + 5,
-                color: `hsl(${Math.random() * 30 + 15}, 70%, ${Math.random() * 20 + 60}%)` // Odcienie skóry
+            points = points.filter(point => {
+                const distLeft = Math.sqrt((point.x - leftEyeX)**2 + (point.y - eyesY)**2);
+                const distRight = Math.sqrt((point.x - rightEyeX)**2 + (point.y - eyesY)**2);
+                return distLeft > eyeRadius && distRight > eyeRadius;
             });
+
+            return points;
         }
 
-        // Interakcja z myszą
-        const mouse = { x: null, y: null, radius: 120 };
+        let particles = generateFaceGrid();
+        const mouse = { x: null, y: null, radius: 100 };
+
+        // Ruch myszy
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.x;
             mouse.y = e.y;
@@ -113,31 +74,31 @@
         // Animacja
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+            ctx.fillStyle = '#fff';
+
             particles.forEach(p => {
                 // Oddziaływanie myszy
                 const dx = mouse.x - p.x;
                 const dy = mouse.y - p.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
+                const distance = Math.sqrt(dx*dx + dy*dy);
+
                 if (distance < mouse.radius) {
-                    const force = (mouse.radius - distance) / mouse.radius;
                     const angle = Math.atan2(dy, dx);
-                    p.x -= Math.cos(angle) * force * p.density * 0.5;
-                    p.y -= Math.sin(angle) * force * p.density * 0.5;
+                    const force = (mouse.radius - distance) / mouse.radius;
+                    p.x += Math.cos(angle) * force * 10;
+                    p.y += Math.sin(angle) * force * 10;
                 } else {
                     // Powrót do pozycji
-                    p.x += (p.baseX - p.x) * 0.05;
-                    p.y += (p.baseY - p.y) * 0.05;
+                    p.x += (p.baseX - p.x) * 0.1;
+                    p.y += (p.baseY - p.y) * 0.1;
                 }
-                
-                // Rysowanie
-                ctx.fillStyle = p.color;
+
+                // Rysuj punkt
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-            
+
             requestAnimationFrame(animate);
         }
 
@@ -147,8 +108,7 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            face.centerX = canvas.width / 2;
-            face.centerY = canvas.height / 2;
+            particles = generateFaceGrid();
         });
     </script>
 </body>
