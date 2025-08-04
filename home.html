@@ -96,19 +96,20 @@
     <div class="new-page" id="new-page">
         <h1>Witaj w nowym wymiarze!</h1>
         <p>Trójwymiarowy portal został aktywowany</p>
-        <button onclick="resetAnimation()">Powrót</button>
+        <button id="return-btn">Powrót</button>
     </div>
 
     <script>
         // Konfiguracja
         const config = {
-            particleCount: Math.floor(Math.min(window.innerWidth, window.innerHeight) * 2),
+            particleCount: Math.floor(Math.min(window.innerWidth, window.innerHeight) * 0.8), // Zmniejszona ilość cząstek
             baseHue: 270,
             mouseRadius: 200,
             mouseForce: 0.3,
-            depthRange: [0.3, 1.5], // Zakres głębi (0.3 = bardzo blisko, 1.5 = daleko)
+            depthRange: [0.3, 1.5],
             trailLength: 8,
-            connectionDistance: 120
+            connectionDistance: 120,
+            maxConnections: 15 // Ograniczenie liczby połączeń
         };
 
         // Inicjalizacja canvas
@@ -141,22 +142,23 @@
             mouse.targetY = e.clientY;
         });
 
-        // Klasa cząstki z zaawansowanym efektem 3D
+        // Klasa cząstki z optymalizacjami
         class Particle {
             constructor() {
                 this.reset(true);
                 this.baseSize = Math.random() * 0.8 + 0.3;
                 this.density = Math.random() * 40 + 10;
                 this.hueOffset = Math.random() * 60 - 30;
-                this.spriteType = Math.random() > 0.8 ? 'star' : 'circle';
+                this.spriteType = Math.random() > 0.85 ? 'star' : 'circle'; // Rzadsze gwiazdki
                 this.trail = [];
+                this.connections = 0;
             }
             
             reset(initial = false) {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.z = initial ? Math.random() * (config.depthRange[1] - config.depthRange[0]) + config.depthRange[0] : 
-                                  Math.random() * 0.3 + 0.7; // Delikatna randomizacja przy resecie
+                                  Math.random() * 0.3 + 0.7;
                 
                 this.velocity = {
                     x: (Math.random() - 0.5) * 0.4,
@@ -168,10 +170,11 @@
                 this.time = Math.random() * 1000;
                 this.exploded = false;
                 this.trail = [];
+                this.connections = 0;
             }
             
             get size() {
-                return this.baseSize * (0.5 / this.z); // Nieliniowa skalacja rozmiaru
+                return this.baseSize * (0.5 / this.z);
             }
             
             get glowSize() {
@@ -181,8 +184,8 @@
             get color() {
                 const hue = (config.baseHue + this.hueOffset) % 360;
                 const saturation = 100;
-                const lightness = 70 + (1 - this.z) * 20; // Im bliżej, tym jaśniejsze
-                const alpha = 0.3 + (1 - this.z) * 0.7; // Im bliżej, tym bardziej widoczne
+                const lightness = 70 + (1 - this.z) * 20;
+                const alpha = 0.3 + (1 - this.z) * 0.7;
                 return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
             }
             
@@ -200,8 +203,8 @@
                 const size = this.size;
                 const glowSize = this.glowSize;
                 
-                // Rysowanie smugi z uwzględnieniem głębi
-                if (this.trail.length > 1) {
+                // Rysowanie smugi tylko dla widocznych cząstek
+                if (this.trail.length > 1 && size > 0.5) {
                     ctx.beginPath();
                     let firstPoint = true;
                     
@@ -228,21 +231,23 @@
                     }
                 }
                 
-                // Efekt poświaty
-                const gradient = ctx.createRadialGradient(
-                    x, y, 0,
-                    x, y, glowSize
-                );
-                gradient.addColorStop(0, this.color);
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                
-                ctx.beginPath();
-                ctx.arc(x, y, glowSize, 0, Math.PI * 2);
-                ctx.fillStyle = gradient;
-                ctx.fill();
+                // Efekt poświaty tylko dla większych cząstek
+                if (size > 1) {
+                    const gradient = ctx.createRadialGradient(
+                        x, y, 0,
+                        x, y, glowSize
+                    );
+                    gradient.addColorStop(0, this.color);
+                    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, glowSize, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                }
                 
                 // Główna cząstka
-                if (this.spriteType === 'star') {
+                if (this.spriteType === 'star' && size > 0.8) {
                     this.drawStar(x, y, size);
                 } else {
                     ctx.beginPath();
@@ -250,20 +255,21 @@
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Dodanie bliku dla głębi
-                    ctx.beginPath();
-                    ctx.arc(
-                        x - size/3, 
-                        y - size/3, 
-                        size/4, 
-                        0, 
-                        Math.PI * 2
-                    );
-                    ctx.fillStyle = `hsla(0, 0%, 100%, ${0.3 + (1 - this.z) * 0.3})`;
-                    ctx.fill();
+                    // Dodanie bliku tylko dla większych cząstek
+                    if (size > 1.5) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            x - size/3, 
+                            y - size/3, 
+                            size/4, 
+                            0, 
+                            Math.PI * 2
+                        );
+                        ctx.fillStyle = `hsla(0, 0%, 100%, ${0.3 + (1 - this.z) * 0.3})`;
+                        ctx.fill();
+                    }
                 }
                 
-                // Aktualizacja śladu
                 this.updateTrail();
             }
             
@@ -301,15 +307,18 @@
             }
             
             updateTrail() {
-                this.trail.unshift({
-                    x: this.x,
-                    y: this.y,
-                    z: this.z,
-                    alpha: parseFloat(this.color.match(/[\d\.]+\)$/)[0])
-                });
-                
-                if (this.trail.length > config.trailLength) {
-                    this.trail.pop();
+                // Dodawanie do trailu tylko jeśli cząstka się porusza
+                if (Math.abs(this.velocity.x) > 0.01 || Math.abs(this.velocity.y) > 0.01) {
+                    this.trail.unshift({
+                        x: this.x,
+                        y: this.y,
+                        z: this.z,
+                        alpha: parseFloat(this.color.match(/[\d\.]+\)$/)[0])
+                    });
+                    
+                    if (this.trail.length > config.trailLength) {
+                        this.trail.pop();
+                    }
                 }
             }
             
@@ -342,21 +351,17 @@
                     this.velocity.x *= 0.96;
                     this.velocity.y *= 0.96;
                     this.velocity.z *= 0.96;
-                    
-                    // Spowolnienie i zanikanie
-                    this.velocity.x *= 0.96;
-                    this.velocity.y *= 0.96;
                 } else {
                     // Organiczny ruch
                     this.time += 0.01;
                     const wanderX = Math.sin(this.time * this.wanderStrength) * 2;
                     const wanderY = Math.cos(this.time * this.wanderStrength * 1.3) * 2;
                     
-                    // Interakcja z myszą (uwzględnia głębię)
+                    // Interakcja z myszą
                     const dx = mouse.x - this.x;
                     const dy = mouse.y - this.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    const effectiveRadius = mouse.radius * (0.5 + this.z/2); // Dopasowany promień
+                    const effectiveRadius = mouse.radius * (0.5 + this.z/2);
                     
                     if (distance < effectiveRadius) {
                         const forceDirectionX = dx / distance;
@@ -395,6 +400,7 @@
         let particles = [];
         let isExploding = false;
         let isMorphing = false;
+        let animationFrameId;
         
         function initParticles() {
             particles = [];
@@ -404,19 +410,20 @@
         }
         initParticles();
 
-        // Połączenia między cząstkami
+        // Połączenia między cząstkami z optymalizacją
         function connectParticles() {
             if (isExploding || isMorphing) return;
             
-            // Sortowanie cząstek według głębi (najpierw te z tyłu)
+            // Sortowanie cząstek według głębi
             const sortedParticles = [...particles].sort((a, b) => b.z - a.z);
             
             for (let a = 0; a < sortedParticles.length; a++) {
-                for (let b = a + 1; b < Math.min(a + 20, sortedParticles.length); b++) {
-                    const p1 = sortedParticles[a];
+                const p1 = sortedParticles[a];
+                if (p1.exploded || p1.connections >= config.maxConnections) continue;
+                
+                for (let b = a + 1; b < Math.min(a + 30, sortedParticles.length); b++) {
                     const p2 = sortedParticles[b];
-                    
-                    if (p1.exploded || p2.exploded) continue;
+                    if (p2.exploded || p2.connections >= config.maxConnections) continue;
                     
                     const dx = p1.x - p2.x;
                     const dy = p1.y - p2.y;
@@ -433,14 +440,18 @@
                         ctx.moveTo(p1.screenX, p1.screenY);
                         ctx.lineTo(p2.screenX, p2.screenY);
                         ctx.stroke();
+                        
+                        p1.connections++;
+                        p2.connections++;
                     }
                 }
+                p1.connections = 0; // Reset dla następnej klatki
             }
         }
 
-        // Animacja
+        // Animacja z optymalizacją
         function animate() {
-            // Czyszczenie z efektem fade dla smug
+            // Czyszczenie z efektem fade
             ctx.fillStyle = 'rgba(0,0,0,0.08)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -456,7 +467,7 @@
                 startMorphing();
             }
             
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
         }
         animate();
 
@@ -535,10 +546,18 @@
             initParticles();
         }
 
+        // Obsługa przycisku powrotu
+        document.getElementById('return-btn').addEventListener('click', resetAnimation);
+
         // Obsługa zmiany rozmiaru
         window.addEventListener('resize', () => {
             resizeCanvas();
             initParticles();
+        });
+
+        // Czyszczenie animacji przy opuszczeniu strony
+        window.addEventListener('beforeunload', () => {
+            cancelAnimationFrame(animationFrameId);
         });
     </script>
 </body>
