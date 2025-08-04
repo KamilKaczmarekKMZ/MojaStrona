@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magiczny Portal 3D</title>
+    <title>Magiczny Portal 3D Pro</title>
     <style>
         body, html {
             margin: 0;
@@ -30,7 +30,7 @@
             transform: translate(-50%, -50%);
             text-align: center;
             z-index: 2;
-            transition: transform 1.5s ease-in-out, opacity 1s ease-in;
+            transition: transform 1.5s cubic-bezier(0.17, 0.85, 0.45, 1), opacity 1s ease-in;
         }
         
         #enter-btn {
@@ -52,6 +52,14 @@
             text-shadow: 0 0 .5em var(--glow-color);
             position: relative;
             cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #enter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 1.5em .35em var(--glow-color),
+                    0 0 5em 1.5em var(--glow-spread-color),
+                    inset 0 0 .75em .25em var(--glow-color);
         }
 
         .new-page {
@@ -64,7 +72,7 @@
             transform: translate(-50%, -50%);
             z-index: 3;
             opacity: 0;
-            transition: opacity 1s ease-in;
+            transition: opacity 1.5s ease-out;
         }
 
         .zoom-effect {
@@ -87,125 +95,220 @@
 
     <div class="new-page" id="new-page">
         <h1>Witaj w nowym wymiarze!</h1>
-        <p>Portal został aktywowany</p>
+        <p>Trójwymiarowy portal został aktywowany</p>
         <button onclick="resetAnimation()">Powrót</button>
     </div>
 
     <script>
-        // Canvas initialization
+        // Konfiguracja
+        const config = {
+            particleCount: Math.floor(Math.min(window.innerWidth, window.innerHeight) * 2),
+            baseHue: 270,
+            mouseRadius: 200,
+            mouseForce: 0.3,
+            depthRange: [0.3, 1.5], // Zakres głębi (0.3 = bardzo blisko, 1.5 = daleko)
+            trailLength: 8,
+            connectionDistance: 120
+        };
+
+        // Inicjalizacja canvas
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        let centerX = window.innerWidth / 2;
+        let centerY = window.innerHeight / 2;
         
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            centerX = canvas.width / 2;
+            centerY = canvas.height / 2;
         }
         resizeCanvas();
         
-        // Mouse position
+        // Pozycja myszy z wygładzaniem
         const mouse = { 
-            x: canvas.width/2, 
-            y: canvas.height/2,
-            radius: 150,
-            influence: 0.2
+            x: centerX, 
+            y: centerY,
+            targetX: centerX,
+            targetY: centerY,
+            radius: config.mouseRadius,
+            influence: config.mouseForce,
+            smoothness: 0.1
         };
         
         window.addEventListener('mousemove', (e) => {
-            mouse.x = e.x;
-            mouse.y = e.y;
+            mouse.targetX = e.clientX;
+            mouse.targetY = e.clientY;
         });
 
-        // Particle class with 3D depth
+        // Klasa cząstki z zaawansowanym efektem 3D
         class Particle {
             constructor() {
-                this.reset();
-                this.z = Math.random() * 0.5 + 0.5; // Głębia (0.5 - blisko, 1.0 - daleko)
+                this.reset(true);
                 this.baseSize = Math.random() * 0.8 + 0.3;
                 this.density = Math.random() * 40 + 10;
-                this.exploded = false;
+                this.hueOffset = Math.random() * 60 - 30;
+                this.spriteType = Math.random() > 0.8 ? 'star' : 'circle';
                 this.trail = [];
-                this.maxTrailLength = 5;
             }
             
-            reset() {
+            reset(initial = false) {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.z = Math.random() * 0.5 + 0.5; // Reset głębi
+                this.z = initial ? Math.random() * (config.depthRange[1] - config.depthRange[0]) + config.depthRange[0] : 
+                                  Math.random() * 0.3 + 0.7; // Delikatna randomizacja przy resecie
+                
                 this.velocity = {
-                    x: (Math.random() - 0.5) * 0.3,
-                    y: (Math.random() - 0.5) * 0.3,
-                    z: (Math.random() - 0.5) * 0.01
+                    x: (Math.random() - 0.5) * 0.4,
+                    y: (Math.random() - 0.5) * 0.4,
+                    z: (Math.random() - 0.5) * 0.005
                 };
-                this.wanderStrength = Math.random() * 0.3 + 0.1;
+                
+                this.wanderStrength = Math.random() * 0.4 + 0.1;
                 this.time = Math.random() * 1000;
-                const hue = 270 + Math.random() * 30;
-                this.baseColor = `hsla(${hue}, 100%, 70%, 0.8)`;
-                this.glowColor = `hsla(${hue}, 100%, 80%, 0.3)`;
                 this.exploded = false;
                 this.trail = [];
             }
             
             get size() {
-                return this.baseSize * (1/this.z); // Im bliżej, tym większe
+                return this.baseSize * (0.5 / this.z); // Nieliniowa skalacja rozmiaru
             }
             
             get glowSize() {
-                return this.size * 2;
+                return this.size * 2.5;
             }
             
             get color() {
-                const alpha = 0.5 + (1 - this.z) * 0.5; // Im bliżej, tym bardziej widoczne
-                return this.baseColor.replace(/0\.8\)/, `${alpha})`);
+                const hue = (config.baseHue + this.hueOffset) % 360;
+                const saturation = 100;
+                const lightness = 70 + (1 - this.z) * 20; // Im bliżej, tym jaśniejsze
+                const alpha = 0.3 + (1 - this.z) * 0.7; // Im bliżej, tym bardziej widoczne
+                return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
+            }
+            
+            get screenX() {
+                return centerX + (this.x - centerX) * (1 / this.z);
+            }
+            
+            get screenY() {
+                return centerY + (this.y - centerY) * (1 / this.z);
             }
             
             draw() {
-                // Oblicz pozycję z uwzględnieniem perspektywy
-                const scale = 1 / this.z;
-                const x = canvas.width/2 + (this.x - canvas.width/2) * scale;
-                const y = canvas.height/2 + (this.y - canvas.height/2) * scale;
+                const x = this.screenX;
+                const y = this.screenY;
+                const size = this.size;
+                const glowSize = this.glowSize;
                 
-                // Rysowanie smugi
+                // Rysowanie smugi z uwzględnieniem głębi
                 if (this.trail.length > 1) {
                     ctx.beginPath();
-                    ctx.moveTo(
-                        canvas.width/2 + (this.trail[0].x - canvas.width/2) * (1 / this.trail[0].z),
-                        canvas.height/2 + (this.trail[0].y - canvas.height/2) * (1 / this.trail[0].z)
-                    );
+                    let firstPoint = true;
                     
-                    for (let i = 1; i < this.trail.length; i++) {
-                        const alpha = i / this.trail.length * 0.2 * this.trail[i].alpha;
-                        ctx.strokeStyle = this.glowColor.replace(/0\.3\)/, `${alpha})`);
-                        ctx.lineWidth = this.size * (1 - i/this.trail.length);
-                        const tx = canvas.width/2 + (this.trail[i].x - canvas.width/2) * (1 / this.trail[i].z);
-                        const ty = canvas.height/2 + (this.trail[i].y - canvas.height/2) * (1 / this.trail[i].z);
-                        ctx.lineTo(tx, ty);
+                    for (let i = 0; i < this.trail.length; i++) {
+                        const point = this.trail[i];
+                        const trailAlpha = (i / this.trail.length) * 0.3 * point.alpha;
+                        const trailSize = size * (1 - i/this.trail.length);
+                        
+                        const tx = centerX + (point.x - centerX) * (1 / point.z);
+                        const ty = centerY + (point.y - centerY) * (1 / point.z);
+                        
+                        if (firstPoint) {
+                            ctx.moveTo(tx, ty);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(tx, ty);
+                        }
+                        
+                        ctx.strokeStyle = this.color.replace(/[\d\.]+\)$/, `${trailAlpha})`);
+                        ctx.lineWidth = trailSize;
                         ctx.stroke();
                         ctx.beginPath();
                         ctx.moveTo(tx, ty);
                     }
                 }
                 
-                // Glow effect
-                ctx.beginPath();
-                ctx.arc(x, y, this.glowSize, 0, Math.PI * 2);
+                // Efekt poświaty
                 const gradient = ctx.createRadialGradient(
                     x, y, 0,
-                    x, y, this.glowSize
+                    x, y, glowSize
                 );
-                gradient.addColorStop(0, this.glowColor);
+                gradient.addColorStop(0, this.color);
                 gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                
+                ctx.beginPath();
+                ctx.arc(x, y, glowSize, 0, Math.PI * 2);
                 ctx.fillStyle = gradient;
                 ctx.fill();
                 
-                // Main particle
+                // Główna cząstka
+                if (this.spriteType === 'star') {
+                    this.drawStar(x, y, size);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    
+                    // Dodanie bliku dla głębi
+                    ctx.beginPath();
+                    ctx.arc(
+                        x - size/3, 
+                        y - size/3, 
+                        size/4, 
+                        0, 
+                        Math.PI * 2
+                    );
+                    ctx.fillStyle = `hsla(0, 0%, 100%, ${0.3 + (1 - this.z) * 0.3})`;
+                    ctx.fill();
+                }
+                
+                // Aktualizacja śladu
+                this.updateTrail();
+            }
+            
+            drawStar(x, y, size) {
+                const spikes = 5;
+                const outerRadius = size;
+                const innerRadius = size * 0.4;
+                let rot = Math.PI/2*3;
+                let step = Math.PI/spikes;
+                
                 ctx.beginPath();
-                ctx.arc(x, y, this.size, 0, Math.PI * 2);
+                ctx.moveTo(x, y - outerRadius);
+                
+                for(let i = 0; i < spikes; i++) {
+                    const x1 = x + Math.cos(rot) * outerRadius;
+                    const y1 = y + Math.sin(rot) * outerRadius;
+                    ctx.lineTo(x1, y1);
+                    rot += step;
+
+                    const x2 = x + Math.cos(rot) * innerRadius;
+                    const y2 = y + Math.sin(rot) * innerRadius;
+                    ctx.lineTo(x2, y2);
+                    rot += step;
+                }
+                
+                ctx.closePath();
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 
-                // Zapisz aktualną pozycję do śladu
-                this.trail.unshift({x: this.x, y: this.y, z: this.z, alpha: this.color.match(/hsla\(.*?,\s*.*?,\s*.*?,\s*(.*?)\)/)[1]});
-                if (this.trail.length > this.maxTrailLength) {
+                // Dodatkowy efekt dla gwiazdek
+                ctx.beginPath();
+                ctx.arc(x, y, size * 0.2, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(0, 0%, 100%, ${0.5 + (1 - this.z) * 0.3})`;
+                ctx.fill();
+            }
+            
+            updateTrail() {
+                this.trail.unshift({
+                    x: this.x,
+                    y: this.y,
+                    z: this.z,
+                    alpha: parseFloat(this.color.match(/[\d\.]+\)$/)[0])
+                });
+                
+                if (this.trail.length > config.trailLength) {
                     this.trail.pop();
                 }
             }
@@ -215,55 +318,70 @@
                 
                 this.exploded = true;
                 const angle = Math.atan2(this.y - mouse.y, this.x - mouse.x);
-                const power = 10 + Math.random() * 10;
+                const power = 12 + Math.random() * 8;
+                const zPower = (Math.random() * 0.1) - 0.05;
                 
                 this.velocity = {
-                    x: Math.cos(angle) * power,
-                    y: Math.sin(angle) * power,
-                    z: Math.random() * 0.05
+                    x: Math.cos(angle) * power * (1 + (1 - this.z)),
+                    y: Math.sin(angle) * power * (1 + (1 - this.z)),
+                    z: zPower
                 };
             }
             
             update() {
+                // Aktualizacja pozycji myszy z wygładzaniem
+                mouse.x += (mouse.targetX - mouse.x) * mouse.smoothness;
+                mouse.y += (mouse.targetY - mouse.y) * mouse.smoothness;
+                
                 if (this.exploded) {
+                    // Fizyka wybuchu
                     this.x += this.velocity.x;
                     this.y += this.velocity.y;
                     this.z += this.velocity.z;
+                    
                     this.velocity.x *= 0.96;
                     this.velocity.y *= 0.96;
                     this.velocity.z *= 0.96;
-                } else {
-                    this.time += 0.01;
                     
-                    // Organic movement
+                    // Spowolnienie i zanikanie
+                    this.velocity.x *= 0.96;
+                    this.velocity.y *= 0.96;
+                } else {
+                    // Organiczny ruch
+                    this.time += 0.01;
                     const wanderX = Math.sin(this.time * this.wanderStrength) * 2;
                     const wanderY = Math.cos(this.time * this.wanderStrength * 1.3) * 2;
                     
-                    // Mouse interaction with depth consideration
+                    // Interakcja z myszą (uwzględnia głębię)
                     const dx = mouse.x - this.x;
                     const dy = mouse.y - this.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    const effectiveRadius = mouse.radius * this.z; // Im dalej, tym mniejszy wpływ
+                    const effectiveRadius = mouse.radius * (0.5 + this.z/2); // Dopasowany promień
                     
                     if (distance < effectiveRadius) {
                         const forceDirectionX = dx / distance;
                         const forceDirectionY = dy / distance;
-                        const force = Math.pow((effectiveRadius - distance) / effectiveRadius, 2) * mouse.influence;
+                        const force = Math.pow((effectiveRadius - distance) / effectiveRadius, 3) * mouse.influence;
                         
-                        this.velocity.x += forceDirectionX * force * this.density * 0.01 * this.z;
-                        this.velocity.y += forceDirectionY * force * this.density * 0.01 * this.z;
+                        this.velocity.x += forceDirectionX * force * this.density * 0.02 * (1/this.z);
+                        this.velocity.y += forceDirectionY * force * this.density * 0.02 * (1/this.z);
                     }
                     
-                    // Apply velocity
+                    // Losowe zmiany głębi
+                    if (Math.random() < 0.005) {
+                        this.velocity.z = (Math.random() - 0.5) * 0.01;
+                    }
+                    
+                    // Aktualizacja pozycji
                     this.x += this.velocity.x + wanderX * 0.2;
                     this.y += this.velocity.y + wanderY * 0.2;
-                    this.z = Math.max(0.1, Math.min(1.5, this.z + this.velocity.z));
+                    this.z = Math.max(config.depthRange[0], Math.min(config.depthRange[1], this.z + this.velocity.z));
                     
-                    // Boundary check with bounce
-                    if (this.x < 0 || this.x > canvas.width) this.velocity.x *= -0.6;
-                    if (this.y < 0 || this.y > canvas.height) this.velocity.y *= -0.6;
+                    // Odbicia od krawędzi
+                    if (this.x < 0 || this.x > canvas.width) this.velocity.x *= -0.7;
+                    if (this.y < 0 || this.y > canvas.height) this.velocity.y *= -0.7;
                     
-                    // Friction
+                    // Tarcie
                     this.velocity.x *= 0.95;
                     this.velocity.y *= 0.95;
                     this.velocity.z *= 0.95;
@@ -273,63 +391,60 @@
             }
         }
 
-        // Create particles
-        const particles = [];
-        const particleCount = Math.floor(window.innerWidth * window.innerHeight / 2000);
+        // Inicjalizacja cząstek
+        let particles = [];
+        let isExploding = false;
+        let isMorphing = false;
         
         function initParticles() {
-            particles.length = 0;
-            for (let i = 0; i < particleCount; i++) {
+            particles = [];
+            for (let i = 0; i < config.particleCount; i++) {
                 particles.push(new Particle());
             }
         }
         initParticles();
 
-        // Connection effect with depth consideration
+        // Połączenia między cząstkami
         function connectParticles() {
-            if (isExploding) return;
+            if (isExploding || isMorphing) return;
             
-            for (let a = 0; a < particles.length; a++) {
-                for (let b = a + 1; b < particles.length; b++) {
-                    if (particles[a].exploded || particles[b].exploded) continue;
+            // Sortowanie cząstek według głębi (najpierw te z tyłu)
+            const sortedParticles = [...particles].sort((a, b) => b.z - a.z);
+            
+            for (let a = 0; a < sortedParticles.length; a++) {
+                for (let b = a + 1; b < Math.min(a + 20, sortedParticles.length); b++) {
+                    const p1 = sortedParticles[a];
+                    const p2 = sortedParticles[b];
                     
-                    // Uwzględnij głębię przy obliczaniu odległości
-                    const dx = particles[a].x - particles[b].x;
-                    const dy = particles[a].y - particles[b].y;
-                    const avgZ = (particles[a].z + particles[b].z) / 2;
-                    const distance = Math.sqrt(dx * dx + dy * dy) * avgZ;
+                    if (p1.exploded || p2.exploded) continue;
                     
-                    if (distance < 100) {
-                        const opacity = (1 - (distance / 100)) * 0.15 * avgZ;
-                        ctx.strokeStyle = particles[a].glowColor.replace(/0\.3\)/, `${opacity})`);
-                        ctx.lineWidth = 0.3 * (1/avgZ);
-                        
-                        const x1 = canvas.width/2 + (particles[a].x - canvas.width/2) * (1 / particles[a].z);
-                        const y1 = canvas.height/2 + (particles[a].y - canvas.height/2) * (1 / particles[a].z);
-                        const x2 = canvas.width/2 + (particles[b].x - canvas.width/2) * (1 / particles[b].z);
-                        const y2 = canvas.height/2 + (particles[b].y - canvas.height/2) * (1 / particles[b].z);
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const avgZ = (p1.z + p2.z) / 2;
+                    const effectiveDistance = distance * avgZ;
+                    
+                    if (effectiveDistance < config.connectionDistance) {
+                        const opacity = (1 - (effectiveDistance / config.connectionDistance)) * 0.2 * avgZ;
+                        ctx.strokeStyle = p1.color.replace(/[\d\.]+\)$/, `${opacity})`);
+                        ctx.lineWidth = 0.4 * (1/avgZ);
                         
                         ctx.beginPath();
-                        ctx.moveTo(x1, y1);
-                        ctx.lineTo(x2, y2);
+                        ctx.moveTo(p1.screenX, p1.screenY);
+                        ctx.lineTo(p2.screenX, p2.screenY);
                         ctx.stroke();
                     }
                 }
             }
         }
 
-        // Animation control
-        let isExploding = false;
-        let particlesHidden = false;
-        
+        // Animacja
         function animate() {
-            // Clear with slight fade for trail effect
-            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            // Czyszczenie z efektem fade dla smug
+            ctx.fillStyle = 'rgba(0,0,0,0.08)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            if (!isExploding) {
-                connectParticles();
-            }
+            connectParticles();
             
             let visibleParticles = 0;
             for (const particle of particles) {
@@ -337,25 +452,17 @@
                 if (particle.size > 0.1) visibleParticles++;
             }
             
-            if (isExploding && visibleParticles === 0 && !particlesHidden) {
-                particlesHidden = true;
-                showNewPage();
+            if (isExploding && visibleParticles === 0 && !isMorphing) {
+                startMorphing();
             }
             
             requestAnimationFrame(animate);
         }
         animate();
 
-        // Handle resize
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initParticles();
-        });
-
-        // Explode particles
+        // Wybuch cząstek
         function explodeParticles() {
             isExploding = true;
-            particlesHidden = false;
             
             const buttonRect = document.getElementById('enter-btn').getBoundingClientRect();
             const centerX = buttonRect.left + buttonRect.width/2;
@@ -365,15 +472,34 @@
                 const dx = particle.x - centerX;
                 const dy = particle.y - centerY;
                 const angle = Math.atan2(dy, dx);
-                const power = 10 + Math.random() * 10;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const power = 8 + (distance / 100) + Math.random() * 6;
                 
                 particle.velocity = {
                     x: Math.cos(angle) * power,
                     y: Math.sin(angle) * power,
-                    z: (Math.random() - 0.5) * 0.1
+                    z: (Math.random() - 0.5) * 0.08
                 };
                 particle.explode();
             }
+        }
+
+        // Morph cząstek w logo
+        function startMorphing() {
+            isMorphing = true;
+            
+            for (const particle of particles) {
+                // Losowy cel w okręgu
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.min(canvas.width, canvas.height) * 0.3;
+                particle.targetX = centerX + Math.cos(angle) * radius;
+                particle.targetY = centerY + Math.sin(angle) * radius;
+                particle.targetZ = 0.7 + Math.random() * 0.3;
+            }
+            
+            setTimeout(() => {
+                showNewPage();
+            }, 2000);
         }
 
         function showNewPage() {
@@ -384,14 +510,11 @@
             }, 50);
         }
 
-        // Button click handler
+        // Obsługa przycisku
         document.getElementById('enter-btn').addEventListener('click', function() {
             const container = document.getElementById('main-container');
             
-            // Start button zoom animation
             container.classList.add('zoom-effect');
-            
-            // Start particle explosion after short delay
             setTimeout(explodeParticles, 300);
         });
 
@@ -406,11 +529,17 @@
             
             container.classList.remove('zoom-effect');
             
-            // Reset particles
+            // Reset cząstek
             isExploding = false;
-            particlesHidden = false;
+            isMorphing = false;
             initParticles();
         }
+
+        // Obsługa zmiany rozmiaru
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
     </script>
 </body>
 </html>
