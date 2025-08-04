@@ -3,16 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Particles - Ludzka Twarz</title>
+    <title>Realistyczna twarz z cząstek</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: #000;
-        }
-        canvas {
-            display: block;
-        }
+        body { margin: 0; overflow: hidden; background: #111; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
@@ -20,163 +14,142 @@
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        
-        // Dostosuj rozmiar canvas do okna
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        
-        // Mapa pikseli twarzy (uproszczona)
-        const faceWidth = 200;
-        const faceHeight = 300;
-        const faceCenterX = canvas.width / 2;
-        const faceCenterY = canvas.height / 2;
-        
-        // Punkty charakterystyczne twarzy (oczy, usta, kontur)
-        function isInFace(x, y) {
-            // Głowa (owal)
-            const headX = faceCenterX;
-            const headY = faceCenterY;
-            const headRadiusX = faceWidth / 2;
-            const headRadiusY = faceHeight / 2;
-            const inHead = Math.pow((x - headX) / headRadiusX, 2) + Math.pow((y - headY) / headRadiusY, 2) <= 1;
-            
-            // Lewe oko
-            const leftEyeX = faceCenterX - faceWidth * 0.2;
-            const leftEyeY = faceCenterY - faceHeight * 0.1;
-            const inLeftEye = Math.sqrt(Math.pow(x - leftEyeX, 2) + Math.pow(y - leftEyeY, 2)) < faceWidth * 0.1;
-            
-            // Prawe oko
-            const rightEyeX = faceCenterX + faceWidth * 0.2;
-            const rightEyeY = faceCenterY - faceHeight * 0.1;
-            const inRightEye = Math.sqrt(Math.pow(x - rightEyeX, 2) + Math.pow(y - rightEyeY, 2)) < faceWidth * 0.1;
-            
-            // Usta (uproszczone jako łuk)
-            const mouthY = faceCenterY + faceHeight * 0.2;
-            const mouthWidth = faceWidth * 0.4;
-            const inMouth = (
-                y > mouthY - 10 && 
-                y < mouthY + 10 && 
-                x > faceCenterX - mouthWidth / 2 && 
-                x < faceCenterX + mouthWidth / 2
-            );
-            
-            return inHead && !inLeftEye && !inRightEye && !inMouth;
-        }
-        
-        // Cząstki
-        const particles = [];
-        const particleCount = 2000;
-        
-        class Particle {
-            constructor() {
-                this.reset();
-                this.baseX = this.x;
-                this.baseY = this.y;
-                this.size = Math.random() * 2 + 1;
-                this.density = Math.random() * 10 + 5;
-            }
-            
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.originX = this.x;
-                this.originY = this.y;
-                this.vx = 0;
-                this.vy = 0;
-                this.force = 0;
-            }
-            
-            update(mouse) {
-                // Cel: pozycja w twarzy lub oryginalna pozycja
-                let targetX, targetY;
-                if (isInFace(this.originX, this.originY)) {
-                    targetX = this.originX;
-                    targetY = this.originY;
-                } else {
-                    targetX = this.baseX;
-                    targetY = this.baseY;
-                }
-                
-                // Oddziaływanie myszy
-                if (mouse.x && mouse.y) {
-                    const dx = mouse.x - this.x;
-                    const dy = mouse.y - this.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const maxDistance = 100;
-                    
-                    if (distance < maxDistance) {
-                        this.force = (maxDistance - distance) / maxDistance;
-                        const angle = Math.atan2(dy, dx);
-                        const repelForce = -0.1;
-                        
-                        this.vx += Math.cos(angle) * repelForce * this.force * this.density;
-                        this.vy += Math.sin(angle) * repelForce * this.force * this.density;
-                    }
-                }
-                
-                // Dążenie do celu
-                const ax = (targetX - this.x) * 0.01;
-                const ay = (targetY - this.y) * 0.01;
-                
-                this.vx += ax;
-                this.vy += ay;
-                
-                // Tłumienie
-                this.vx *= 0.9;
-                this.vy *= 0.9;
-                
-                this.x += this.vx;
-                this.y += this.vy;
-            }
-            
-            draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fill();
-            }
-        }
-        
-        // Inicjalizacja cząstek
-        function init() {
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-        }
-        
-        // Animacja
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            for (const particle of particles) {
-                particle.update(mouse);
-                particle.draw();
-            }
-            
-            requestAnimationFrame(animate);
-        }
-        
-        // Śledzenie myszy
-        const mouse = {
-            x: null,
-            y: null
+
+        // Parametry twarzy
+        const face = {
+            width: 300,
+            height: 400,
+            centerX: canvas.width / 2,
+            centerY: canvas.height / 2,
+            jawWidth: 220,
+            foreheadWidth: 250,
+            chinY: () => face.centerY + face.height * 0.4
         };
-        
+
+        // Funkcja sprawdzająca przynależność do części twarzy
+        function isInFace(x, y) {
+            // Kontur twarzy (bardziej anatomiczny)
+            const inHead = (
+                y > face.centerY - face.height * 0.4 && // Czoło
+                y < face.chinY() && // Broda
+                Math.abs(x - face.centerX) < (
+                    (y < face.centerY) 
+                        ? face.foreheadWidth * 0.5 * (1 - (face.centerY - y) / (face.height * 0.4)) // Zwężanie ku górze
+                        : face.jawWidth * 0.5 * (1 - (y - face.centerY) / (face.height * 0.4)) // Zwężanie ku dołowi
+            );
+
+            // Oczy (migdałowy kształt)
+            const eyeWidth = face.width * 0.12;
+            const eyeHeight = face.width * 0.07;
+            const leftEyeX = face.centerX - face.width * 0.18;
+            const rightEyeX = face.centerX + face.width * 0.18;
+            const eyesY = face.centerY - face.height * 0.1;
+
+            const inLeftEye = (
+                Math.pow((x - leftEyeX) / eyeWidth, 2) + 
+                Math.pow((y - eyesY) / eyeHeight, 2) < 1
+            );
+            const inRightEye = (
+                Math.pow((x - rightEyeX) / eyeWidth, 2) + 
+                Math.pow((y - eyesY) / eyeHeight, 2) < 1
+            );
+
+            // Nos (trójkąt)
+            const noseBottomY = face.centerY + face.height * 0.1;
+            const inNose = (
+                y > face.centerY && 
+                y < noseBottomY && 
+                Math.abs(x - face.centerX) < face.width * 0.1 * (1 - (y - face.centerY) / (noseBottomY - face.centerY))
+            );
+
+            // Usta (krzywa Béziera)
+            const mouthWidth = face.width * 0.3;
+            const mouthY = face.centerY + face.height * 0.25;
+            const mouthCurve = (x) => {
+                const t = (x - (face.centerX - mouthWidth/2)) / mouthWidth;
+                if (t < 0 || t > 1) return Infinity;
+                return mouthY + 15 * Math.sin(t * Math.PI);
+            };
+            const inMouth = (
+                x > face.centerX - mouthWidth/2 && 
+                x < face.centerX + mouthWidth/2 && 
+                y > mouthY - 10 && 
+                y < mouthCurve(x)
+            );
+
+            return inHead && !inLeftEye && !inRightEye && !inNose && !inMouth;
+        }
+
+        // Generowanie cząstek
+        const particles = [];
+        const particleCount = 3000;
+
+        for (let i = 0; i < particleCount; i++) {
+            let x, y;
+            do {
+                x = Math.random() * canvas.width;
+                y = Math.random() * canvas.height;
+            } while (!isInFace(x, y));
+            
+            particles.push({
+                x, y,
+                baseX: x,
+                baseY: y,
+                size: Math.random() * 2 + 1,
+                density: Math.random() * 10 + 5,
+                color: `hsl(${Math.random() * 30 + 15}, 70%, ${Math.random() * 20 + 60}%)` // Odcienie skóry
+            });
+        }
+
+        // Interakcja z myszą
+        const mouse = { x: null, y: null, radius: 120 };
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.x;
             mouse.y = e.y;
         });
-        
+
+        // Animacja
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                // Oddziaływanie myszy
+                const dx = mouse.x - p.x;
+                const dy = mouse.y - p.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < mouse.radius) {
+                    const force = (mouse.radius - distance) / mouse.radius;
+                    const angle = Math.atan2(dy, dx);
+                    p.x -= Math.cos(angle) * force * p.density * 0.5;
+                    p.y -= Math.sin(angle) * force * p.density * 0.5;
+                } else {
+                    // Powrót do pozycji
+                    p.x += (p.baseX - p.x) * 0.05;
+                    p.y += (p.baseY - p.y) * 0.05;
+                }
+                
+                // Rysowanie
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Responsywność
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            faceCenterX = canvas.width / 2;
-            faceCenterY = canvas.height / 2;
+            face.centerX = canvas.width / 2;
+            face.centerY = canvas.height / 2;
         });
-        
-        init();
-        animate();
     </script>
 </body>
 </html>
