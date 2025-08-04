@@ -115,16 +115,16 @@
             mouse.y = e.y;
         });
 
-        // Particle class
+        // Particle class - bardzo małe cząstki
         class Particle {
             constructor() {
                 this.reset();
                 this.baseX = this.x;
                 this.baseY = this.y;
-                this.size = Math.random() * 4 + 2;
+                this.size = Math.random() * 0.5 + 0.3; // Bardzo małe rozmiary (0.3-0.8px)
                 this.density = Math.random() * 40 + 10;
                 this.exploded = false;
-                this.glowSize = Math.random() * 10 + 5;
+                this.glowSize = Math.random() * 3 + 1; // Mała poświata
             }
             
             reset() {
@@ -143,7 +143,10 @@
             }
             
             draw() {
-                // Glow effect
+                // Rysuj tylko jeśli cząstka jest widoczna
+                if (this.size <= 0.1) return;
+                
+                // Glow effect (mniejszy dla małych cząstek)
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.glowSize, 0, Math.PI * 2);
                 const gradient = ctx.createRadialGradient(
@@ -173,7 +176,7 @@
                     x: Math.cos(angle) * power,
                     y: Math.sin(angle) * power
                 };
-                this.size *= 1.5;
+                this.size *= 1.5; // Lekkie powiększenie przy wybuchu
                 this.glowSize *= 2;
             }
             
@@ -217,9 +220,9 @@
             }
         }
 
-        // Create particles
+        // Create particles - więcej cząstek (bo są mniejsze)
         const particles = [];
-        const particleCount = Math.floor(window.innerWidth * window.innerHeight / 2000);
+        const particleCount = Math.floor(window.innerWidth * window.innerHeight / 1000);
         
         function initParticles() {
             particles.length = 0;
@@ -229,9 +232,11 @@
         }
         initParticles();
 
-        // Connection effect
+        // Connection effect - subtelniejsze linie
         function connectParticles() {
             if (isExploding) return;
+            
+            ctx.lineWidth = 0.3; // Cieńsze linie
             
             for (let a = 0; a < particles.length; a++) {
                 for (let b = a + 1; b < particles.length; b++) {
@@ -239,10 +244,9 @@
                     const dy = particles[a].y - particles[b].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    if (distance < 150) {
-                        const opacity = 1 - (distance / 150);
-                        ctx.strokeStyle = `hsla(270, 100%, 80%, ${opacity * 0.2})`;
-                        ctx.lineWidth = opacity * 1.5;
+                    if (distance < 100) { // Krótszy zasięg łączenia
+                        const opacity = 1 - (distance / 100);
+                        ctx.strokeStyle = `hsla(270, 100%, 80%, ${opacity * 0.15})`;
                         ctx.beginPath();
                         ctx.moveTo(particles[a].x, particles[a].y);
                         ctx.lineTo(particles[b].x, particles[b].y);
