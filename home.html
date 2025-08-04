@@ -102,14 +102,15 @@
     <script>
         // Konfiguracja
         const config = {
-            particleCount: Math.floor(Math.min(window.innerWidth, window.innerHeight) * 0.8), // Zmniejszona ilość cząstek
+            particleCount: Math.floor(Math.min(window.innerWidth, window.innerHeight) * 0.8),
             baseHue: 270,
             mouseRadius: 200,
             mouseForce: 0.3,
             depthRange: [0.3, 1.5],
-            trailLength: 8,
+            trailLength: 6, // Skrócone smugi
             connectionDistance: 120,
-            maxConnections: 15 // Ograniczenie liczby połączeń
+            maxConnections: 12,
+            explosionDuration: 1500 // Czas trwania wybuchu w ms
         };
 
         // Inicjalizacja canvas
@@ -126,7 +127,7 @@
         }
         resizeCanvas();
         
-        // Pozycja myszy z wygładzaniem
+        // Pozycja myszy
         const mouse = { 
             x: centerX, 
             y: centerY,
@@ -149,9 +150,11 @@
                 this.baseSize = Math.random() * 0.8 + 0.3;
                 this.density = Math.random() * 40 + 10;
                 this.hueOffset = Math.random() * 60 - 30;
-                this.spriteType = Math.random() > 0.85 ? 'star' : 'circle'; // Rzadsze gwiazdki
+                this.spriteType = Math.random() > 0.9 ? 'star' : 'circle'; // Rzadsze gwiazdki
                 this.trail = [];
                 this.connections = 0;
+                this.lastUpdate = 0;
+                this.updateInterval = Math.floor(Math.random() * 2) + 1; // Różne częstotliwości aktualizacji
             }
             
             reset(initial = false) {
@@ -169,11 +172,17 @@
                 this.wanderStrength = Math.random() * 0.4 + 0.1;
                 this.time = Math.random() * 1000;
                 this.exploded = false;
+                this.explosionTime = 0;
                 this.trail = [];
                 this.connections = 0;
             }
             
             get size() {
+                if (this.exploded) {
+                    // Zmniejszanie rozmiaru podczas wybuchu
+                    const progress = Math.min(1, this.explosionTime / config.explosionDuration);
+                    return this.baseSize * (0.5 / this.z) * (1 - progress * 0.9);
+                }
                 return this.baseSize * (0.5 / this.z);
             }
             
@@ -185,7 +194,13 @@
                 const hue = (config.baseHue + this.hueOffset) % 360;
                 const saturation = 100;
                 const lightness = 70 + (1 - this.z) * 20;
-                const alpha = 0.3 + (1 - this.z) * 0.7;
+                let alpha = 0.3 + (1 - this.z) * 0.7;
+                
+                if (this.exploded) {
+                    const progress = Math.min(1, this.explosionTime / config.explosionDuration);
+                    alpha *= (1 - progress * 0.8); // Zanikanie podczas wybuchu
+                }
+                
                 return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
             }
             
@@ -197,14 +212,20 @@
                 return centerY + (this.y - centerY) * (1 / this.z);
             }
             
+            get shouldUpdate() {
+                // Optymalizacja: nie aktualizuj każdej klatki dla wszystkich cząstek
+                return !this.exploded || (this.explosionTime < config.explosionDuration);
+            }
+            
             draw() {
+                if (!this.shouldUpdate) return;
+                
                 const x = this.screenX;
                 const y = this.screenY;
                 const size = this.size;
-                const glowSize = this.glowSize;
                 
-                // Rysowanie smugi tylko dla widocznych cząstek
-                if (this.trail.length > 1 && size > 0.5) {
+                // Rysowanie smugi tylko dla większych cząstek
+                if (size > 0.5 && this.trail.length > 1) {
                     ctx.beginPath();
                     let firstPoint = true;
                     
@@ -233,6 +254,7 @@
                 
                 // Efekt poświaty tylko dla większych cząstek
                 if (size > 1) {
+                    const glowSize = this.glowSize;
                     const gradient = ctx.createRadialGradient(
                         x, y, 0,
                         x, y, glowSize
@@ -249,7 +271,7 @@
                 // Główna cząstka
                 if (this.spriteType === 'star' && size > 0.8) {
                     this.drawStar(x, y, size);
-                } else {
+                } else if (size > 0.3) { // Pomijaj bardzo małe cząstki
                     ctx.beginPath();
                     ctx.arc(x, y, size, 0, Math.PI * 2);
                     ctx.fillStyle = this.color;
@@ -269,8 +291,6 @@
                         ctx.fill();
                     }
                 }
-                
-                this.updateTrail();
             }
             
             drawStar(x, y, size) {
@@ -307,6 +327,8 @@
             }
             
             updateTrail() {
+                if (!this.shouldUpdate) return;
+                
                 // Dodawanie do trailu tylko jeśli cząstka się porusza
                 if (Math.abs(this.velocity.x) > 0.01 || Math.abs(this.velocity.y) > 0.01) {
                     this.trail.unshift({
@@ -326,9 +348,11 @@
                 if (this.exploded) return;
                 
                 this.exploded = true;
+                this.explosionTime = 0;
+                
                 const angle = Math.atan2(this.y - mouse.y, this.x - mouse.x);
                 const power = 12 + Math.random() * 8;
-                const zPower = (Math.random() * 0.1) - 0.05;
+                const zPower = (Math.random() - 0.5) * 0.08;
                 
                 this.velocity = {
                     x: Math.cos(angle) * power * (1 + (1 - this.z)),
@@ -337,12 +361,24 @@
                 };
             }
             
-            update() {
-                // Aktualizacja pozycji myszy z wygładzaniem
+            update(timestamp) {
+                // Aktualizacja pozycji myszy
                 mouse.x += (mouse.targetX - mouse.x) * mouse.smoothness;
                 mouse.y += (mouse.targetY - mouse.y) * mouse.smoothness;
                 
+                if (!this.shouldUpdate) return;
+                
+                // Optymalizacja: nie aktualizuj każdej klatki dla wszystkich cząstek
+                if (timestamp - this.lastUpdate < this.updateInterval * 16) return;
+                this.lastUpdate = timestamp;
+                
                 if (this.exploded) {
+                    this.explosionTime += 16 * this.updateInterval;
+                    
+                    if (this.explosionTime >= config.explosionDuration) {
+                        return;
+                    }
+                    
                     // Fizyka wybuchu
                     this.x += this.velocity.x;
                     this.y += this.velocity.y;
@@ -392,6 +428,7 @@
                     this.velocity.z *= 0.95;
                 }
                 
+                this.updateTrail();
                 this.draw();
             }
         }
@@ -401,6 +438,7 @@
         let isExploding = false;
         let isMorphing = false;
         let animationFrameId;
+        let lastTimestamp = 0;
         
         function initParticles() {
             particles = [];
@@ -421,7 +459,7 @@
                 const p1 = sortedParticles[a];
                 if (p1.exploded || p1.connections >= config.maxConnections) continue;
                 
-                for (let b = a + 1; b < Math.min(a + 30, sortedParticles.length); b++) {
+                for (let b = a + 1; b < Math.min(a + 25, sortedParticles.length); b++) {
                     const p2 = sortedParticles[b];
                     if (p2.exploded || p2.connections >= config.maxConnections) continue;
                     
@@ -450,28 +488,29 @@
         }
 
         // Animacja z optymalizacją
-        function animate() {
+        function animate(timestamp) {
             // Czyszczenie z efektem fade
             ctx.fillStyle = 'rgba(0,0,0,0.08)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             connectParticles();
             
-            let visibleParticles = 0;
+            let activeParticles = 0;
             for (const particle of particles) {
-                particle.update();
-                if (particle.size > 0.1) visibleParticles++;
+                particle.update(timestamp);
+                if (particle.shouldUpdate) activeParticles++;
             }
             
-            if (isExploding && visibleParticles === 0 && !isMorphing) {
+            if (isExploding && activeParticles === 0 && !isMorphing) {
                 startMorphing();
             }
             
+            lastTimestamp = timestamp;
             animationFrameId = requestAnimationFrame(animate);
         }
-        animate();
+        animate(0);
 
-        // Wybuch cząstek
+        // Wybuch cząstek z optymalizacją
         function explodeParticles() {
             isExploding = true;
             
@@ -479,19 +518,24 @@
             const centerX = buttonRect.left + buttonRect.width/2;
             const centerY = buttonRect.top + buttonRect.height/2;
             
-            for (const particle of particles) {
-                const dx = particle.x - centerX;
-                const dy = particle.y - centerY;
-                const angle = Math.atan2(dy, dx);
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const power = 8 + (distance / 100) + Math.random() * 6;
-                
-                particle.velocity = {
-                    x: Math.cos(angle) * power,
-                    y: Math.sin(angle) * power,
-                    z: (Math.random() - 0.5) * 0.08
-                };
-                particle.explode();
+            // Podziel cząstki na grupy i wybuchaj je stopniowo
+            const groupSize = Math.ceil(particles.length / 4);
+            for (let i = 0; i < particles.length; i++) {
+                setTimeout(() => {
+                    const particle = particles[i];
+                    const dx = particle.x - centerX;
+                    const dy = particle.y - centerY;
+                    const angle = Math.atan2(dy, dx);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const power = 8 + (distance / 100) + Math.random() * 6;
+                    
+                    particle.velocity = {
+                        x: Math.cos(angle) * power,
+                        y: Math.sin(angle) * power,
+                        z: (Math.random() - 0.5) * 0.08
+                    };
+                    particle.explode();
+                }, (i % 4) * 20); // Rozłożenie w czasie
             }
         }
 
@@ -555,7 +599,7 @@
             initParticles();
         });
 
-        // Czyszczenie animacji przy opuszczeniu strony
+        // Czyszczenie animacji
         window.addEventListener('beforeunload', () => {
             cancelAnimationFrame(animationFrameId);
         });
