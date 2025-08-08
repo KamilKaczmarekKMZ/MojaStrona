@@ -254,15 +254,14 @@
         }
       }
 
-      /* Style dla modelu 3D - teraz zawsze widoczny */
+      /* Style dla modelu 3D - stała widoczność */
       model-viewer.grid-item.special {
         width: 100%;
         height: 100%;
         background: transparent;
         border: none;
         --poster-color: transparent;
-        opacity: 1 !important; /* Zawsze widoczny */
-        transform: scale(1) !important; /* Bez zoomowania */
+        opacity: 1;
       }
 
       model-viewer.grid-item.special::part(model) {
@@ -309,9 +308,7 @@
       disable-zoom
       disable-pan
       disable-tap
-      auto-rotate-delay="0"
       camera-orbit="0deg 90deg 0deg"
-      auto-rotate
     ></model-viewer>
     <div class="grid-item">Automation</div>
     <div class="grid-item">Scalability</div>
@@ -364,8 +361,6 @@
       const handleScroll = () => {
         const scrollY = window.scrollY;
         const scrollProgress = Math.min(scrollY / scrollHeight, 1);
-        
-        // Obrót modelu
         const rotation = scrollProgress * maxRotation;
         modelViewer.cameraOrbit = `${rotation}deg 90deg 0deg`;
       };
