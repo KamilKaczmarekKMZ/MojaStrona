@@ -1,114 +1,106 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siatka twarzy</title>
+    <title>Neon Hex Floor POV</title>
     <style>
+        :root {
+            --bg-dark: #050710;
+            --neon-color: #00f3ff;
+            --neon-glow: rgba(0, 243, 255, 0.7);
+        }
+        
         body {
             margin: 0;
+            background: var(--bg-dark);
             overflow: hidden;
-            background: #000;
+            height: 100vh;
+            perspective: 1200px;
         }
-        canvas {
-            display: block;
+        
+        .hex-floor {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) rotateX(85deg);
+            transform-style: preserve-3d;
+            width: 200%;
+            height: 300%;
+            display: grid;
+            grid-template-columns: repeat(30, 1fr);
+            gap: 2px;
+        }
+        
+        .hex-line {
+            position: relative;
+            height: 0;
+            padding-bottom: 115.47%; /* ratio dla heksagonu */
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .hex-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            border: 1px solid var(--neon-color);
+            box-shadow: 0 0 10px var(--neon-glow);
+            opacity: calc(1 - var(--distance) * 0.8);
+            filter: blur(calc(var(--distance) * 1px));
+        }
+        
+        .glow {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--neon-glow) 0%, transparent 70%);
+            filter: blur(80px);
+            opacity: 0.3;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+    <div class="hex-floor" id="floor"></div>
+    
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        // Punkty siatki twarzy (uproszczone)
-        function generateFaceGrid() {
-            const points = [];
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const faceWidth = 200;
-            const faceHeight = 300;
-
-            // Głowa (owal)
-            for (let y = -faceHeight/2; y <= faceHeight/2; y += 15) {
-                for (let x = -faceWidth/2; x <= faceWidth/2; x += 15) {
-                    // Równanie owalu
-                    if ((x*x)/(faceWidth*faceWidth/4) + (y*y)/(faceHeight*faceHeight/4) <= 1) {
-                        points.push({
-                            x: centerX + x,
-                            y: centerY + y,
-                            baseX: centerX + x,
-                            baseY: centerY + y,
-                            size: 2
-                        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const floor = document.getElementById('floor');
+            const rows = 20;
+            const cols = 30;
+            
+            // Tworzenie siatki z fadingiem
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const hex = document.createElement('div');
+                    hex.className = 'hex-line';
+                    
+                    // Obliczanie odległości dla efektu zanikania
+                    const distance = Math.min(row / rows, 0.9);
+                    hex.style.setProperty('--distance', distance);
+                    
+                    // Przesunięcie co drugiego rzędu
+                    if (row % 2 === 0) {
+                        hex.style.gridColumnStart = col * 2 + 1;
+                        hex.style.gridColumnEnd = col * 2 + 3;
+                    } else {
+                        hex.style.gridColumnStart = col * 2 + 2;
+                        hex.style.gridColumnEnd = col * 2 + 4;
                     }
+                    
+                    floor.appendChild(hex);
                 }
             }
-
-            // Oczy (dwa puste koła)
-            const eyeRadius = 30;
-            const leftEyeX = centerX - faceWidth * 0.2;
-            const rightEyeX = centerX + faceWidth * 0.2;
-            const eyesY = centerY - faceHeight * 0.1;
-
-            points = points.filter(point => {
-                const distLeft = Math.sqrt((point.x - leftEyeX)**2 + (point.y - eyesY)**2);
-                const distRight = Math.sqrt((point.x - rightEyeX)**2 + (point.y - eyesY)**2);
-                return distLeft > eyeRadius && distRight > eyeRadius;
-            });
-
-            return points;
-        }
-
-        let particles = generateFaceGrid();
-        const mouse = { x: null, y: null, radius: 100 };
-
-        // Ruch myszy
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.x;
-            mouse.y = e.y;
-        });
-
-        // Animacja
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-
-            particles.forEach(p => {
-                // Oddziaływanie myszy
-                const dx = mouse.x - p.x;
-                const dy = mouse.y - p.y;
-                const distance = Math.sqrt(dx*dx + dy*dy);
-
-                if (distance < mouse.radius) {
-                    const angle = Math.atan2(dy, dx);
-                    const force = (mouse.radius - distance) / mouse.radius;
-                    p.x += Math.cos(angle) * force * 10;
-                    p.y += Math.sin(angle) * force * 10;
-                } else {
-                    // Powrót do pozycji
-                    p.x += (p.baseX - p.x) * 0.1;
-                    p.y += (p.baseY - p.y) * 0.1;
-                }
-
-                // Rysuj punkt
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-
-        // Responsywność
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            particles = generateFaceGrid();
+            
+            // Dodanie świateł ambientowych
+            for (let i = 0; i < 3; i++) {
+                const glow = document.createElement('div');
+                glow.className = 'glow';
+                glow.style.left = `${Math.random() * 100}%`;
+                glow.style.bottom = `${Math.random() * 30}%`;
+                document.body.appendChild(glow);
+            }
         });
     </script>
 </body>
