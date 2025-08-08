@@ -1,264 +1,334 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSS 3D Scroll Animation</title>
-    <style>
-        @keyframes zoom-in {
-            0% {
-                transform: translateZ(-1000px);
-                opacity: 0;
-                filter: blur(5px);
-            }
-            50% {
-                transform: translateZ(0px);
-                opacity: 1;
-                filter: blur(0px);
-            }
-            100% {
-                transform: translateZ(1000px);
-                opacity: 0;
-                filter: blur(5px);
-            }
-        }
+  <style>
+    @keyframes zoom-in {
+      0% {
+        transform: translateZ(-1000px);
+        opacity: 0;
+        filter: blur(5px);
+      }
+      50% {
+        transform: translateZ(0px);
+        opacity: 1;
+        filter: blur(0px);
+      }
+      100% {
+        transform: translateZ(1000px);
+        opacity: 0;
+        filter: blur(5px);
+      }
+    }
 
-        .stuck-grid {
-            block-size: 100svh;
-            perspective: 1000px;
-            transform-style: preserve-3d;
-            display: grid;
-            grid-template: repeat(4, 1fr) / repeat(4, 1fr);
-            place-items: center;
-            position: sticky;
-            top: 0;
-            overflow: clip;
-            margin: 0;
-            padding: 0;
-        }
+    .stuck-grid {
+      block-size: 100svh;
+      perspective: 1000px;
+      transform-style: preserve-3d;
 
-        .stuck-grid > .grid-item {
-            transform-style: preserve-3d;
-            font-size: 5vmin;
-            font-weight: lighter;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+      display: grid;
+      grid: repeat(4, 25dvh) / repeat(4, 25dvw);;
+      place-items: center;
 
-        .stuck-grid > .grid-item.special {
-            grid-row: 2 / span 2;
-            grid-column: 2 / span 2;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+      position: sticky;
+      top: 0;
 
-        .stuck-grid > .grid-item.special b {
-            font-size: 15vmin;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            margin: 0;
-            padding: 0;
-            line-height: 1;
-        }
+      overflow: clip;
 
-        /* Animacje dla wszystkich elementów */
-        .stuck-grid > .grid-item:nth-of-type(1)  { animation-range: 40% 50%; }
-        .stuck-grid > .grid-item:nth-of-type(2)  { animation-range: 20% 30%; }
-        .stuck-grid > .grid-item:nth-of-type(3)  { animation-range: 52% 62%; }
-        .stuck-grid > .grid-item:nth-of-type(4)  { animation-range: 50% 60%; }
-        .stuck-grid > .grid-item:nth-of-type(5)  { animation-range: 45% 55%; }
-        .stuck-grid > .grid-item:nth-of-type(6)  { animation-range: 10% 20%; }
-        .stuck-grid > .grid-item:nth-of-type(7)  { animation-range: 90% 100%; }
-        .stuck-grid > .grid-item:nth-of-type(8)  { animation-range: 30% 40%; }
-        .stuck-grid > .grid-item:nth-of-type(9)  { animation-range: 80% 90%; }
-        .stuck-grid > .grid-item:nth-of-type(10) { animation-range: 70% 80%; }
-        .stuck-grid > .grid-item:nth-of-type(11) { animation-range: -10% 50%; }
-        .stuck-grid > .grid-item:nth-of-type(12) { animation-range: 52% 62%; }
-        .stuck-grid > .grid-item:nth-of-type(13) { animation-range: 15% 25%; }
-        .stuck-grid > .grid-item:nth-of-type(14) { animation-range: 7% 17%; }
-        .stuck-grid > .grid-item:nth-of-type(15) { animation-range: 75% 85%; }
-        .stuck-grid > .grid-item:nth-of-type(16) { animation-range: 3% 13%; }
-        .stuck-grid > .grid-item:nth-of-type(17) { animation-range: 87% 97%; }
-        .stuck-grid > .grid-item:nth-of-type(18) { animation-range: 42% 52%; }
-        .stuck-grid > .grid-item:nth-of-type(19) { animation-range: 57% 67%; }
-        .stuck-grid > .grid-item:nth-of-type(20) { animation-range: 37% 47%; }
-        .stuck-grid > .grid-item:nth-of-type(21) { animation-range: 12% 22%; }
-        .stuck-grid > .grid-item:nth-of-type(22) { animation-range: 8% 18%; }
-        .stuck-grid > .grid-item:nth-of-type(23) { animation-range: 84% 94%; }
-        .stuck-grid > .grid-item:nth-of-type(24) { animation-range: 33% 43%; }
-        .stuck-grid > .grid-item:nth-of-type(25) { animation-range: 48% 58%; }
-        .stuck-grid > .grid-item:nth-of-type(26) { animation-range: 13% 23%; }
-        .stuck-grid > .grid-item:nth-of-type(27) { animation-range: 78% 88%; }
-        .stuck-grid > .grid-item:nth-of-type(28) { animation-range: 62% 72%; }
-        .stuck-grid > .grid-item:nth-of-type(29) { animation-range: 31% 41%; }
-        .stuck-grid > .grid-item:nth-of-type(30) { animation-range: 8% 18%; }
-        .stuck-grid > .grid-item:nth-of-type(31) { animation-range: 4% 14%; }
-        .stuck-grid > .grid-item:nth-of-type(32) { animation-range: 74% 84%; }
-        .stuck-grid > .grid-item:nth-of-type(33) { animation-range: 61% 71%; }
-        .stuck-grid > .grid-item:nth-of-type(34) { animation-range: 26% 36%; }
-        .stuck-grid > .grid-item:nth-of-type(35) { animation-range: 63% 73%; }
-        .stuck-grid > .grid-item:nth-of-type(36) { animation-range: 11% 21%; }
-        .stuck-grid > .grid-item:nth-of-type(37) { animation-range: 89% 99%; }
-        .stuck-grid > .grid-item:nth-of-type(38) { animation-range: 33% 43%; }
-        .stuck-grid > .grid-item:nth-of-type(39) { animation-range: 88% 98%; }
-        .stuck-grid > .grid-item:nth-of-type(40) { animation-range: 22% 32%; }
-        .stuck-grid > .grid-item:nth-of-type(41) { animation-range: 16% 26%; }
-        .stuck-grid > .grid-item:nth-of-type(42) { animation-range: 26% 36%; }
-        .stuck-grid > .grid-item:nth-of-type(43) { animation-range: 66% 76%; }
-        .stuck-grid > .grid-item:nth-of-type(44) { animation-range: 3% 13%; }
-        .stuck-grid > .grid-item:nth-of-type(45) { animation-range: 44% 54%; }
-        .stuck-grid > .grid-item:nth-of-type(46) { animation-range: 11% 21%; }
-        .stuck-grid > .grid-item:nth-of-type(47) { animation-range: 23% 33%; }
-        .stuck-grid > .grid-item:nth-of-type(48) { animation-range: 39% 49%; }
-        .stuck-grid > .grid-item:nth-of-type(49) { animation-range: 59% 69%; }
-        .stuck-grid > .grid-item:nth-of-type(50) { animation-range: 6% 16%; }
+      > .grid-item {
+        transform-style: preserve-3d;
 
-        /* Support dla scroll-timeline */
+        font-size: 5vmin;
+        font-weight: lighter;
+        text-wrap: nowrap;
+        
+        /* Neon effect */
+        color: #fff;
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 10px #fff,
+          0 0 20px #fff,
+          0 0 40px #0ff,
+          0 0 80px #0ff,
+          0 0 90px #0ff,
+          0 0 100px #0ff,
+          0 0 150px #0ff;
+        animation: flicker 1.5s infinite alternate;
+
         @supports (animation-timeline: scroll()) {
-            @media (prefers-reduced-motion: no-preference) {
-                .stuck-grid > .grid-item {
-                    animation: zoom-in linear both;
-                    animation-timeline: scroll(root block);
-                    will-change: transform, opacity, filter;
-                }
-            }
-
-            .stuck-grid > .grid-item:nth-of-type(1) { grid-area: 1/1; }
-            .stuck-grid > .grid-item:nth-of-type(2) { grid-area: 1/2; }
-            .stuck-grid > .grid-item:nth-of-type(3) { grid-area: 1/3; }
-            .stuck-grid > .grid-item:nth-of-type(4) { grid-area: 1/4; }
-            .stuck-grid > .grid-item:nth-of-type(5) { grid-area: 2/1; }
-            .stuck-grid > .grid-item:nth-of-type(6) { grid-area: 2/2; }
-            .stuck-grid > .grid-item:nth-of-type(7) { grid-area: 2/3; }
-            .stuck-grid > .grid-item:nth-of-type(8) { grid-area: 2/4; }
-            .stuck-grid > .grid-item:nth-of-type(9) { grid-area: 3/1; }
-            .stuck-grid > .grid-item:nth-of-type(10) { grid-area: 3/2; }
-            .stuck-grid > .grid-item:nth-of-type(11) { grid-area: 3/3; }
-            .stuck-grid > .grid-item:nth-of-type(12) { grid-area: 3/4; }
-            .stuck-grid > .grid-item:nth-of-type(13) { grid-area: 4/1; }
-            .stuck-grid > .grid-item:nth-of-type(14) { grid-area: 4/2; }
-            .stuck-grid > .grid-item:nth-of-type(15) { grid-area: 4/3; }
-            .stuck-grid > .grid-item:nth-of-type(16) { grid-area: 4/4; }
-            .stuck-grid > .grid-item:nth-of-type(17) { grid-area: 2/1; }
-            .stuck-grid > .grid-item:nth-of-type(18) { grid-area: 2/2; }
-            .stuck-grid > .grid-item:nth-of-type(19) { grid-area: 2/3; }
-            .stuck-grid > .grid-item:nth-of-type(20) { grid-area: 2/4; }
-            .stuck-grid > .grid-item:nth-of-type(21) { grid-area: 3/1; }
-            .stuck-grid > .grid-item:nth-of-type(22) { grid-area: 3/2; }
-            .stuck-grid > .grid-item:nth-of-type(23) { grid-area: 3/3; }
-            .stuck-grid > .grid-item:nth-of-type(24) { grid-area: 3/4; }
-            .stuck-grid > .grid-item:nth-of-type(25) { grid-area: 1/1; }
-            .stuck-grid > .grid-item:nth-of-type(26) { grid-area: 1/2; }
-            .stuck-grid > .grid-item:nth-of-type(27) { grid-area: 1/3; }
-            .stuck-grid > .grid-item:nth-of-type(28) { grid-area: 1/4; }
-            .stuck-grid > .grid-item:nth-of-type(29) { grid-area: 4/1; }
-            .stuck-grid > .grid-item:nth-of-type(30) { grid-area: 4/2; }
-            .stuck-grid > .grid-item:nth-of-type(31) { grid-area: 4/3; }
-            .stuck-grid > .grid-item:nth-of-type(32) { grid-area: 4/4; }
-            .stuck-grid > .grid-item:nth-of-type(33) { grid-area: 2/1; }
-            .stuck-grid > .grid-item:nth-of-type(34) { grid-area: 2/2; }
-            .stuck-grid > .grid-item:nth-of-type(35) { grid-area: 2/3; }
-            .stuck-grid > .grid-item:nth-of-type(36) { grid-area: 2/4; }
-            .stuck-grid > .grid-item:nth-of-type(37) { grid-area: 3/1; }
-            .stuck-grid > .grid-item:nth-of-type(38) { grid-area: 3/2; }
-            .stuck-grid > .grid-item:nth-of-type(39) { grid-area: 3/3; }
-            .stuck-grid > .grid-item:nth-of-type(40) { grid-area: 3/4; }
-            .stuck-grid > .grid-item:nth-of-type(41) { grid-area: 1/1; }
-            .stuck-grid > .grid-item:nth-of-type(42) { grid-area: 1/2; }
-            .stuck-grid > .grid-item:nth-of-type(43) { grid-area: 1/3; }
-            .stuck-grid > .grid-item:nth-of-type(44) { grid-area: 1/4; }
-            .stuck-grid > .grid-item:nth-of-type(45) { grid-area: 4/1; }
-            .stuck-grid > .grid-item:nth-of-type(46) { grid-area: 4/2; }
-            .stuck-grid > .grid-item:nth-of-type(47) { grid-area: 4/3; }
-            .stuck-grid > .grid-item:nth-of-type(48) { grid-area: 4/4; }
-            .stuck-grid > .grid-item:nth-of-type(49) { grid-area: 3/1; }
-            .stuck-grid > .grid-item:nth-of-type(50) { grid-area: 3/2; }
+          @media (prefers-reduced-motion: no-preference) {
+            animation: zoom-in linear both, flicker 1.5s infinite alternate;
+            animation-timeline: scroll(root block);
+            will-change: transform, opacity, filter;
+          }
         }
 
-        /* Warstwa support */
-        @layer support {
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
-
-            html {
-                block-size: 100%;
-                color-scheme: dark light;
-            }
-
-            body {
-                min-block-size: 400vh;
-                font-family: system-ui, sans-serif;
-                margin: 0;
-                padding: 0;
-            }
+        &.special.special {
+          grid-row: 2 / span 2;
+          grid-column: 2 / span 2;
+          
+          /* Special neon effect for the center element */
+          text-shadow: 
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 30px #fff,
+            0 0 40px #ff00de,
+            0 0 70px #ff00de,
+            0 0 80px #ff00de,
+            0 0 100px #ff00de,
+            0 0 150px #ff00de;
         }
-    </style>
+
+        > b {
+          font-size: 15vmin;
+        }
+
+        &:nth-of-type(4n+1) {
+          text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #0ff,
+            0 0 80px #0ff,
+            0 0 90px #0ff,
+            0 0 100px #0ff,
+            0 0 150px #0ff;
+        }
+        
+        &:nth-of-type(4n+2) {
+          text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #f0f,
+            0 0 80px #f0f,
+            0 0 90px #f0f,
+            0 0 100px #f0f,
+            0 0 150px #f0f;
+        }
+        
+        &:nth-of-type(4n+3) {
+          text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #0f0,
+            0 0 80px #0f0,
+            0 0 90px #0f0,
+            0 0 100px #0f0,
+            0 0 150px #0f0;
+        }
+        
+        &:nth-of-type(4n+4) {
+          text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #ff0,
+            0 0 80px #ff0,
+            0 0 90px #ff0,
+            0 0 100px #ff0,
+            0 0 150px #ff0;
+        }
+
+        @keyframes flicker {
+          0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+            text-shadow: 
+              0 0 5px #fff,
+              0 0 10px #fff,
+              0 0 20px #fff,
+              0 0 40px currentColor,
+              0 0 80px currentColor,
+              0 0 90px currentColor,
+              0 0 100px currentColor,
+              0 0 150px currentColor;
+          }
+          20%, 24%, 55% {
+            text-shadow: none;
+            box-shadow: none;
+          }
+        }
+
+        &:nth-of-type(1)  { animation-range: 40% 50%; color: #0ff; }
+        &:nth-of-type(2)  { animation-range: 20% 30%; color: #f0f; }
+        &:nth-of-type(3)  { animation-range: 52% 62%; color: #0f0; }
+        &:nth-of-type(4)  { animation-range: 50% 60%; color: #ff0; }
+        &:nth-of-type(5)  { animation-range: 45% 55%; color: #0ff; }
+        &:nth-of-type(6)  { animation-range: 10% 20%; color: #f0f; }
+        &:nth-of-type(7)  { animation-range: 90% 100%; color: #0f0; }
+        &:nth-of-type(8)  { animation-range: 30% 40%; color: #ff0; }
+        &:nth-of-type(9)  { animation-range: 80% 90%; color: #0ff; }
+        &:nth-of-type(10) { animation-range: 70% 80%; color: #f0f; }
+        &:nth-of-type(11) { animation-range: -10% 50%; color: #2d1228; }
+        &:nth-of-type(12) { animation-range: 52% 62%; color: #0ff; }
+        &:nth-of-type(13) { animation-range: 15% 25%; color: #f0f; }
+        &:nth-of-type(14) { animation-range: 7% 17%; color: #0f0; }
+        &:nth-of-type(15) { animation-range: 75% 85%; color: #ff0; }
+        &:nth-of-type(16) { animation-range: 3% 13%; color: #0ff; }
+        &:nth-of-type(17) { animation-range: 87% 97%; color: #f0f; }
+        &:nth-of-type(18) { animation-range: 42% 52%; color: #0f0; }
+        &:nth-of-type(19) { animation-range: 57% 67%; color: #ff0; }
+        &:nth-of-type(20) { animation-range: 37% 47%; color: #0ff; }
+        &:nth-of-type(21) { animation-range: 12% 22%; color: #f0f; }
+        &:nth-of-type(22) { animation-range: 8% 18%; color: #0f0; }
+        &:nth-of-type(23) { animation-range: 84% 94%; color: #ff0; }
+        &:nth-of-type(24) { animation-range: 33% 43%; color: #0ff; }
+        &:nth-of-type(25) { animation-range: 48% 58%; color: #f0f; }
+        &:nth-of-type(26) { animation-range: 13% 23%; color: #0f0; }
+        &:nth-of-type(27) { animation-range: 78% 88%; color: #ff0; }
+        &:nth-of-type(28) { animation-range: 62% 72%; color: #0ff; }
+        &:nth-of-type(29) { animation-range: 31% 41%; color: #f0f; }
+        &:nth-of-type(30) { animation-range: 8% 18%; color: #0f0; }
+        &:nth-of-type(31) { animation-range: 4% 14%; color: #ff0; }
+        &:nth-of-type(32) { animation-range: 74% 84%; color: #0ff; }
+        &:nth-of-type(33) { animation-range: 61% 71%; color: #f0f; }
+        &:nth-of-type(34) { animation-range: 26% 36%; color: #0f0; }
+        &:nth-of-type(35) { animation-range: 63% 73%; color: #ff0; }
+        &:nth-of-type(36) { animation-range: 11% 21%; color: #0ff; }
+        &:nth-of-type(37) { animation-range: 89% 99%; color: #f0f; }
+        &:nth-of-type(38) { animation-range: 33% 43%; color: #0f0; }
+        &:nth-of-type(39) { animation-range: 88% 98%; color: #ff0; }
+        &:nth-of-type(40) { animation-range: 22% 32%; color: #0ff; }
+        &:nth-of-type(41) { animation-range: 16% 26%; color: #f0f; }
+        &:nth-of-type(42) { animation-range: 26% 36%; color: #0f0; }
+        &:nth-of-type(43) { animation-range: 66% 76%; color: #ff0; }
+        &:nth-of-type(44) { animation-range: 3% 13%; color: #0ff; }
+        &:nth-of-type(45) { animation-range: 44% 54%; color: #f0f; }
+        &:nth-of-type(46) { animation-range: 11% 21%; color: #0f0; }
+        &:nth-of-type(47) { animation-range: 23% 33%; color: #ff0; }
+        &:nth-of-type(48) { animation-range: 39% 49%; color: #0ff; }
+        &:nth-of-type(49) { animation-range: 59% 69%; color: #f0f; }
+        &:nth-of-type(50) { animation-range: 6% 16%; color: #0f0; }
+        
+        @supports (animation-timeline: scroll()) {
+
+          &:nth-of-type(1) { grid-area: 1/1 }
+          &:nth-of-type(2) { grid-area: 1/2 }
+          &:nth-of-type(3) { grid-area: 1/3 }
+          &:nth-of-type(4) { grid-area: 1/4 }
+          &:nth-of-type(5) { grid-area: 2/1 }
+          &:nth-of-type(6) { grid-area: 2/2 }
+          &:nth-of-type(7) { grid-area: 2/3 }
+          &:nth-of-type(8) { grid-area: 2/4 }
+          &:nth-of-type(9) { grid-area: 3/1 }
+          &:nth-of-type(10) { grid-area: 3/2 }
+          &:nth-of-type(11) { grid-area: 3/3 }
+          &:nth-of-type(12) { grid-area: 3/4 }
+          &:nth-of-type(13) { grid-area: 4/1 }
+          &:nth-of-type(14) { grid-area: 4/2 }
+          &:nth-of-type(15) { grid-area: 4/3 }
+          &:nth-of-type(16) { grid-area: 4/4 }
+          &:nth-of-type(17) { grid-area: 2/1 }
+          &:nth-of-type(18) { grid-area: 2/2 }
+          &:nth-of-type(19) { grid-area: 2/3 }
+          &:nth-of-type(20) { grid-area: 2/4 }
+          &:nth-of-type(21) { grid-area: 3/1 }
+          &:nth-of-type(22) { grid-area: 3/2 }
+          &:nth-of-type(23) { grid-area: 3/3 }
+          &:nth-of-type(24) { grid-area: 3/4 }
+          &:nth-of-type(25) { grid-area: 1/1 }
+          &:nth-of-type(26) { grid-area: 1/2 }
+          &:nth-of-type(27) { grid-area: 1/3 }
+          &:nth-of-type(28) { grid-area: 1/4 }
+          &:nth-of-type(29) { grid-area: 4/1 }
+          &:nth-of-type(30) { grid-area: 4/2 }
+          &:nth-of-type(31) { grid-area: 4/3 }
+          &:nth-of-type(32) { grid-area: 4/4 }
+          &:nth-of-type(33) { grid-area: 2/1 }
+          &:nth-of-type(34) { grid-area: 2/2 }
+          &:nth-of-type(35) { grid-area: 2/3 }
+          &:nth-of-type(36) { grid-area: 2/4 }
+          &:nth-of-type(37) { grid-area: 3/1 }
+          &:nth-of-type(38) { grid-area: 3/2 }
+          &:nth-of-type(39) { grid-area: 3/3 }
+          &:nth-of-type(40) { grid-area: 3/4 }
+          &:nth-of-type(41) { grid-area: 1/1 }
+          &:nth-of-type(42) { grid-area: 1/2 }
+          &:nth-of-type(43) { grid-area: 1/3 }
+          &:nth-of-type(44) { grid-area: 1/4 }
+          &:nth-of-type(45) { grid-area: 4/1 }
+          &:nth-of-type(46) { grid-area: 4/2 }
+          &:nth-of-type(47) { grid-area: 4/3 }
+          &:nth-of-type(48) { grid-area: 4/4 }
+          &:nth-of-type(49) { grid-area: 3/1 }
+          &:nth-of-type(50) { grid-area: 3/2 }
+          &:nth-of-type(51) { grid-area: 3/3 }
+          &:nth-of-type(52) { grid-area: 3/4 }
+        }
+      }
+    }
+
+    @layer support {
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html {
+        block-size: 100%;
+        color-scheme: dark light;
+        background-color: #000;
+      }
+
+      body {
+        min-block-size: 400vh;
+        font-family: system-ui, sans-serif;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="stuck-grid">
-        <div class="grid-item">oklch()</div>
-        <div class="grid-item">scroll()</div>
-        <div class="grid-item">text-box-trim</div>
-        <div class="grid-item">pow()</div>
-        <div class="grid-item">@property</div>
-        <div class="grid-item">top-layer</div>
-        <div class="grid-item">@view-transition</div>
-        <div class="grid-item">var()</div>
-        <div class="grid-item">clamp()</div>
-        <div class="grid-item">view()</div>
-        <div class="grid-item special"><b>CSS</b></div>
-        <div class="grid-item">@layer</div>
-        <div class="grid-item">@swash</div>
-        <div class="grid-item">subgrid</div>
-        <div class="grid-item">in oklab</div>
-        <div class="grid-item">:popover-open</div>
-        <div class="grid-item">abs()</div>
-        <div class="grid-item">sin()</div>
-        <div class="grid-item">:has()</div>
-        <div class="grid-item">::marker</div>
-        <div class="grid-item">1cap</div>
-        <div class="grid-item">scrollbar-color</div>
-        <div class="grid-item">scroll-timeline</div>
-        <div class="grid-item">view-timeline</div>
-        <div class="grid-item">overlay</div>
-        <div class="grid-item">scale</div>
-        <div class="grid-item">ascent-override</div>
-        <div class="grid-item">initial-letter</div>
-        <div class="grid-item">inset</div>
-        <div class="grid-item">@container</div>
-        <div class="grid-item">accent-color</div>
-        <div class="grid-item">color-mix()</div>
-        <div class="grid-item">@scope</div>
-        <div class="grid-item">@starting-style</div>
-        <div class="grid-item">override-colors</div>
-        <div class="grid-item">anchor()</div>
-        <div class="grid-item">scroll-snap</div>
-        <div class="grid-item">::backdrop</div>
-        <div class="grid-item">::cue</div>
-        <div class="grid-item">:focus-visible</div>
-        <div class="grid-item">:user-valid</div>
-        <div class="grid-item">:fullscreen</div>
-        <div class="grid-item">:dir()</div>
-        <div class="grid-item">caret-color</div>
-        <div class="grid-item">aspect-ratio</div>
-        <div class="grid-item">cross-fade()</div>
-        <div class="grid-item">image-set()</div>
-        <div class="grid-item">env()</div>
-        <div class="grid-item">place-content</div>
-        <div class="grid-item">gap</div>
-    </div>
+  <div class="stuck-grid">
+    <div class="grid-item">CRM</div>
+    <div class="grid-item">ERP</div>
+    <div class="grid-item">API</div>
+    <div class="grid-item">Cloud</div>
+    <div class="grid-item">AI</div>
+    <div class="grid-item">RPA</div>
+    <div class="grid-item">BPM</div>
+    <div class="grid-item">Workflow</div>
+    <div class="grid-item">Zapier</div>
+    <div class="grid-item">Make</div>
+    <div class="grid-item special"><b>KK</b></div>
+    <div class="grid-item">Automation</div>
+    <div class="grid-item">Scalability</div>
+    <div class="grid-item">Integration</div>
+    <div class="grid-item">Microservices</div>
+    <div class="grid-item">Low-Code</div>
+    <div class="grid-item">No-Code</div>
+    <div class="grid-item">Webhooks</div>
+    <div class="grid-item">ETL</div>
+    <div class="grid-item">Big Data</div>
+    <div class="grid-item">BI</div>
+    <div class="grid-item">Analytics</div>
+    <div class="grid-item">Dashboard</div>
+    <div class="grid-item">Chatbot</div>
+    <div class="grid-item">ML</div>
+    <div class="grid-item">IoT</div>
+    <div class="grid-item">DevOps</div>
+    <div class="grid-item">CI/CD</div>
+    <div class="grid-item">Kubernetes</div>
+    <div class="grid-item">Docker</div>
+    <div class="grid-item">Agile</div>
+    <div class="grid-item">Scrum</div>
+    <div class="grid-item">Kanban</div>
+    <div class="grid-item">SLA</div>
+    <div class="grid-item">SaaS</div>
+    <div class="grid-item">PaaS</div>
+    <div class="grid-item">IaaS</div>
+    <div class="grid-item">Security</div>
+    <div class="grid-item">GDPR</div>
+    <div class="grid-item">Compliance</div>
+    <div class="grid-item">Subscription</div>
+    <div class="grid-item">Recurring</div>
+    <div class="grid-item">MRR</div>
+    <div class="grid-item">ARR</div>
+    <div class="grid-item">Churn</div>
+    <div class="grid-item">Onboarding</div>
+    <div class="grid-item">UX</div>
+    <div class="grid-item">UI</div>
+    <div class="grid-item">CX</div>
+    <div class="grid-item">Retention</div>
+    <div class="grid-item">Upsell</div>
+  </div>
 </body>
 </html>
