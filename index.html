@@ -260,10 +260,16 @@
         background: black;
         border: none;
         --poster-color: black;
+        --progress-mask: none;
+        --progress-bar-color: transparent;
       }
 
       model-viewer.grid-item.special::part(model) {
         transform: scale(1.5);
+      }
+
+      model-viewer.grid-item.special::part(interaction-prompt) {
+        display: none;
       }
 
       /* Nowe style dla obracania modelu podczas scrollowania */
@@ -319,7 +325,11 @@
       class="grid-item special" 
       src="twoje-logo.glb" 
       alt="Moje logo 3D"
-      camera-controls
+      interaction-prompt="none"
+      disable-zoom
+      disable-pan
+      disable-tap
+      auto-rotate-delay="0"
     ></model-viewer>
     <div class="grid-item">Automation</div>
     <div class="grid-item">Scalability</div>
