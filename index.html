@@ -123,11 +123,15 @@
       background: transparent;
       border: none;
       --poster-color: transparent;
-      opacity: 1; /* Logo od razu widoczne */
+      opacity: 1;
     }
 
     model-viewer.grid-item.special::part(model) {
       transform: scale(1.5);
+    }
+
+    model-viewer.grid-item.special::part(interaction-prompt) {
+      display: none;
     }
 
     @layer support {
@@ -148,13 +152,6 @@
       }
     }
 
-    /* Usunięto animację zoom-in */
-    @supports (animation-timeline: scroll()) {
-      .stuck-grid > .grid-item:not(.special) {
-        animation: flicker 1.5s infinite alternate;
-      }
-    }
-
     .stuck-grid > .grid-item:nth-of-type(1)  { color: #0ff; }
     .stuck-grid > .grid-item:nth-of-type(2)  { color: #f0f; }
     .stuck-grid > .grid-item:nth-of-type(3)  { color: #0f0; }
@@ -165,45 +162,46 @@
     .stuck-grid > .grid-item:nth-of-type(8)  { color: #ff0; }
     .stuck-grid > .grid-item:nth-of-type(9)  { color: #0ff; }
     .stuck-grid > .grid-item:nth-of-type(10) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(12) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(13) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(14) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(15) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(16) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(17) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(18) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(19) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(20) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(21) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(22) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(23) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(24) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(25) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(26) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(27) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(28) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(29) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(30) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(31) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(32) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(33) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(34) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(35) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(36) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(37) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(38) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(39) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(40) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(41) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(42) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(43) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(44) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(45) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(46) { color: #0f0; }
-    .stuck-grid > .grid-item:nth-of-type(47) { color: #ff0; }
-    .stuck-grid > .grid-item:nth-of-type(48) { color: #0ff; }
-    .stuck-grid > .grid-item:nth-of-type(49) { color: #f0f; }
-    .stuck-grid > .grid-item:nth-of-type(50) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(11) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(12) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(13) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(14) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(15) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(16) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(17) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(18) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(19) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(20) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(21) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(22) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(23) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(24) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(25) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(26) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(27) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(28) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(29) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(30) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(31) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(32) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(33) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(34) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(35) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(36) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(37) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(38) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(39) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(40) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(41) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(42) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(43) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(44) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(45) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(46) { color: #f0f; }
+    .stuck-grid > .grid-item:nth-of-type(47) { color: #0f0; }
+    .stuck-grid > .grid-item:nth-of-type(48) { color: #ff0; }
+    .stuck-grid > .grid-item:nth-of-type(49) { color: #0ff; }
+    .stuck-grid > .grid-item:nth-of-type(50) { color: #f0f; }
   </style>
 </head>
 <body>
@@ -274,7 +272,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modelViewer = document.querySelector('model-viewer');
-      const maxRotation = 360; // Pełny obrót 360 stopni
+      const maxRotation = 360;
       const scrollHeight = document.body.scrollHeight - window.innerHeight;
 
       const handleScroll = () => {
@@ -282,12 +280,11 @@
         const scrollProgress = Math.min(scrollY / scrollHeight, 1);
         const rotationX = scrollProgress * maxRotation;
         
-        // Obracamy wokół osi X (lewo-prawo) zaczynając od normalnej pozycji
         modelViewer.cameraOrbit = `${rotationX}deg 90deg 0deg`;
       };
 
       window.addEventListener('scroll', handleScroll);
-      handleScroll(); // Inicjalne ustawienie rotacji
+      handleScroll();
     });
   </script>
 </body>
