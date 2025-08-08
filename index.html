@@ -261,11 +261,22 @@
         background: transparent;
         border: none;
         --poster-color: transparent;
-        opacity: 1; /* Logo widoczne od razu */
+        opacity: 0;
+        transform: scale(1);
+        transition: opacity 0.5s ease, transform 0.5s ease;
       }
 
       model-viewer.grid-item.special::part(model) {
         transform: scale(1.5);
+      }
+
+      model-viewer.grid-item.special.visible {
+        opacity: 1;
+      }
+
+      model-viewer.grid-item.special.zoom-out {
+        transform: scale(0);
+        opacity: 0;
       }
     }
 
@@ -356,20 +367,34 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modelViewer = document.querySelector('model-viewer');
-      const maxRotation = 360; // Pełny obrót 360 stopni
+      const maxRotation = 360;
       const scrollHeight = document.body.scrollHeight - window.innerHeight;
+      let hasScrolled = false;
 
       const handleScroll = () => {
         const scrollY = window.scrollY;
         const scrollProgress = Math.min(scrollY / scrollHeight, 1);
         const rotationX = scrollProgress * maxRotation;
         
-        // Obracamy wokół osi X (lewo-prawo) zaczynając od normalnej pozycji
+        // Pokaż model przy pierwszym scrollu
+        if (!hasScrolled && scrollY > 0) {
+          hasScrolled = true;
+          modelViewer.classList.add('visible');
+        }
+        
+        // Obrót modelu
         modelViewer.cameraOrbit = `${rotationX}deg 90deg 0deg`;
+        
+        // Zoom i zniknięcie na końcu strony
+        if (scrollProgress > 0.95) {
+          modelViewer.classList.add('zoom-out');
+        } else {
+          modelViewer.classList.remove('zoom-out');
+        }
       };
 
       window.addEventListener('scroll', handleScroll);
-      handleScroll(); // Inicjalne ustawienie rotacji
+      handleScroll();
     });
   </script>
 </body>
