@@ -3,6 +3,21 @@
 <head>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
+    @keyframes zoom-in {
+      0% {
+        transform: translateZ(-1000px);
+        opacity: 0;
+      }
+      50% {
+        transform: translateZ(0px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateZ(1000px);
+        opacity: 0;
+      }
+    }
+
     .stuck-grid {
       block-size: 100svh;
       perspective: 1000px;
@@ -30,37 +45,193 @@
         0 0 90px #0ff,
         0 0 100px #0ff,
         0 0 150px #0ff;
+      animation: flicker 1.5s infinite alternate;
+
+      @supports (animation-timeline: scroll()) {
+        @media (prefers-reduced-motion: no-preference) {
+          animation: zoom-in linear both, flicker 1.5s infinite alternate;
+          animation-timeline: scroll(root block);
+          will-change: transform, opacity;
+        }
+      }
+
+      &.special.special {
+        grid-row: 2 / span 2;
+        grid-column: 2 / span 2;
+        text-shadow: 
+          0 0 10px #fff,
+          0 0 20px #fff,
+          0 0 30px #fff,
+          0 0 40px #ff00de,
+          0 0 70px #ff00de,
+          0 0 80px #ff00de,
+          0 0 100px #ff00de,
+          0 0 150px #ff00de;
+      }
+
+      > b {
+        font-size: 15vmin;
+      }
+
+      &:nth-of-type(4n+1) {
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 10px #fff,
+          0 0 20px #fff,
+          0 0 40px #0ff,
+          0 0 80px #0ff,
+          0 0 90px #0ff,
+          0 0 100px #0ff,
+          0 0 150px #0ff;
+      }
+      
+      &:nth-of-type(4n+2) {
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 10px #fff,
+          0 0 20px #fff,
+          0 0 40px #f0f,
+          0 0 80px #f0f,
+          0 0 90px #f0f,
+          0 0 100px #f0f,
+          0 0 150px #f0f;
+      }
+      
+      &:nth-of-type(4n+3) {
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 10px #fff,
+          0 0 20px #fff,
+          0 0 40px #0f0,
+          0 0 80px #0f0,
+          0 0 90px #0f0,
+          0 0 100px #0f0,
+          0 0 150px #0f0;
+      }
+      
+      &:nth-of-type(4n+4) {
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 10px #fff,
+          0 0 20px #fff,
+          0 0 40px #ff0,
+          0 0 80px #ff0,
+          0 0 90px #ff0,
+          0 0 100px #ff0,
+          0 0 150px #ff0;
+      }
+
+      @keyframes flicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+          text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px currentColor,
+            0 0 80px currentColor,
+            0 0 90px currentColor,
+            0 0 100px currentColor,
+            0 0 150px currentColor;
+        }
+        20%, 24%, 55% {
+          text-shadow: none;
+          box-shadow: none;
+        }
+      }
+
+      &:nth-of-type(1)  { animation-range: 40% 50%; color: #0ff; }
+      &:nth-of-type(2)  { animation-range: 20% 30%; color: #f0f; }
+      &:nth-of-type(3)  { animation-range: 52% 62%; color: #0f0; }
+      &:nth-of-type(4)  { animation-range: 50% 60%; color: #ff0; }
+      &:nth-of-type(5)  { animation-range: 45% 55%; color: #0ff; }
+      &:nth-of-type(6)  { animation-range: 10% 20%; color: #f0f; }
+      &:nth-of-type(7)  { animation-range: 90% 100%; color: #0f0; }
+      &:nth-of-type(8)  { animation-range: 30% 40%; color: #ff0; }
+      &:nth-of-type(9)  { animation-range: 80% 90%; color: #0ff; }
+      &:nth-of-type(10) { animation-range: 70% 80%; color: #f0f; }
+      &:nth-of-type(12) { animation-range: 52% 62%; color: #0ff; }
+      &:nth-of-type(13) { animation-range: 15% 25%; color: #f0f; }
+      &:nth-of-type(14) { animation-range: 7% 17%; color: #0f0; }
+      &:nth-of-type(15) { animation-range: 75% 85%; color: #ff0; }
+      &:nth-of-type(16) { animation-range: 3% 13%; color: #0ff; }
+      &:nth-of-type(17) { animation-range: 87% 97%; color: #f0f; }
+      &:nth-of-type(18) { animation-range: 42% 52%; color: #0f0; }
+      &:nth-of-type(19) { animation-range: 57% 67%; color: #ff0; }
+      &:nth-of-type(20) { animation-range: 37% 47%; color: #0ff; }
+      &:nth-of-type(21) { animation-range: 12% 22%; color: #f0f; }
+      &:nth-of-type(22) { animation-range: 8% 18%; color: #0f0; }
+      &:nth-of-type(23) { animation-range: 84% 94%; color: #ff0; }
+      &:nth-of-type(24) { animation-range: 33% 43%; color: #0ff; }
+      &:nth-of-type(25) { animation-range: 48% 58%; color: #f0f; }
+      &:nth-of-type(26) { animation-range: 13% 23%; color: #0f0; }
+      &:nth-of-type(27) { animation-range: 78% 88%; color: #ff0; }
+      &:nth-of-type(28) { animation-range: 62% 72%; color: #0ff; }
+      &:nth-of-type(29) { animation-range: 31% 41%; color: #f0f; }
+      &:nth-of-type(30) { animation-range: 8% 18%; color: #0f0; }
+      &:nth-of-type(31) { animation-range: 4% 14%; color: #ff0; }
+      &:nth-of-type(32) { animation-range: 74% 84%; color: #0ff; }
+      &:nth-of-type(33) { animation-range: 61% 71%; color: #f0f; }
+      &:nth-of-type(34) { animation-range: 26% 36%; color: #0f0; }
+      &:nth-of-type(35) { animation-range: 63% 73%; color: #ff0; }
+      &:nth-of-type(36) { animation-range: 11% 21%; color: #0ff; }
+      &:nth-of-type(37) { animation-range: 89% 99%; color: #f0f; }
+      &:nth-of-type(38) { animation-range: 33% 43%; color: #0f0; }
+      &:nth-of-type(39) { animation-range: 88% 98%; color: #ff0; }
+      &:nth-of-type(40) { animation-range: 22% 32%; color: #0ff; }
+      &:nth-of-type(41) { animation-range: 16% 26%; color: #f0f; }
+      &:nth-of-type(42) { animation-range: 26% 36%; color: #0f0; }
+      &:nth-of-type(43) { animation-range: 66% 76%; color: #ff0; }
+      &:nth-of-type(44) { animation-range: 3% 13%; color: #0ff; }
+      &:nth-of-type(45) { animation-range: 44% 54%; color: #f0f; }
+      &:nth-of-type(46) { animation-range: 11% 21%; color: #0f0; }
+      &:nth-of-type(47) { animation-range: 23% 33%; color: #ff0; }
+      &:nth-of-type(48) { animation-range: 39% 49%; color: #0ff; }
+      &:nth-of-type(49) { animation-range: 59% 69%; color: #f0f; }
+      &:nth-of-type(50) { animation-range: 6% 16%; color: #0f0; }
+      
+      @supports (animation-timeline: scroll()) {
+        &:nth-of-type(1) { grid-area: 1/1 }
+        &:nth-of-type(2) { grid-area: 1/2 }
+        <!-- ... wszystkie pozostałe grid-area ... -->
+      }
     }
 
     model-viewer.grid-item.special {
-      grid-row: 2 / span 2;
-      grid-column: 2 / span 2;
       width: 100%;
       height: 100%;
       background: transparent;
       border: none;
       --poster-color: transparent;
-      opacity: 1;
+      opacity: 1 !important;
+      filter: none !important;
     }
 
     model-viewer.grid-item.special::part(model) {
       transform: scale(1.5);
     }
 
-    body {
-      margin: 0;
-      min-height: 400vh;
-      background-color: #000;
-      font-family: system-ui, sans-serif;
+    @layer support {
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html {
+        block-size: 100%;
+        color-scheme: dark light;
+        background-color: #000;
+      }
+
+      body {
+        min-block-size: 400vh;
+        font-family: system-ui, sans-serif;
+      }
     }
   </style>
 </head>
 <body>
   <div class="stuck-grid">
-    <!-- Twoje elementy grid -->
-    <div class="grid-item">CRM</div>
-    <div class="grid-item">ERP</div>
-    <!-- ... inne elementy ... -->
+    <!-- Wszystkie Twoje elementy grid pozostają bez zmian -->
     <model-viewer 
       class="grid-item special" 
       src="twoje-logo.glb" 
@@ -71,7 +242,7 @@
       disable-tap
       camera-orbit="0deg 90deg 0deg"
     ></model-viewer>
-    <!-- ... reszta elementów ... -->
+    <!-- ... -->
   </div>
 
   <script>
@@ -80,7 +251,7 @@
       const scrollHeight = document.body.scrollHeight - window.innerHeight;
 
       window.addEventListener('scroll', () => {
-        const scrollProgress = window.scrollY / scrollHeight;
+        const scrollProgress = Math.min(window.scrollY / scrollHeight, 1);
         const rotation = scrollProgress * 360;
         modelViewer.cameraOrbit = `${rotation}deg 90deg 0deg`;
       });
