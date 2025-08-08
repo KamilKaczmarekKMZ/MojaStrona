@@ -307,6 +307,7 @@
       disable-pan
       disable-tap
       auto-rotate-delay="0"
+      camera-orbit="0deg 90deg 0deg"
     ></model-viewer>
     <div class="grid-item">Automation</div>
     <div class="grid-item">Scalability</div>
@@ -361,8 +362,8 @@
         const scrollProgress = Math.min(scrollY / scrollHeight, 1);
         const rotationX = scrollProgress * maxRotation;
         
-        // Obracamy wokół osi X (lewo-prawo)
-        modelViewer.cameraOrbit = `${rotationX}deg 0deg 0deg`;
+        // Obracamy wokół osi X (lewo-prawo) zaczynając od normalnej pozycji
+        modelViewer.cameraOrbit = `${rotationX}deg 90deg 0deg`;
       };
 
       window.addEventListener('scroll', handleScroll);
