@@ -432,6 +432,7 @@
         lastScrollY = scrollY;
         
         if (scrollProgress <= 0.8) {
+          // Normalna animacja
           const rotation = (scrollProgress / 0.8) * maxRotation;
           const inertiaRotation = rotation + (velocity * 0.2);
           modelViewer.cameraOrbit = `${inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
@@ -441,11 +442,21 @@
           modelViewer.style.transform = `translate(-50%, -50%) scale(${scale})`;
           modelViewer.style.filter = `drop-shadow(0 0 20px rgba(0, 255, 255, ${0.7 + Math.sin(scrollProgress * Math.PI) * 0.3}))`;
         } 
-        else if (scrollProgress >= 0.9) {
-          const fadeProgress = (scrollProgress - 0.9) / 0.1;
-          modelViewer.style.opacity = 1 - fadeProgress;
-          modelViewer.style.filter = `blur(${fadeProgress * 10}px) drop-shadow(0 0 ${20 + fadeProgress * 30}px rgba(0, 255, 255, ${1 - fadeProgress}))`;
-          modelViewer.style.transform = `translate(-50%, -50%) scale(${1 + fadeProgress * 0.5})`;
+        else if (scrollProgress > 0.8 && scrollProgress < 0.95) {
+          // Płynne przejście na górę
+          const transitionProgress = (scrollProgress - 0.8) / 0.15;
+          const scale = 1 - (transitionProgress * 0.7); // Zmniejsz do 30% oryginalnego rozmiaru
+          const yPos = 50 - (transitionProgress * 40); // Przesuń do 10% od góry
+          
+          modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
+          modelViewer.style.opacity = 1;
+          modelViewer.style.filter = `drop-shadow(0 0 ${20 - (transitionProgress * 15)}px rgba(0, 255, 255, ${1 - (transitionProgress * 0.5)}))`;
+        }
+        else if (scrollProgress >= 0.95) {
+          // Ostateczna pozycja na górze
+          modelViewer.style.transform = `translate(-50%, -10%) scale(0.3)`;
+          modelViewer.style.opacity = 1;
+          modelViewer.style.filter = `drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))`;
         }
       };
 
