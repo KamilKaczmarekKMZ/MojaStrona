@@ -454,14 +454,6 @@
 
       window.addEventListener('scroll', handleScroll);
       handleScroll();
-      
-      document.addEventListener('mousemove', (e) => {
-        const x = e.clientX / window.innerWidth - 0.5;
-        const y = e.clientY / window.innerHeight - 0.5;
-        const currentTransform = modelViewer.style.transform.match(/translate\(-50%, -50%\) (.*)/);
-        const baseTransform = currentTransform ? currentTransform[1] : '';
-        modelViewer.style.transform = `translate(-50%, -50%) rotateX(${y * 10}deg) rotateY(${x * 10}deg) ${baseTransform}`;
-      });
     });
   </script>
 </body>
