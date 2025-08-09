@@ -182,6 +182,12 @@
       z-index: 3;
       text-align: center;
       width: 100%;
+      transition: opacity 0.5s ease;
+    }
+    
+    .button-container.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
     
     .neon-link {
@@ -405,6 +411,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modelViewer = document.querySelector('model-viewer');
+      const buttonContainer = document.querySelector('.button-container');
       const maxRotation = 720;
       const scrollHeight = document.body.scrollHeight - window.innerHeight;
       let lastScrollY = 0;
@@ -416,6 +423,13 @@
         
         velocity = scrollY - lastScrollY;
         lastScrollY = scrollY;
+        
+        // Ukrywanie przycisku gdy jesteśmy na dole strony
+        if (scrollY >= scrollHeight - 100) {
+          buttonContainer.classList.add('hidden');
+        } else {
+          buttonContainer.classList.remove('hidden');
+        }
         
         if (scrollProgress <= 0.8) {
           const rotation = (scrollProgress / 0.8) * maxRotation;
@@ -443,13 +457,31 @@
         }
       };
 
-      // Obsługa przycisku
+      // Obsługa przycisku - wolniejsze przewijanie do samego dołu
       document.getElementById('scroll-button').addEventListener('click', function(e) {
         e.preventDefault();
-        window.scrollTo({
-          top: window.innerHeight,
-          behavior: 'smooth'
-        });
+        const targetPosition = document.body.scrollHeight;
+        const startPosition = window.pageYOffset;
+        const distance = targetPosition - startPosition;
+        const duration = 3000; // 3 sekundy - można dostosować
+        let startTime = null;
+        
+        function animation(currentTime) {
+          if (startTime === null) startTime = currentTime;
+          const timeElapsed = currentTime - startTime;
+          const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+          window.scrollTo(0, run);
+          if (timeElapsed < duration) requestAnimationFrame(animation);
+        }
+        
+        function easeInOutQuad(t, b, c, d) {
+          t /= d/2;
+          if (t < 1) return c/2*t*t + b;
+          t--;
+          return -c/2 * (t*(t-2) - 1) + b;
+        }
+        
+        requestAnimationFrame(animation);
       });
 
       window.addEventListener('scroll', handleScroll);
