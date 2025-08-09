@@ -446,7 +446,7 @@
           // Płynne przejście na górę
           const transitionProgress = (scrollProgress - 0.8) / 0.15;
           const scale = 1 - (transitionProgress * 0.7); // Zmniejsz do 30% oryginalnego rozmiaru
-          const yPos = 50 - (transitionProgress * 40); // Przesuń do 10% od góry
+          const yPos = 50 + (transitionProgress * 40); // Przesuń do 90% od góry (na samą górę)
           
           modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
           modelViewer.style.opacity = 1;
@@ -454,7 +454,7 @@
         }
         else if (scrollProgress >= 0.95) {
           // Ostateczna pozycja na górze
-          modelViewer.style.transform = `translate(-50%, -10%) scale(0.3)`;
+          modelViewer.style.transform = `translate(-50%, -90%) scale(0.3)`;
           modelViewer.style.opacity = 1;
           modelViewer.style.filter = `drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))`;
         }
