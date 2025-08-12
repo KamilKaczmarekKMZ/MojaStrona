@@ -164,7 +164,7 @@ model-viewer:hover {
 .grid-item:nth-of-type(49) { animation-range: 59% 69%; grid-area: 3 / 1; }
 .grid-item:nth-of-type(50) { animation-range: 6% 16%; grid-area: 3 / 2; }
 
-/* Style dla przycisku */
+/* Style dla przycisku neonowego */
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap");
 
 .button-container {
@@ -309,76 +309,272 @@ model-viewer:hover {
   transform: translateY(0);
 }
 
-/* Zmodyfikowane style dla przycisków na dole - teraz wyglądają jak neon-link */
+/* Zmodyfikowane style dla przycisków na dole */
 .bottom-button {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   padding: 15px 20px;
   color: #03e9f4;
   text-decoration: none;
   text-transform: uppercase;
-  transition: 0.5s;
   letter-spacing: 4px;
-  overflow: hidden;
   font-family: "Raleway", sans-serif;
   font-weight: bold;
   font-size: 0.9rem;
-  animation: flicker 1.5s infinite alternate;
-  cursor: pointer;
   background: transparent;
   border: none;
+  cursor: pointer;
+  animation: flicker 1.5s infinite alternate;
+  overflow: visible;
+  z-index: 1;
 }
 
 .bottom-button:hover {
   background: #03e9f4;
   color: #050801;
-  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 200px #03e9f4;
-  -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
+  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4;
   animation: none;
 }
 
+/* Wyłącz animowane linie neonowe */
 .bottom-button span {
+  display: none;
+}
+
+/* Style dla linii pomocniczych */
+.padding-left,
+.padding-right,
+.padding-left-line,
+.padding-right-line,
+.background::before,
+.background::after,
+.border::before,
+.border::after {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.padding-left-text,
+.padding-right-text,
+.background-text,
+.border-text {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bottom-button:hover .padding-left,
+.bottom-button:hover .padding-right,
+.bottom-button:hover .padding-left-line,
+.bottom-button:hover .padding-right-line,
+.bottom-button:hover .background::before,
+.bottom-button:hover .background::after,
+.bottom-button:hover .border::before,
+.bottom-button:hover .border::after,
+.bottom-button:hover .padding-left-text,
+.bottom-button:hover .padding-right-text,
+.bottom-button:hover .background-text,
+.bottom-button:hover .border-text {
+  opacity: 1;
+}
+
+/* Oryginalne style dla linii pomocniczych */
+.padding-left {
   position: absolute;
-  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: rgb(255, 0, 170);
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.bottom-button span:nth-child(1) {
+.padding-left:before,
+.padding-left:after {
+  content: "";
+  width: 2px;
+  height: 10px;
+  background-color: rgb(255, 0, 170);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.padding-left:before {
+  left: 0;
+}
+
+.padding-left:after {
+  right: 0;
+}
+
+.padding-left-line {
+  position: absolute;
+  width: 30px;
+  height: 2px;
+  background-color: rgb(255, 0, 170);
+  left: -24px;
+  top: 11px;
+  transform: rotate(-50deg);
+}
+
+.padding-left-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
   top: 0;
-  left: 0;
-  width: 100%;
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, -50%);
+  background-color: rgb(255, 0, 170);
+  border-radius: 100%;
+}
+
+.padding-left-text {
+  color: rgb(255, 0, 170);
+  font-size: 12px;
+  position: absolute;
+  white-space: nowrap;
+  transform: rotate(50deg);
+  bottom: 30px;
+  left: -67px;
+}
+
+.padding-right {
+  position: absolute;
+  width: 20px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #03e9f4);
-  animation: animate1 1s linear infinite;
+  background-color: rgb(255, 0, 170);
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.bottom-button span:nth-child(2) {
-  top: -100%;
-  right: 0;
+.padding-right:before,
+.padding-right:after {
+  content: "";
   width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, transparent, #03e9f4);
-  animation: animate2 1s linear infinite;
-  animation-delay: 0.25s;
+  height: 10px;
+  background-color: rgb(255, 0, 170);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.bottom-button span:nth-child(3) {
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(270deg, transparent, #03e9f4);
-  animation: animate3 1s linear infinite;
-  animation-delay: 0.5s;
-}
-
-.bottom-button span:nth-child(4) {
-  bottom: -100%;
+.padding-right:before {
   left: 0;
+}
+
+.padding-right:after {
+  right: 0;
+}
+
+.padding-right-line {
+  position: absolute;
+  width: 30px;
+  height: 2px;
+  background-color: rgb(255, 0, 170);
+  right: -24px;
+  top: 11px;
+  transform: rotate(50deg);
+}
+
+.padding-right-line::before {
+  content: "";
+  position: absolute;
+  left: 30px;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, -50%);
+  background-color: rgb(255, 0, 170);
+  border-radius: 100%;
+}
+
+.padding-right-text {
+  color: rgb(255, 0, 170);
+  font-size: 12px;
+  position: absolute;
+  white-space: nowrap;
+  transform: rotate(-50deg);
+  bottom: 33px;
+  left: 18px;
+}
+
+.background {
+  position: absolute;
+}
+
+.background::before {
+  content: "";
+  position: absolute;
+  right: 27px;
+  bottom: -70px;
+  width: 100px;
+  height: 53px;
+  background-color: transparent;
+  border-radius: 0px 0px 22px 22px;
+  border-right: solid 2px rgb(255, 0, 170);
+  border-bottom: solid 2px transparent;
+}
+
+.background::after {
+  content: "";
+  position: absolute;
+  right: 25px;
+  bottom: -20px;
+  width: 6px;
+  height: 6px;
+  background-color: rgb(255, 0, 170);
+  border-radius: 100%;
+}
+
+.background-text {
+  position: absolute;
+  color: rgb(255, 0, 170);
+  font-size: 12px;
+  bottom: -70px;
+  left: -115px;
+}
+
+.border {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.border:before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border: solid 2px rgb(255, 0, 170);
+  position: absolute;
+  right: 0%;
+  top: 0;
+  transform: translate(50%, -50%);
+  border-radius: 100%;
+}
+
+.border:after {
+  content: "";
   width: 2px;
-  height: 100%;
-  background: linear-gradient(360deg, transparent, #03e9f4);
-  animation: animate4 1s linear infinite;
-  animation-delay: 0.75s;
+  height: 25px;
+  background-color: rgb(255, 0, 170);
+  position: absolute;
+  right: -10px;
+  top: -15px;
+  transform: translate(50%, -50%) rotate(60deg);
+}
+
+.border .border-text {
+  position: absolute;
+  color: rgb(255, 0, 170);
+  font-size: 12px;
+  right: -112px;
+  top: -30px;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
