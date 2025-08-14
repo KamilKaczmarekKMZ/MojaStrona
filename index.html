@@ -194,5 +194,25 @@
   </div>
 
   <script src="js/script.js"></script>
+  
+  <script>
+    (function(){
+        var script=document.createElement('script');
+        script.src='https://cdn.jsdelivr.net/gh/yourusername/chat-widget@main/widget.min.js';
+        script.onload=function(){
+            window.ChatWidgetConfig={
+                webhook:{url:'TWÓJ_WEBHOOK_URL',route:'TWÓJ_ROUTE'},
+                branding:{
+                    logo:'LOGO_URL',
+                    name:'NAZWA_FIRMY',
+                    welcomeText:'WITAMY_W_TREŚCI',
+                    responseTimeText:'CZAS_ODPOWIEDZI'
+                },
+                style:{position:'right'}
+            };
+        };
+        document.body.appendChild(script);
+    })();
+  </script>
 </body>
 </html>
