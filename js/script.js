@@ -1,59 +1,67 @@
+// script.js - CAŁY NOWY KOD
 document.addEventListener('DOMContentLoaded', () => {
   const modelViewer = document.querySelector('model-viewer');
   const buttonContainer = document.querySelector('.button-container');
   const bottomButtons = document.querySelector('.button-container-bottom');
-  const maxRotation = 720;
-  const scrollHeight = document.body.scrollHeight - window.innerHeight;
-  let lastScrollY = 0;
-  let velocity = 0;
-  
-  const handleScroll = () => {
-    const scrollY = window.scrollY;
-    const scrollProgress = Math.min(scrollY / scrollHeight, 1);
-    const bottomThreshold = 0.7;
-    
-    velocity = scrollY - lastScrollY;
-    lastScrollY = scrollY;
-    
-    if (scrollY >= scrollHeight * bottomThreshold) {
-      const opacity = Math.min((scrollY - scrollHeight * bottomThreshold) / 500, 1);
-      bottomButtons.style.opacity = opacity;
-      bottomButtons.classList.add('visible');
-      buttonContainer.style.opacity = 1 - opacity;
-    } else {
-      bottomButtons.style.opacity = '0';
-      bottomButtons.classList.remove('visible');
-      buttonContainer.style.opacity = '1';
-    }
-    
-    if (scrollProgress <= 0.8) {
-      const rotation = (scrollProgress / 0.8) * maxRotation;
-      const inertiaRotation = rotation + (velocity * 0.2);
-      modelViewer.cameraOrbit = `${inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
-      modelViewer.style.opacity = 1;
-      
-      const scale = 1 + Math.sin(scrollProgress * Math.PI) * 0.2;
-      modelViewer.style.transform = `translate(-50%, -50%) scale(${scale})`;
-      modelViewer.style.filter = `drop-shadow(0 0 20px rgba(0, 255, 255, ${0.7 + Math.sin(scrollProgress * Math.PI) * 0.3}))`;
-    } 
-    else if (scrollProgress > 0.8 && scrollProgress < 0.95) {
-      const transitionProgress = (scrollProgress - 0.8) / 0.15;
-      const scale = 1 - (transitionProgress * 0.8);
-      const yPos = 50 + (transitionProgress * 30);
-      
-      modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
-      modelViewer.style.opacity = 1;
-      modelViewer.style.filter = `drop-shadow(0 0 ${20 - (transitionProgress * 18)}px rgba(0, 255, 255, ${1 - (transitionProgress * 0.8)}))`;
-    }
-    else if (scrollProgress >= 0.95) {
-      modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
-      modelViewer.style.opacity = 1;
-      modelViewer.style.filter = `drop-shadow(0 0 2px rgba(0, 255, 255, 0.2))`;
-    }
-  };
+  const gridItems = document.querySelectorAll('.grid-item');
+  const animationDuration = 20000; // 20 sekund
+  let animationStart;
+  let isScrolling = false;
 
+  // Funkcja animacji słów
+  function animateWords(timestamp) {
+    if (!animationStart) animationStart = timestamp;
+    const elapsed = timestamp - animationStart;
+    const progress = (elapsed % animationDuration) / animationDuration;
+
+    gridItems.forEach((item, index) => {
+      const rangeStart = parseFloat(item.style.getPropertyValue('--range-start') || 0);
+      const rangeEnd = parseFloat(item.style.getPropertyValue('--range-end') || 1);
+      const rangeDuration = rangeEnd - rangeStart;
+      
+      // Oblicz progres dla danego elementu
+      let elementProgress;
+      if (progress >= rangeStart && progress <= rangeEnd) {
+        elementProgress = (progress - rangeStart) / rangeDuration;
+      } else if (progress < rangeStart) {
+        elementProgress = 0;
+      } else {
+        elementProgress = 1;
+      }
+
+      // Zastosuj transformacje
+      const scale = 1 + Math.sin(elementProgress * Math.PI) * 0.5;
+      const opacity = Math.min(elementProgress * 3, 1, (1 - elementProgress) * 3);
+      const blur = 5 - (elementProgress * 5);
+      
+      item.style.transform = `translateZ(${(1 - elementProgress) * 1000}px) scale(${scale})`;
+      item.style.opacity = opacity;
+      item.style.filter = `blur(${blur}px)`;
+    });
+
+    if (!isScrolling) {
+      requestAnimationFrame(animateWords);
+    }
+  }
+
+  // Inicjalizacja zakresów animacji
+  function initAnimationRanges() {
+    // Ustawiamy zakresy dla każdego elementu (zachowujemy oryginalne proporcje)
+    const totalItems = gridItems.length;
+    gridItems.forEach((item, index) => {
+      const start = index * 0.02; // Rozkładamy równomiernie w ciągu 20 sekund
+      const end = start + 0.1; // Każde słowo jest widoczne przez 2 sekundy
+      
+      item.style.setProperty('--range-start', start);
+      item.style.setProperty('--range-end', end);
+    });
+  }
+
+  // Obsługa przycisku
   document.getElementById('scroll-button').addEventListener('click', function(e) {
     e.preventDefault();
+    isScrolling = true;
+    
     const targetPosition = document.body.scrollHeight;
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
@@ -65,19 +73,44 @@ document.addEventListener('DOMContentLoaded', () => {
       const timeElapsed = currentTime - startTime;
       const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
       window.scrollTo(0, run);
-      if (timeElapsed < duration) requestAnimationFrame(animation);
-    }
-    
-    function easeInOutQuad(t, b, c, d) {
-      t /= d/2;
-      if (t < 1) return c/2*t*t + b;
-      t--;
-      return -c/2 * (t*(t-2) - 1) + b;
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      } else {
+        isScrolling = false;
+        animationStart = null; // Reset animacji
+        requestAnimationFrame(animateWords);
+      }
     }
     
     requestAnimationFrame(animation);
   });
 
-  window.addEventListener('scroll', handleScroll);
-  handleScroll();
+  function easeInOutQuad(t, b, c, d) {
+    t /= d/2;
+    if (t < 1) return c/2*t*t + b;
+    t--;
+    return -c/2 * (t*(t-2) - 1) + b;
+  }
+
+  // Inicjalizacja
+  initAnimationRanges();
+  requestAnimationFrame(animateWords);
+
+  // Obsługa pojawiania się dolnych przycisków
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const scrollHeight = document.body.scrollHeight - window.innerHeight;
+    const bottomThreshold = 0.7;
+    
+    if (scrollY >= scrollHeight * bottomThreshold) {
+      const opacity = Math.min((scrollY - scrollHeight * bottomThreshold) / 500, 1);
+      bottomButtons.style.opacity = opacity;
+      bottomButtons.classList.add('visible');
+      buttonContainer.style.opacity = 1 - opacity;
+    } else {
+      bottomButtons.style.opacity = '0';
+      bottomButtons.classList.remove('visible');
+      buttonContainer.style.opacity = '1';
+    }
+  });
 });
