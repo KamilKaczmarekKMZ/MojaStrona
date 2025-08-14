@@ -7,17 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastScrollY = 0;
   let velocity = 0;
   
-  // Funkcja do animacji słów na pierwszym ekranie
-  const animateInitialWords = () => {
-    const gridItems = document.querySelectorAll('.grid-item');
-    gridItems.forEach(item => {
-      // Resetujemy animację dla każdego słowa
-      item.style.animation = 'none';
-      void item.offsetWidth; // Trigger reflow
-      item.style.animation = '';
-    });
-  };
-
   const handleScroll = () => {
     const scrollY = window.scrollY;
     const scrollProgress = Math.min(scrollY / scrollHeight, 1);
@@ -89,21 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animation);
   });
 
-  // Uruchamiamy animację słów na starcie
-  animateInitialWords();
-  
-  // Obsługa scrolla
-  let isScrolling = false;
-  const smoothHandleScroll = () => {
-    if (!isScrolling) {
-      isScrolling = true;
-      requestAnimationFrame(() => {
-        handleScroll();
-        isScrolling = false;
-      });
-    }
-  };
-
-  window.addEventListener('scroll', smoothHandleScroll, { passive: true });
-  handleScroll(); // Inicjalne wywołanie
+  window.addEventListener('scroll', handleScroll);
+  handleScroll();
 });
