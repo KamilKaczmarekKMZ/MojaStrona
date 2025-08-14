@@ -39,13 +39,13 @@ html {
 }
 
 body {
-  min-block-size: 100vh; /* Zmienione z 400vh na 100vh (tylko pierwszy ekran) */
+  min-block-size: 100vh;
   font-family: system-ui, sans-serif;
   background-color: #000000;
   overflow-x: hidden;
 }
 
-/* Siatka słów */
+/* Siatka słów - WAŻNE: słowa początkowo niewidoczne */
 .stuck-grid {
   block-size: 100vh;
   perspective: 1000px;
@@ -54,7 +54,7 @@ body {
   grid-template-columns: repeat(4, 25dvw);
   grid-template-rows: repeat(4, 25dvh);
   place-items: center;
-  position: fixed; /* Zmienione z sticky na fixed (uniezależniamy od scrolla) */
+  position: fixed;
   top: 0;
   left: 0;
   overflow: clip;
@@ -75,10 +75,7 @@ body {
     0 0 90px #00ffff,
     0 0 100px #00ffff,
     0 0 150px #00ffff;
-  animation: 
-    zoom-in 3s infinite ease-in-out, /* Nowa animacja w pętli */
-    flicker 1.5s infinite alternate;
-  opacity: 0; /* Początkowo niewidoczne */
+  opacity: 0; /* Początkowo ukryte */
   will-change: transform, opacity, filter;
 }
 
