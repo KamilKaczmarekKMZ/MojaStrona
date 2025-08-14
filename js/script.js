@@ -1,65 +1,71 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const words = [
+    "Growth", "Automation", "Income", "Scalability", "Innovation", 
+    "Strategy", "Marketing", "Sales", "Networking", "Productivity",
+    "Efficiency", "Investment", "Partnership", "Loyalty", "Optimization",
+    "Analytics", "ROI", "Competitive Advantage", "Expansion", "MVP",
+    "Cash Flow", "KPIs", "Digital Transformation", "scale", "Sustainability",
+    "Remote Work", "AI", "CRM", "SEO", "Exit Strategy",
+    "Bootstrapping", "Monetization", "B2B", "B2C", "Pivot",
+    "Workflow", "Data-Driven", "Scalable Model", "Business Intelligence", "Traction",
+    "Upselling", "Value Proposition", "ChatBot", "Revenue Stream", "Business Agility",
+    "Proof of Concept", "Hyperautomation", "Growth Hacking"
+  ];
+
   // Konfiguracja
-  const config = {
+  const CONFIG = {
+    activeWords: 12,     // Stała liczba widocznych słów
     animationDuration: 3000,
-    delayBetweenWords: 150,
-    maxActiveWords: 12,
-    wordPopDistance: 500
+    delayBetweenWords: 300
   };
 
-  // Elementy DOM
-  const gridItems = document.querySelectorAll('.grid-item');
-  const modelViewer = document.querySelector('model-viewer');
-  const button = document.getElementById('scroll-button');
-
-  // Inicjalizacja - ukryj wszystkie słowa
-  gridItems.forEach(item => {
-    item.style.opacity = '0';
-    item.style.transform = `translateZ(-${config.wordPopDistance}px)`;
+  // Kontener
+  const container = document.querySelector('body');
+  
+  // Inicjalizacja słów
+  words.forEach(word => {
+    const el = document.createElement('div');
+    el.className = 'grid-item';
+    el.textContent = word;
+    container.appendChild(el);
   });
 
-  // Funkcja animacji słowa
-  function animateWord(word) {
-    word.style.animation = `word-pop ${config.animationDuration}ms forwards`;
-    word.style.opacity = '1';
-    
-    setTimeout(() => {
-      word.style.animation = '';
-      word.style.opacity = '0';
-      word.style.transform = `translateZ(-${config.wordPopDistance}px)`;
-      scheduleNextAnimation(word);
-    }, config.animationDuration);
+  const gridItems = document.querySelectorAll('.grid-item');
+
+  // Funkcja losowej pozycji (gwarantuje, że słowo będzie na ekranie)
+  function getRandomPosition() {
+    const padding = 20;
+    return {
+      left: padding + Math.random() * (window.innerWidth - 2 * padding),
+      top: padding + Math.random() * (window.innerHeight - 2 * padding)
+    };
   }
 
-  // Planowanie następnej animacji
-  function scheduleNextAnimation(word) {
-    const delay = Math.random() * 2000 + 1000;
-    setTimeout(() => animateWord(word), delay);
+  // Animacja słowa
+  function animateWord(word) {
+    const pos = getRandomPosition();
+    word.style.left = `${pos.left}px`;
+    word.style.top = `${pos.top}px`;
+    word.style.animation = `zoom-in ${CONFIG.animationDuration}ms forwards, flicker 1.5s infinite`;
+    word.style.opacity = '1';
+
+    setTimeout(() => {
+      word.style.animation = 'none';
+      word.style.opacity = '0';
+      setTimeout(() => animateWord(word), CONFIG.delayBetweenWords);
+    }, CONFIG.animationDuration);
   }
 
   // Start animacji
   function startAnimation() {
-    // Pierwsza fala animacji
-    const initialWords = Array.from(gridItems)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, config.maxActiveWords);
-    
-    initialWords.forEach((word, i) => {
-      setTimeout(() => animateWord(word), i * config.delayBetweenWords);
+    gridItems.forEach((word, index) => {
+      setTimeout(() => {
+        animateWord(word);
+        setInterval(() => animateWord(word), 
+          CONFIG.animationDuration * 2 + CONFIG.delayBetweenWords * gridItems.length);
+      }, index * CONFIG.delayBetweenWords);
     });
-
-    // Kontynuacja animacji dla wszystkich słów
-    gridItems.forEach(word => scheduleNextAnimation(word));
   }
 
-  // Inicjalizacja
   startAnimation();
-
-  // Obsługa przycisku (opcjonalna)
-  if (button) {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Tutaj dodaj swoją akcję
-    });
-  }
 });
