@@ -1,4 +1,4 @@
-/* styles.css */
+/* Animacje */
 @keyframes flicker {
   0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
     opacity: 1;
@@ -15,9 +15,9 @@
     filter: blur(5px);
   }
   50% {
-    transform: translateZ(0px);
+    transform: translateZ(0);
     opacity: 1;
-    filter: blur(0px);
+    filter: blur(0);
   }
   100% {
     transform: translateZ(1000px);
@@ -26,6 +26,7 @@
   }
 }
 
+/* Reset i podstawowe style */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -38,21 +39,22 @@ html {
 }
 
 body {
-  min-block-size: 400vh;
+  min-block-size: 100vh; /* Zmienione z 400vh na 100vh (tylko pierwszy ekran) */
   font-family: system-ui, sans-serif;
   background-color: #000000;
   overflow-x: hidden;
 }
 
+/* Siatka słów */
 .stuck-grid {
-  block-size: 100svh;
+  block-size: 100vh;
   perspective: 1000px;
   transform-style: preserve-3d;
   display: grid;
   grid-template-columns: repeat(4, 25dvw);
   grid-template-rows: repeat(4, 25dvh);
   place-items: center;
-  position: sticky;
+  position: fixed; /* Zmienione z sticky na fixed (uniezależniamy od scrolla) */
   top: 0;
   left: 0;
   overflow: clip;
@@ -73,19 +75,14 @@ body {
     0 0 90px #00ffff,
     0 0 100px #00ffff,
     0 0 150px #00ffff;
-  animation: flicker 1.5s infinite alternate;
+  animation: 
+    zoom-in 3s infinite ease-in-out, /* Nowa animacja w pętli */
+    flicker 1.5s infinite alternate;
+  opacity: 0; /* Początkowo niewidoczne */
+  will-change: transform, opacity, filter;
 }
 
-@supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .grid-item {
-      animation: zoom-in linear both, flicker 1.5s infinite alternate;
-      animation-timeline: scroll(root block);
-      will-change: transform, opacity, filter;
-    }
-  }
-}
-
+/* Model 3D */
 model-viewer {
   position: fixed;
   top: 50%;
@@ -99,13 +96,10 @@ model-viewer {
   border: none;
   --poster-color: transparent;
   opacity: 1;
-  animation: none;
-  will-change: transform, opacity;
-  transition: transform 0.5s ease;
   z-index: 2;
   pointer-events: none;
   filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.7));
-  transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 model-viewer:hover {
@@ -113,60 +107,7 @@ model-viewer:hover {
   transform: translate(-50%, -50%) scale(1.05);
 }
 
-.grid-item:nth-of-type(1) { animation-range: 40% 50%; grid-area: 1 / 1; }
-.grid-item:nth-of-type(2) { animation-range: 20% 30%; grid-area: 1 / 2; }
-.grid-item:nth-of-type(3) { animation-range: 52% 62%; grid-area: 1 / 3; }
-.grid-item:nth-of-type(4) { animation-range: 50% 60%; grid-area: 1 / 4; }
-.grid-item:nth-of-type(5) { animation-range: 45% 55%; grid-area: 2 / 1; }
-.grid-item:nth-of-type(6) { animation-range: 10% 20%; grid-area: 2 / 2; }
-.grid-item:nth-of-type(7) { animation-range: 90% 100%; grid-area: 2 / 3; }
-.grid-item:nth-of-type(8) { animation-range: 30% 40%; grid-area: 2 / 4; }
-.grid-item:nth-of-type(9) { animation-range: 80% 90%; grid-area: 3 / 1; }
-.grid-item:nth-of-type(10) { animation-range: 70% 80%; grid-area: 3 / 2; }
-.grid-item:nth-of-type(11) { animation-range: -10% 50%; grid-area: 3 / 3; }
-.grid-item:nth-of-type(12) { animation-range: 52% 62%; grid-area: 3 / 4; }
-.grid-item:nth-of-type(13) { animation-range: 15% 25%; grid-area: 4 / 1; }
-.grid-item:nth-of-type(14) { animation-range: 7% 17%; grid-area: 4 / 2; }
-.grid-item:nth-of-type(15) { animation-range: 75% 85%; grid-area: 4 / 3; }
-.grid-item:nth-of-type(16) { animation-range: 3% 13%; grid-area: 4 / 4; }
-.grid-item:nth-of-type(17) { animation-range: 87% 97%; grid-area: 2 / 1; }
-.grid-item:nth-of-type(18) { animation-range: 42% 52%; grid-area: 2 / 2; }
-.grid-item:nth-of-type(19) { animation-range: 57% 67%; grid-area: 2 / 3; }
-.grid-item:nth-of-type(20) { animation-range: 37% 47%; grid-area: 2 / 4; }
-.grid-item:nth-of-type(21) { animation-range: 12% 22%; grid-area: 3 / 1; }
-.grid-item:nth-of-type(22) { animation-range: 8% 18%; grid-area: 3 / 2; }
-.grid-item:nth-of-type(23) { animation-range: 84% 94%; grid-area: 3 / 3; }
-.grid-item:nth-of-type(24) { animation-range: 33% 43%; grid-area: 3 / 4; }
-.grid-item:nth-of-type(25) { animation-range: 48% 58%; grid-area: 1 / 1; }
-.grid-item:nth-of-type(26) { animation-range: 13% 23%; grid-area: 1 / 2; }
-.grid-item:nth-of-type(27) { animation-range: 78% 88%; grid-area: 1 / 3; }
-.grid-item:nth-of-type(28) { animation-range: 62% 72%; grid-area: 1 / 4; }
-.grid-item:nth-of-type(29) { animation-range: 31% 41%; grid-area: 4 / 1; }
-.grid-item:nth-of-type(30) { animation-range: 8% 18%; grid-area: 4 / 2; }
-.grid-item:nth-of-type(31) { animation-range: 4% 14%; grid-area: 4 / 3; }
-.grid-item:nth-of-type(32) { animation-range: 74% 84%; grid-area: 4 / 4; }
-.grid-item:nth-of-type(33) { animation-range: 61% 71%; grid-area: 2 / 1; }
-.grid-item:nth-of-type(34) { animation-range: 26% 36%; grid-area: 2 / 2; }
-.grid-item:nth-of-type(35) { animation-range: 63% 73%; grid-area: 2 / 3; }
-.grid-item:nth-of-type(36) { animation-range: 11% 21%; grid-area: 2 / 4; }
-.grid-item:nth-of-type(37) { animation-range: 89% 99%; grid-area: 3 / 1; }
-.grid-item:nth-of-type(38) { animation-range: 33% 43%; grid-area: 3 / 2; }
-.grid-item:nth-of-type(39) { animation-range: 88% 98%; grid-area: 3 / 3; }
-.grid-item:nth-of-type(40) { animation-range: 22% 32%; grid-area: 3 / 4; }
-.grid-item:nth-of-type(41) { animation-range: 16% 26%; grid-area: 1 / 1; }
-.grid-item:nth-of-type(42) { animation-range: 26% 36%; grid-area: 1 / 2; }
-.grid-item:nth-of-type(43) { animation-range: 66% 76%; grid-area: 1 / 3; }
-.grid-item:nth-of-type(44) { animation-range: 3% 13%; grid-area: 1 / 4; }
-.grid-item:nth-of-type(45) { animation-range: 44% 54%; grid-area: 4 / 1; }
-.grid-item:nth-of-type(46) { animation-range: 11% 21%; grid-area: 4 / 2; }
-.grid-item:nth-of-type(47) { animation-range: 23% 33%; grid-area: 4 / 3; }
-.grid-item:nth-of-type(48) { animation-range: 39% 49%; grid-area: 4 / 4; }
-.grid-item:nth-of-type(49) { animation-range: 59% 69%; grid-area: 3 / 1; }
-.grid-item:nth-of-type(50) { animation-range: 6% 16%; grid-area: 3 / 2; }
-
-/* Style dla przycisku */
-@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap");
-
+/* Przyciski */
 .button-container {
   position: fixed;
   bottom: 10vh;
@@ -175,12 +116,6 @@ model-viewer:hover {
   z-index: 3;
   text-align: center;
   width: 100%;
-  transition: opacity 1s ease;
-}
-
-.button-container.hidden {
-  opacity: 0;
-  pointer-events: none;
 }
 
 .neon-link {
@@ -222,165 +157,11 @@ model-viewer:hover {
 }
 
 @keyframes animate1 {
-  0% {
-    left: -100%;
-  }
-  50%, 100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
 }
 
-.neon-link span:nth-child(2) {
-  top: -100%;
-  right: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, transparent, #03e9f4);
-  animation: animate2 1s linear infinite;
-  animation-delay: 0.25s;
-}
-
-@keyframes animate2 {
-  0% {
-    top: -100%;
-  }
-  50%, 100% {
-    top: 100%;
-  }
-}
-
-.neon-link span:nth-child(3) {
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(270deg, transparent, #03e9f4);
-  animation: animate3 1s linear infinite;
-  animation-delay: 0.5s;
-}
-
-@keyframes animate3 {
-  0% {
-    right: -100%;
-  }
-  50%, 100% {
-    right: 100%;
-  }
-}
-
-.neon-link span:nth-child(4) {
-  bottom: -100%;
-  left: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(360deg, transparent, #03e9f4);
-  animation: animate4 1s linear infinite;
-  animation-delay: 0.75s;
-}
-
-@keyframes animate4 {
-  0% {
-    bottom: -100%;
-  }
-  50%, 100% {
-    bottom: 100%;
-  }
-}
-
-/* Nowe style dla przycisków na dole */
-.button-container-bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 80px;
-  padding: 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  z-index: 4;
-  opacity: 0;
-  transform: translateY(100%);
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-.button-container-bottom.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Zmodyfikowane style dla przycisków na dole - teraz wyglądają jak neon-link */
-.bottom-button {
-  position: relative;
-  display: inline-block;
-  padding: 15px 20px;
-  color: #03e9f4;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: 0.5s;
-  letter-spacing: 4px;
-  overflow: hidden;
-  font-family: "Raleway", sans-serif;
-  font-weight: bold;
-  font-size: 0.9rem;
-  animation: flicker 1.5s infinite alternate;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-}
-
-.bottom-button:hover {
-  background: #03e9f4;
-  color: #050801;
-  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 200px #03e9f4;
-  -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
-  animation: none;
-}
-
-.bottom-button span {
-  position: absolute;
-  display: block;
-}
-
-.bottom-button span:nth-child(1) {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #03e9f4);
-  animation: animate1 1s linear infinite;
-}
-
-.bottom-button span:nth-child(2) {
-  top: -100%;
-  right: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, transparent, #03e9f4);
-  animation: animate2 1s linear infinite;
-  animation-delay: 0.25s;
-}
-
-.bottom-button span:nth-child(3) {
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(270deg, transparent, #03e9f4);
-  animation: animate3 1s linear infinite;
-  animation-delay: 0.5s;
-}
-
-.bottom-button span:nth-child(4) {
-  bottom: -100%;
-  left: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(360deg, transparent, #03e9f4);
-  animation: animate4 1s linear infinite;
-  animation-delay: 0.75s;
-}
-
+/* Responsywność */
 @media (max-width: 768px) {
   model-viewer {
     width: 80vw;
@@ -395,30 +176,11 @@ model-viewer:hover {
       0 0 3px #ffffff,
       0 0 6px #ffffff,
       0 0 12px #ffffff,
-      0 0 24px #00ffff,
-      0 0 48px #00ffff;
+      0 0 24px #00ffff;
   }
   
   .neon-link {
     padding: 15px 20px;
     font-size: 1rem;
-  }
-  
-  .button-container {
-    bottom: 5vh;
-  }
-
-  .button-container-bottom {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .bottom-button {
-    width: 100%;
-    max-width: 250px;
-    padding: 10px 15px;
-    font-size: 0.8rem;
   }
 }
