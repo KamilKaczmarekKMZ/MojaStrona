@@ -1,99 +1,42 @@
-/* Animacje */
+/* Animacje (IDENTYCZNE jak w oryginale) */
 @keyframes flicker {
   0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 1; }
   20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.4; }
 }
 
-@keyframes word-pop {
-  0% { transform: scale(0.2) translateZ(-500px); opacity: 0; }
-  50% { transform: scale(1) translateZ(0); opacity: 1; }
-  100% { transform: scale(0.2) translateZ(500px); opacity: 0; }
+@keyframes zoom-in {
+  0% { transform: translateZ(-1000px); opacity: 0; filter: blur(5px); }
+  50% { transform: translateZ(0); opacity: 1; filter: blur(0); }
+  100% { transform: translateZ(1000px); opacity: 0; filter: blur(5px); }
 }
 
-/* Reset i podstawowe style */
+/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
-  height: 100%;
+body {
+  height: 100vh;
   overflow: hidden;
-  background-color: #000;
+  background: #000;
 }
 
-/* Siatka słów - nowa wersja */
-.word-grid-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  perspective: 1000px;
-}
-
-.word-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 15px;
-  width: 90%;
-  max-width: 1200px;
-  padding: 20px;
-}
-
+/* Słowa - pozycjonowanie absolutne */
 .grid-item {
-  color: white;
-  font-size: clamp(14px, 2vw, 24px);
-  text-align: center;
-  opacity: 0;
+  position: absolute;
+  font-size: 5vmin;
+  font-weight: lighter;
+  color: #ffffff;
   text-shadow: 
-    0 0 5px #fff,
-    0 0 10px #fff,
-    0 0 20px #00ffff,
-    0 0 40px #00ffff;
+    0 0 5px #ffffff,
+    0 0 10px #ffffff,
+    0 0 20px #ffffff,
+    0 0 40px #00ffff,
+    0 0 80px #00ffff;
+  opacity: 0;
   transform-style: preserve-3d;
   will-change: transform, opacity;
-}
-
-/* Model 3D */
-model-viewer {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(60vw, 500px);
-  height: min(60vh, 500px);
-  z-index: 10;
   pointer-events: none;
-  filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.7));
-}
-
-/* Przyciski */
-.button-container {
-  position: fixed;
-  bottom: 10vh;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-}
-
-.neon-link {
-  /* ... (zachowaj swój istniejący styl przycisku) ... */
-}
-
-/* Responsywność */
-@media (max-width: 768px) {
-  .word-grid {
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px;
-  }
-  
-  model-viewer {
-    width: 80vw;
-    height: 80vw;
-  }
 }
