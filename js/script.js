@@ -1,57 +1,65 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Konfiguracja
+  const config = {
+    animationDuration: 3000,
+    delayBetweenWords: 150,
+    maxActiveWords: 12,
+    wordPopDistance: 500
+  };
+
+  // Elementy DOM
   const gridItems = document.querySelectorAll('.grid-item');
-  
-  // Natychmiast ukryj wszystkie słowa
+  const modelViewer = document.querySelector('model-viewer');
+  const button = document.getElementById('scroll-button');
+
+  // Inicjalizacja - ukryj wszystkie słowa
   gridItems.forEach(item => {
     item.style.opacity = '0';
-    item.style.animation = 'none';
+    item.style.transform = `translateZ(-${config.wordPopDistance}px)`;
   });
 
-  // Konfiguracja animacji
-  const ANIMATION_DURATION = 3000;
-  const DELAY_BETWEEN_WORDS = 150;
-  const MAX_ACTIVE_WORDS = 10;
-
-  let activeWords = 0;
-
+  // Funkcja animacji słowa
   function animateWord(word) {
-    if (activeWords >= MAX_ACTIVE_WORDS) return;
-    
-    activeWords++;
-    word.style.animation = 'zoom-in 3s forwards, flicker 1.5s infinite';
+    word.style.animation = `word-pop ${config.animationDuration}ms forwards`;
     word.style.opacity = '1';
-
+    
     setTimeout(() => {
+      word.style.animation = '';
       word.style.opacity = '0';
-      word.style.animation = 'none';
-      activeWords--;
-    }, ANIMATION_DURATION);
+      word.style.transform = `translateZ(-${config.wordPopDistance}px)`;
+      scheduleNextAnimation(word);
+    }, config.animationDuration);
   }
 
+  // Planowanie następnej animacji
+  function scheduleNextAnimation(word) {
+    const delay = Math.random() * 2000 + 1000;
+    setTimeout(() => animateWord(word), delay);
+  }
+
+  // Start animacji
   function startAnimation() {
-    // Pierwsza partia słów (start od razu)
+    // Pierwsza fala animacji
     const initialWords = Array.from(gridItems)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, MAX_ACTIVE_WORDS);
+      .sort(() => Math.random() - 0.5)
+      .slice(0, config.maxActiveWords);
     
     initialWords.forEach((word, i) => {
-      setTimeout(() => animateWord(word), i * DELAY_BETWEEN_WORDS);
+      setTimeout(() => animateWord(word), i * config.delayBetweenWords);
     });
 
-    // Pętla dla reszty słów
-    setInterval(() => {
-      const inactiveWords = Array.from(gridItems).filter(word => 
-        word.style.opacity !== '1'
-      );
-      
-      if (inactiveWords.length > 0) {
-        const randomWord = inactiveWords[
-          Math.floor(Math.random() * inactiveWords.length)
-        ];
-        animateWord(randomWord);
-      }
-    }, DELAY_BETWEEN_WORDS * MAX_ACTIVE_WORDS);
+    // Kontynuacja animacji dla wszystkich słów
+    gridItems.forEach(word => scheduleNextAnimation(word));
   }
 
+  // Inicjalizacja
   startAnimation();
+
+  // Obsługa przycisku (opcjonalna)
+  if (button) {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Tutaj dodaj swoją akcję
+    });
+  }
 });
