@@ -6,8 +6,124 @@
   <title>KK Automations</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* === Globalne style === */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #000;
+        font-family: 'Arial', sans-serif;
+        perspective: 1000px;
+    }
+
+    /* === Animacja tekstów 3D === */
+    .text-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform-style: preserve-3d;
+        animation: rotate 30s infinite linear;
+        z-index: -1;
+    }
+
+    .text-item {
+        position: absolute;
+        color: transparent;
+        font-size: 3rem;
+        font-weight: bold;
+        text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #0ff,
+            0 0 80px #0ff;
+        transform-origin: 0 0;
+        filter: blur(0px);
+        will-change: transform, filter;
+        backface-visibility: visible;
+    }
+
+    @keyframes rotate {
+        0% { transform: translate(-50%, -50%) rotateY(0deg) rotateX(10deg); }
+        100% { transform: translate(-50%, -50%) rotateY(360deg) rotateX(10deg); }
+    }
+
+    /* === Efekt mgławicy === */
+    .nebula {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, 
+                    rgba(0, 100, 255, 0.1) 0%, 
+                    rgba(0, 0, 0, 0) 70%);
+        animation: pulse 15s infinite alternate;
+        z-index: -2;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 0.3; transform: scale(1); }
+        100% { opacity: 0.7; transform: scale(1.2); }
+    }
+
+    /* === Efekt gwiazd === */
+    .stars-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .star-layer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(1px 1px at 20% 30%, white 1%, transparent 1%),
+            radial-gradient(1px 1px at 40% 70%, white 1%, transparent 1%),
+            radial-gradient(1px 1px at 60% 20%, white 1%, transparent 1%),
+            radial-gradient(1px 1px at 80% 90%, white 1%, transparent 1%);
+        background-size: 200px 200px;
+        animation: stars-move 100s linear infinite;
+    }
+
+    .star-layer:nth-child(2) {
+        opacity: 0.6;
+        background-size: 300px 300px;
+        animation-duration: 150s;
+    }
+
+    .star-layer:nth-child(3) {
+        opacity: 0.3;
+        background-size: 400px 400px;
+        animation-duration: 200s;
+    }
+
+    @keyframes stars-move {
+        from { transform: translateY(0); }
+        to { transform: translateY(-1000px); }
+    }
+  </style>
 </head>
 <body>
+  <!-- Tło: animacja tekstów 3D -->
+  <div class="text-container" id="textContainer"></div>
+
+  <!-- Efekty tła -->
+  <div class="nebula"></div>
+  <div class="stars-container">
+      <div class="star-layer"></div>
+      <div class="star-layer"></div>
+      <div class="star-layer"></div>
+  </div>
+
   <div class="stuck-grid">
     <div class="grid-item">Growth</div>
     <div class="grid-item">Automation</div>
@@ -213,6 +329,39 @@
         };
         document.body.appendChild(script);
     })();
+
+    // Skrypt dla animacji tekstów 3D
+    const container = document.getElementById('textContainer');
+    const texts = [
+        "INFINITE", "LOOP", "CYBER", "DREAM", "MATRIX", 
+        "CODE", "FUTURE", "TECH", "NEON", "DIGITAL",
+        "REALITY", "VIRTUAL", "SPACE", "TIME", "WORLD",
+        "SMART", "SYSTEMS", "KK", "QUANTUM", "AI"
+    ];
+
+    function createText() {
+        container.innerHTML = '';
+        const count = 15 + Math.floor(Math.random() * 10);
+        
+        for (let i = 0; i < count; i++) {
+            const text = document.createElement('div');
+            text.className = 'text-item';
+            text.textContent = texts[Math.floor(Math.random() * texts.length)];
+            
+            const angle = (i / count) * Math.PI * 2;
+            const radius = 200 + Math.random() * 400;
+            const x = Math.cos(angle) * radius;
+            const y = Math.random() * 200 - 100;
+            const z = Math.sin(angle) * radius;
+            
+            text.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${-angle * (180 / Math.PI)}deg)`;
+            text.style.opacity = 0.7 + Math.random() * 0.3;
+            container.appendChild(text);
+        }
+    }
+
+    // Inicjalizacja
+    createText();
   </script>
 </body>
 </html>
