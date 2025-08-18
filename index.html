@@ -12,12 +12,10 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 0;
-      height: 0;
       transform-style: preserve-3d;
       animation: rotate 30s infinite linear;
+      z-index: 10;
       pointer-events: none;
-      z-index: 1;
     }
 
     .text-item {
@@ -114,13 +112,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transform-style: preserve-3d;
-    }
-
-    model-viewer {
-      position: relative;
-      z-index: 2;
-      transform-style: preserve-3d;
     }
 
     /* === Sticky grid adjustments === */
@@ -143,139 +134,11 @@
       opacity: 0;
       pointer-events: none;
     }
-
-    /* === Button styles === */
-    .button-container {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-    }
-
-    .neon-link {
-      position: relative;
-      display: inline-block;
-      padding: 15px 30px;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      text-decoration: none;
-      font-size: 24px;
-      overflow: hidden;
-      transition: 0.2s;
-    }
-
-    .neon-link:hover {
-      color: #255784;
-      background: #2196f3;
-      box-shadow: 0 0 10px #2196f3, 0 0 40px #2196f3, 0 0 80px #2196f3;
-      transition-delay: 1s;
-    }
-
-    .neon-link span {
-      position: absolute;
-      display: block;
-    }
-
-    .neon-link span:nth-child(1) {
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #2196f3);
-    }
-
-    .neon-link:hover span:nth-child(1) {
-      left: 100%;
-      transition: 1s;
-    }
-
-    .neon-link span:nth-child(3) {
-      bottom: 0;
-      right: -100%;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(270deg, transparent, #2196f3);
-    }
-
-    .neon-link:hover span:nth-child(3) {
-      right: 100%;
-      transition: 1s;
-      transition-delay: 0.5s;
-    }
-
-    .neon-link span:nth-child(2) {
-      top: -100%;
-      right: 0;
-      width: 2px;
-      height: 100%;
-      background: linear-gradient(180deg, transparent, #2196f3);
-    }
-
-    .neon-link:hover span:nth-child(2) {
-      top: 100%;
-      transition: 1s;
-      transition-delay: 0.25s;
-    }
-
-    .neon-link span:nth-child(4) {
-      bottom: -100%;
-      left: 0;
-      width: 2px;
-      height: 100%;
-      background: linear-gradient(360deg, transparent, #2196f3);
-    }
-
-    .neon-link:hover span:nth-child(4) {
-      bottom: 100%;
-      transition: 1s;
-      transition-delay: 0.75s;
-    }
-
-    /* Bottom buttons styles */
-    .button-container-bottom {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 100;
-    }
-
-    .bottom-button {
-      position: relative;
-      display: flex;
-      align-items: center;
-      padding: 12px 20px;
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .bottom-button:hover {
-      background: rgba(33, 150, 243, 0.7);
-    }
-
-    .bottom-button .icon {
-      margin-right: 10px;
-    }
-
-    .bottom-button .title {
-      font-weight: bold;
-    }
-
-    .hide {
-      display: none;
-    }
   </style>
 </head>
 <body>
-  <!-- Efekty tła -->
+  <!-- Efekty orbitujących słów -->
+  <div class="text-container" id="textContainer"></div>
   <div class="nebula"></div>
   <div class="stars-container">
     <div class="star-layer"></div>
@@ -335,7 +198,6 @@
     <div class="grid-item">Growth Hacking</div>
   </div>
 
-  <!-- Kontener modelu 3D z orbitującymi tekstami -->
   <div class="model-container">
     <model-viewer
       src="assets/twoje-logo.glb"
@@ -358,7 +220,6 @@
       <div slot="hotspot-1" data-position="1m 1m 1m" data-normal="0 0 1"></div>
       <div slot="hotspot-2" data-position="-1m -1m -1m" data-normal="0 0 -1"></div>
     </model-viewer>
-    <div class="text-container" id="textContainer"></div>
   </div>
 
   <div class="button-container">
@@ -472,6 +333,8 @@
     </a>
   </div>
 
+  <script src="js/script.js"></script>
+  
   <script>
     // Skrypt dla animacji tekstów 3D
     const container = document.getElementById('textContainer');
@@ -496,15 +359,11 @@
         
         text.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${-angle * (180 / Math.PI)}deg)`;
         text.style.opacity = 0.7 + Math.random() * 0.3;
-        
-        // Dynamicznie ustawiamy z-index na podstawie pozycji Z
-        text.style.zIndex = z > 0 ? 3 : 1;
-        
         container.appendChild(text);
       }
     }
 
-    // Obsługa scrollowania
+    // Obsługa scrollowania - ukrywanie efektu
     window.addEventListener('scroll', function() {
       if (window.scrollY > 50) {
         document.body.classList.add('scrolled');
@@ -515,25 +374,6 @@
 
     // Inicjalizacja
     createText();
-
-    // Chat widget script
-    (function(){
-        var script=document.createElement('script');
-        script.src='https://cdn.jsdelivr.net/gh/yourusername/chat-widget@main/widget.min.js';
-        script.onload=function(){
-            window.ChatWidgetConfig={
-                webhook:{url:'TWÓJ_WEBHOOK_URL',route:'TWÓJ_ROUTE'},
-                branding:{
-                    logo:'LOGO_URL',
-                    name:'NAZWA_FIRMY',
-                    welcomeText:'WITAMY_W_TREŚCI',
-                    responseTimeText:'CZAS_ODPOWIEDZI'
-                },
-                style:{position:'right'}
-            };
-        };
-        document.body.appendChild(script);
-    })();
   </script>
 </body>
 </html>
