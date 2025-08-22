@@ -16,7 +16,6 @@ button1.addEventListener('click', () => {
 // Oryginalny kod strony
 document.addEventListener('DOMContentLoaded', () => {
   const modelViewer = document.querySelector('model-viewer');
-  const buttonContainer = document.querySelector('.button-container');
   const maxRotation = 720;
   const scrollHeight = document.body.scrollHeight - window.innerHeight;
   let lastScrollY = 0;
@@ -50,32 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
       modelViewer.style.filter = `drop-shadow(0 0 2px rgba(0, 255, 255, 0.2))`;
     }
   };
-
-  document.getElementById('scroll-button').addEventListener('click', function(e) {
-    e.preventDefault();
-    const targetPosition = document.body.scrollHeight;
-    const startPosition = window.pageYOffset;
-    const distance = targetPosition - startPosition;
-    const duration = 10000;
-    let startTime = null;
-    
-    function animation(currentTime) {
-      if (startTime === null) startTime = currentTime;
-      const timeElapsed = currentTime - startTime;
-      const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
-      window.scrollTo(0, run);
-      if (timeElapsed < duration) requestAnimationFrame(animation);
-    }
-    
-    function easeInOutQuad(t, b, c, d) {
-      t /= d/2;
-      if (t < 1) return c/2*t*t + b;
-      t--;
-      return -c/2 * (t*(t-2) - 1) + b;
-    }
-    
-    requestAnimationFrame(animation);
-  });
 
   window.addEventListener('scroll', handleScroll);
   handleScroll();
