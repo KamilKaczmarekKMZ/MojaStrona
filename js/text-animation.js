@@ -1,5 +1,13 @@
-// Zmieniamy window.onload na własną funkcję init
 function initTextAnimation() {
+  // Sprawdź czy kontener jest widoczny (po scrollu)
+  const threeContainer = document.getElementById('three-container');
+  if (!threeContainer || !threeContainer.classList.contains('visible')) {
+    setTimeout(initTextAnimation, 500); // Spróbuj ponownie za 500ms
+    return;
+  }
+
+  console.log('Inicjalizacja animacji tekstu 3D...');
+
   var root = new THREERoot({
     createCameraControls:!true,
     antialias:(window.devicePixelRatio === 1),
@@ -37,19 +45,24 @@ function initTextAnimation() {
   createTweenScrubber(tl);
 }
 
-// Uruchamiamy gdy kontener jest widoczny
+// Uruchamiamy init po załadowaniu DOM
 document.addEventListener('DOMContentLoaded', function() {
+  // Obserwujemy zmiany w kontenerze 3D
   const threeContainer = document.getElementById('three-container');
   
   if (threeContainer) {
+    // Tworzymy obserwatora mutacji
     const observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
-        if (mutation.attributeName === 'class' && threeContainer.classList.contains('visible')) {
-          initTextAnimation();
+        if (mutation.attributeName === 'class') {
+          if (threeContainer.classList.contains('visible')) {
+            initTextAnimation();
+          }
         }
       });
     });
 
+    // Rozpoczynamy obserwację
     observer.observe(threeContainer, {
       attributes: true,
       attributeFilter: ['class']
@@ -57,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Reszta kodu pozostaje DOKŁADNIE TAKA SAMA jak podałeś
 function createTextAnimation() {
   var geometry = generateTextGeometry('Easy Automation', {
     size:40,
@@ -73,6 +85,7 @@ function createTextAnimation() {
   });
 
   THREE.BAS.Utils.tessellateRepeat(geometry, 1.0, 2);
+
   THREE.BAS.Utils.separateFaces(geometry);
 
   return new TextAnimation(geometry);
@@ -80,6 +93,7 @@ function createTextAnimation() {
 
 function generateTextGeometry(text, params) {
   var geometry = new THREE.TextGeometry(text, params);
+
   geometry.computeBoundingBox();
 
   var size = geometry.boundingBox.size();
@@ -89,15 +103,17 @@ function generateTextGeometry(text, params) {
   var matrix = new THREE.Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
 
   geometry.applyMatrix(matrix);
+
   return geometry;
 }
 
 ////////////////////
-// CLASSES (bez zmian)
+// CLASSES
 ////////////////////
 
 function TextAnimation(textGeometry) {
   var bufferGeometry = new THREE.BAS.ModelBufferGeometry(textGeometry);
+
   var aAnimation = bufferGeometry.createAttribute('aAnimation', 2);
   var aEndPosition = bufferGeometry.createAttribute('aEndPosition', 3);
   var aAxisAngle = bufferGeometry.createAttribute('aAxisAngle', 4);
@@ -123,6 +139,7 @@ function TextAnimation(textGeometry) {
     var centroid = THREE.BAS.Utils.computeCentroid(textGeometry, face);
     var centroidN = new THREE.Vector3().copy(centroid).normalize();
 
+    // animation
     var delay = (maxLength - centroid.length()) * lengthFactor;
     var duration = THREE.Math.randFloat(minDuration, maxDuration);
 
@@ -131,19 +148,24 @@ function TextAnimation(textGeometry) {
       aAnimation.array[i2 + v + 1] = duration;
     }
 
+    // end position
     var point = utils.fibSpherePoint(i, faceCount, 200);
+
     for (v = 0; v < 9; v += 3) {
       aEndPosition.array[i3 + v    ] = point.x;
       aEndPosition.array[i3 + v + 1] = point.y;
       aEndPosition.array[i3 + v + 2] = point.z;
     }
 
+    // axis angle
     axis.x = centroidN.x;
     axis.y = -centroidN.y;
     axis.z = -centroidN.z;
+
     axis.normalize();
 
     angle = Math.PI * THREE.Math.randFloat(0.5, 2.0);
+
     for (v = 0; v < 12; v += 4) {
       aAxisAngle.array[i4 + v    ] = axis.x;
       aAxisAngle.array[i4 + v + 1] = axis.y;
@@ -180,26 +202,33 @@ function TextAnimation(textGeometry) {
       ],
       shaderTransformPosition: [
         'transformed = mix(transformed, aEndPosition, tProgress);',
+
         'float angle = aAxisAngle.w * tProgress;',
         'vec4 tQuat = quatFromAxisAngle(aAxisAngle.xyz, angle);',
         'transformed = rotateVector(tQuat, transformed);',
       ]
     },
     {
+      // JAŚNIEJSZE KOLORY
       diffuse: 0xffffff,
       specular: 0xffffff,
-      shininess: 10
+      shininess: 10,
+      transparent: true,
+      opacity: 1.0
     }
   );
 
   THREE.Mesh.call(this, bufferGeometry, material);
+
   this.frustumCulled = false;
 }
 TextAnimation.prototype = Object.create(THREE.Mesh.prototype);
 TextAnimation.prototype.constructor = TextAnimation;
 
 Object.defineProperty(TextAnimation.prototype, 'animationProgress', {
-  get: function() { return this._animationProgress; },
+  get: function() {
+    return this._animationProgress;
+  },
   set: function(v) {
     this._animationProgress = v;
     this.material.uniforms['uTime'].value = this.animationDuration * v;
@@ -216,10 +245,10 @@ function THREERoot(params) {
 
   this.renderer = new THREE.WebGLRenderer({
     antialias:params.antialias,
-    alpha: true
+    alpha: true // PRZEZROCZYSTE TŁO
   });
   this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-  this.renderer.setClearColor(0x000000, 0);
+  this.renderer.setClearColor(0x000000, 0); // PRZEZROCZYSTE TŁO
   document.getElementById('three-container').appendChild(this.renderer.domElement);
 
   this.camera = new THREE.PerspectiveCamera(
@@ -258,12 +287,13 @@ THREERoot.prototype = {
   resize: function() {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
+
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 };
 
 ////////////////////
-// UTILS (bez zmian)
+// UTILS
 ////////////////////
 
 var utils = {
@@ -282,18 +312,23 @@ var utils = {
   fibSpherePoint: (function() {
     var v = {x:0, y:0, z:0};
     var G = Math.PI * (3 - Math.sqrt(5));
+
     return function(i, n, radius) {
       var step = 2.0 / n;
       var r, phi;
+
       v.y = i * step - 1 + (step * 0.5);
       r = Math.sqrt(1 - v.y * v.y);
       phi = i * G;
       v.x = Math.cos(phi) * r;
       v.z = Math.sin(phi) * r;
+
       radius = radius || 1;
+
       v.x *= radius;
       v.y *= radius;
       v.z *= radius;
+
       return v;
     }
   })()
@@ -301,15 +336,25 @@ var utils = {
 
 function createTweenScrubber(tween, seekSpeed) {
   seekSpeed = seekSpeed || 0.001;
-  function stop() { TweenMax.to(tween, 1, {timeScale:0}); }
-  function resume() { TweenMax.to(tween, 1, {timeScale:1}); }
+
+  function stop() {
+    TweenMax.to(tween, 1, {timeScale:0});
+  }
+
+  function resume() {
+    TweenMax.to(tween, 1, {timeScale:1});
+  }
+
   function seek(dx) {
     var progress = tween.progress();
     var p = THREE.Math.clamp((progress + (dx * seekSpeed)), 0, 1);
+
     tween.progress(p);
   }
 
   var _cx = 0;
+
+  // desktop
   var mouseDown = false;
   document.body.style.cursor = 'pointer';
 
@@ -329,9 +374,11 @@ function createTweenScrubber(tween, seekSpeed) {
       var cx = e.clientX;
       var dx = cx - _cx;
       _cx = cx;
+
       seek(dx);
     }
   });
+  // mobile
   window.addEventListener('touchstart', function(e) {
     _cx = e.touches[0].clientX;
     stop();
@@ -345,6 +392,7 @@ function createTweenScrubber(tween, seekSpeed) {
     var cx = e.touches[0].clientX;
     var dx = cx - _cx;
     _cx = cx;
+
     seek(dx);
     e.preventDefault();
   });
