@@ -26,7 +26,6 @@ button1.addEventListener('click', () => {
 // Oryginalny kod strony
 document.addEventListener('DOMContentLoaded', () => {
   const modelViewer = document.querySelector('model-viewer');
-  const threeContainer = document.getElementById('three-container');
   const maxRotation = 720;
   const scrollHeight = document.body.scrollHeight - window.innerHeight;
   let lastScrollY = 0;
@@ -52,18 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
       
       modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
       modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`; /* BIAŁA POŚWIATA */
-      
-      // Ukryj element 3D tekstu
-      threeContainer.classList.remove('visible');
     } 
-    // Pozycja końcowa (powyżej 20% scrolla) - pokaż element 3D tekstu
+    // Pozycja końcowa (powyżej 20% scrolla)
     else {
       modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
       modelViewer.style.opacity = 1;
       modelViewer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`; /* BIAŁA POŚWIATA */
-      
-      // Pokaż element 3D tekstu
-      threeContainer.classList.add('visible');
     }
   };
 
