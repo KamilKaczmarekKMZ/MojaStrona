@@ -110,17 +110,20 @@ button {
 }
 
 #instructions {
-  position: absolute;
-  color: #666;
-  bottom: 0;
+  position: fixed;
+  color: #fff;
+  bottom: 20px;
+  left: 0;
+  right: 0;
   padding-bottom: 6px;
   font-family: sans-serif;
   width: 100%;
   text-align: center;
   pointer-events: none;
-  z-index: 5;
+  z-index: 10;
   opacity: 0;
   transition: opacity 1s ease;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 #three-container.visible ~ #instructions {
