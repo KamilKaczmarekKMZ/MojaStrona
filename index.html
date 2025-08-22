@@ -4,10 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KK Automations</title>
-  
-  <!-- BIBLIOTEKI w DOBREJ KOLEJNOŚCI -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -16,6 +12,9 @@
   <div id="bg-app">
     <canvas id="webgl-canvas"></canvas>
   </div>
+
+  <!-- Oryginalna zawartość strony -->
+ 
 
   <model-viewer
     src="assets/twoje-logo.glb"
@@ -39,67 +38,13 @@
     <div slot="hotspot-2" data-position="-1m -1m -1m" data-normal="0 0 -1"></div>
   </model-viewer>
 
+  <!-- Nowy przycisk do zmiany kolorów tła -->
   <div class="buttons">
     <button type="button" id="colors-btn">
       Random colors
     </button>
   </div>
 
-  <!-- USUŃ PNLTRI i THREE.BAS - powodują konflikty -->
-  <div id="three-container"></div>
-
-  <div id="instructions">
-    click and drag to control the animation
-  </div>
-
   <script type="module" src="js/script.js"></script>
-  
-  <!-- PROSTA ANIMACJA TEKSTU bez THREE.BAS -->
-  <script>
-    function initSimpleTextAnimation() {
-      const threeContainer = document.getElementById('three-container');
-      if (!threeContainer.classList.contains('visible')) return;
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ alpha: true });
-      
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x000000, 0);
-      threeContainer.appendChild(renderer.domElement);
-
-      // Prosty tekst
-      const geometry = new THREE.BoxGeometry(2, 2, 2);
-      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-
-      camera.position.z = 5;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        renderer.render(scene, camera);
-      }
-      animate();
-    }
-
-    // Obserwuj widoczność kontenera
-    document.addEventListener('DOMContentLoaded', function() {
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.target.classList.contains('visible')) {
-            initSimpleTextAnimation();
-          }
-        });
-      });
-
-      observer.observe(document.getElementById('three-container'), {
-        attributes: true,
-        attributeFilter: ['class']
-      });
-    });
-  </script>
 </body>
 </html>
