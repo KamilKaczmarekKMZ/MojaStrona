@@ -8,6 +8,12 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <!-- Tło Hexagonal Grid -->
+  <div id="bg-app">
+    <canvas id="webgl-canvas"></canvas>
+  </div>
+
+  <!-- Oryginalna zawartość strony -->
   <div class="stuck-grid">
     <div class="grid-item">Growth</div>
     <div class="grid-item">Automation</div>
@@ -193,6 +199,13 @@
     </a>
   </div>
 
-  <script src="js/script.js"></script>
+  <!-- Nowy przycisk do zmiany kolorów tła -->
+  <div class="buttons">
+    <button type="button" id="colors-btn">
+      Random colors
+    </button>
+  </div>
+
+  <script type="module" src="js/script.js"></script>
 </body>
 </html>
