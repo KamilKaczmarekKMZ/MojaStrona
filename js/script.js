@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
       buttonContainer.style.opacity = '1';
     }
     
-    if (scrollProgress <= 0.8) {
-      const rotation = (scrollProgress / 0.8) * maxRotation;
+    if (scrollProgress <= 0.1) {
+      const rotation = (scrollProgress / 0.1) * maxRotation;
       const inertiaRotation = rotation + (velocity * 0.2);
       modelViewer.cameraOrbit = `${inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
       modelViewer.style.opacity = 1;
@@ -52,10 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
       modelViewer.style.transform = `translate(-50%, -50%) scale(${scale})`;
       modelViewer.style.filter = `drop-shadow(0 0 20px rgba(0, 255, 255, ${0.7 + Math.sin(scrollProgress * Math.PI) * 0.3}))`;
     } 
-    else if (scrollProgress > 0.8 && scrollProgress < 0.20) {
-      const transitionProgress = (scrollProgress - 0.8) / 0.15;
+    else if (scrollProgress > 0.1 && scrollProgress < 0.20) {
+      const transitionProgress = (scrollProgress - 0.1) / 0.1;
       const scale = 1 - (transitionProgress * 0.8);
-      const yPos = 50 + (transitionProgress * 30);
+      const yPos = 50 + (transitionProgress * 90);
       
       modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
       modelViewer.style.opacity = 1;
