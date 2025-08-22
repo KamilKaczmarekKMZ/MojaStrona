@@ -14,16 +14,21 @@ function initTextAnimation() {
     fov:60
   });
 
-  root.renderer.setClearColor(0x000000);
+  // PRZEZROCZYSTE TŁO
+  root.renderer.setClearColor(0x000000, 0);
   root.renderer.setPixelRatio(window.devicePixelRatio || 1);
+  root.renderer.alpha = true;
   root.camera.position.set(0, 0, 600);
 
   var textAnimation = createTextAnimation();
   root.scene.add(textAnimation);
 
-  var light = new THREE.DirectionalLight();
+  var light = new THREE.DirectionalLight(0xffffff, 1);
   light.position.set(0, 0, 1);
   root.scene.add(light);
+
+  var ambientLight = new THREE.AmbientLight(0x404040, 2);
+  root.scene.add(ambientLight);
 
   var tl = new TimelineMax({
     repeat:-1,
@@ -204,9 +209,12 @@ function TextAnimation(textGeometry) {
       ]
     },
     {
-      diffuse: 0x444444,
-      specular: 0xcccccc,
-      shininess: 4
+      // JAŚNIEJSZE KOLORY
+      diffuse: 0xffffff,
+      specular: 0xffffff,
+      shininess: 10,
+      transparent: true,
+      opacity: 1.0
     }
   );
 
@@ -236,9 +244,11 @@ function THREERoot(params) {
   }, params);
 
   this.renderer = new THREE.WebGLRenderer({
-    antialias:params.antialias
+    antialias:params.antialias,
+    alpha: true // PRZEZROCZYSTE TŁO
   });
   this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  this.renderer.setClearColor(0x000000, 0); // PRZEZROCZYSTE TŁO
   document.getElementById('three-container').appendChild(this.renderer.domElement);
 
   this.camera = new THREE.PerspectiveCamera(
