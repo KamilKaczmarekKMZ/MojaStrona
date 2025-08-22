@@ -1,13 +1,12 @@
-// Zachowaj oryginalny kod animacji tekstu bez zmian
-window.onload = init;
-
-function init() {
+function initTextAnimation() {
   // Sprawdź czy kontener jest widoczny (po scrollu)
   const threeContainer = document.getElementById('three-container');
-  if (!threeContainer.classList.contains('visible')) {
-    setTimeout(init, 100); // Spróbuj ponownie za 100ms
+  if (!threeContainer || !threeContainer.classList.contains('visible')) {
+    setTimeout(initTextAnimation, 500); // Spróbuj ponownie za 500ms
     return;
   }
+
+  console.log('Inicjalizacja animacji tekstu 3D...');
 
   var root = new THREERoot({
     createCameraControls:!true,
@@ -40,6 +39,31 @@ function init() {
 
   createTweenScrubber(tl);
 }
+
+// Uruchamiamy init po załadowaniu DOM
+document.addEventListener('DOMContentLoaded', function() {
+  // Obserwujemy zmiany w kontenerze 3D
+  const threeContainer = document.getElementById('three-container');
+  
+  if (threeContainer) {
+    // Tworzymy obserwatora mutacji
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName === 'class') {
+          if (threeContainer.classList.contains('visible')) {
+            initTextAnimation();
+          }
+        }
+      });
+    });
+
+    // Rozpoczynamy obserwację
+    observer.observe(threeContainer, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  }
+});
 
 function createTextAnimation() {
   var geometry = generateTextGeometry('AS THE WORLD TURNS', {
