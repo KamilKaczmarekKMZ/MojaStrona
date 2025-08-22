@@ -50,13 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const yPos = 50 + (scrollProgress * 90); // Przesuwanie w górę od 50% do 140%
       
       modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
-      modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(0, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
+      modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`; /* BIAŁA POŚWIATA */
     } 
     // Pozycja końcowa (powyżej 20% scrolla)
     else {
       modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
       modelViewer.style.opacity = 1;
-      modelViewer.style.filter = `drop-shadow(0 0 2px rgba(0, 255, 255, 0.2))`;
+      modelViewer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`; /* BIAŁA POŚWIATA */
     }
   };
 
