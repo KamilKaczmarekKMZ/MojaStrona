@@ -27,24 +27,6 @@ body, html {
   }
 }
 
-@keyframes zoom-in {
-  0% {
-    transform: translateZ(-1000px);
-    opacity: 0;
-    filter: blur(5px);
-  }
-  50% {
-    transform: translateZ(0px);
-    opacity: 1;
-    filter: blur(0px);
-  }
-  100% {
-    transform: translateZ(1000px);
-    opacity: 0;
-    filter: blur(5px);
-  }
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -62,48 +44,6 @@ body {
   overflow-x: hidden;
 }
 
-.stuck-grid {
-  block-size: 100svh;
-  perspective: 1000px;
-  transform-style: preserve-3d;
-  display: grid;
-  grid-template-columns: repeat(4, 25dvw);
-  grid-template-rows: repeat(4, 25dvh);
-  place-items: center;
-  position: sticky;
-  top: 0;
-  left: 0;
-  overflow: clip;
-}
-
-.grid-item {
-  transform-style: preserve-3d;
-  font-size: 5vmin;
-  font-weight: lighter;
-  text-wrap: nowrap;
-  color: #ffffff;
-  text-shadow: 
-    0 0 5px #ffffff,
-    0 0 10px #ffffff,
-    0 0 20px #ffffff,
-    0 0 40px #00ffff,
-    0 0 80px #00ffff,
-    0 0 90px #00ffff,
-    0 0 100px #00ffff,
-    0 0 150px #00ffff;
-  animation: flicker 1.5s infinite alternate;
-}
-
-@supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .grid-item {
-      animation: zoom-in linear both, flicker 1.5s infinite alternate;
-      animation-timeline: scroll(root block);
-      will-change: transform, opacity, filter;
-    }
-  }
-}
-
 model-viewer {
   position: fixed;
   top: 50%;
@@ -119,7 +59,6 @@ model-viewer {
   opacity: 1;
   animation: none;
   will-change: transform, opacity;
-  transition: transform 0.5s ease;
   z-index: 2;
   pointer-events: none;
   filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.7));
@@ -255,100 +194,6 @@ model-viewer:hover {
   }
 }
 
-/* Nowe style dla przycisków na dole */
-.button-container-bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 80px;
-  padding: 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  z-index: 4;
-  opacity: 0;
-  transform: translateY(100%);
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-.button-container-bottom.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Zmodyfikowane style dla przycisków na dole - teraz wyglądają jak neon-link */
-.bottom-button {
-  position: relative;
-  display: inline-block;
-  padding: 15px 20px;
-  color: #03e9f4;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: 0.5s;
-  letter-spacing: 4px;
-  overflow: hidden;
-  font-family: "Raleway", sans-serif;
-  font-weight: bold;
-  font-size: 0.9rem;
-  animation: flicker 1.5s infinite alternate;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-}
-
-.bottom-button:hover {
-  background: #03e9f4;
-  color: #050801;
-  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 200px #03e9f4;
-  -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
-  animation: none;
-}
-
-.bottom-button span {
-  position: absolute;
-  display: block;
-}
-
-.bottom-button span:nth-child(1) {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #03e9f4);
-  animation: animate1 1s linear infinite;
-}
-
-.bottom-button span:nth-child(2) {
-  top: -100%;
-  right: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, transparent, #03e9f4);
-  animation: animate2 1s linear infinite;
-  animation-delay: 0.25s;
-}
-
-.bottom-button span:nth-child(3) {
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(270deg, transparent, #03e9f4);
-  animation: animate3 1s linear infinite;
-  animation-delay: 0.5s;
-}
-
-.bottom-button span:nth-child(4) {
-  bottom: -100%;
-  left: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(360deg, transparent, #03e9f4);
-  animation: animate4 1s linear infinite;
-  animation-delay: 0.75s;
-}
-
 /* Style dla przycisku zmiany kolorów tła */
 .buttons {
   position: fixed;
@@ -378,16 +223,6 @@ button {
     max-height: none;
   }
   
-  .grid-item {
-    font-size: 3.5vmin;
-    text-shadow: 
-      0 0 3px #ffffff,
-      0 0 6px #ffffff,
-      0 0 12px #ffffff,
-      0 0 24px #00ffff,
-      0 0 48px #00ffff;
-  }
-  
   .neon-link {
     padding: 15px 20px;
     font-size: 1rem;
@@ -395,20 +230,6 @@ button {
   
   .button-container {
     bottom: 5vh;
-  }
-
-  .button-container-bottom {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .bottom-button {
-    width: 100%;
-    max-width: 250px;
-    padding: 10px 15px;
-    font-size: 0.8rem;
   }
 
   .buttons {
