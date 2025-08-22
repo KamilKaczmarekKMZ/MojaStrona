@@ -3,17 +3,17 @@ import Grid1Background from 'https://cdn.jsdelivr.net/npm/threejs-components@0.0
 
 const bg = Grid1Background(document.getElementById('webgl-canvas'))
 
-// RĘCZNIE USTAWIONE KOLORY POCZĄTKOWE
-// Ustawiamy kolory siatki (trzy kolory dla gradientu)
-bg.grid.setColors([0x3366cc, 0x00ccff, 0xcc00ff]) // ZMIENIONE KOLORY: Niebieski, Cyjan, Magenta
-// Ustawiamy kolor i intensywność pierwszego światła
-bg.grid.light1.color.set(295E10) // ZMIENIONY KOLOR: Pomarańczowy
-bg.grid.light1.intensity = 800 // ZMIENIONA INTENSYWNOŚĆ
-// Ustawiamy kolor i intensywność drugiego światła
-bg.grid.light2.color.set(0x00ff66) // ZMIENIONY KOLOR: Zielony
-bg.grid.light2.intensity = 300 // ZMIENIONA INTENSYWNOŚĆ
+// DOPASOWANE KOLORY POCZĄTKOWE - ELEGANCKA FIOLETOWO-GRANATOWA PALETA
+// Ustawiamy kolory siatki (gradient przez podane kolory)
+bg.grid.setColors([0x171842, 0x2C1742, 0x411742]) // Ciemny granat, Fioletowy granat, Głęboki fiolet
+// Ustawiamy kolor i intensywność pierwszego światła (główne, fioletowe)
+bg.grid.light1.color.set(0x9c27b0) // Średni fiolet - pasujący do palety
+bg.grid.light1.intensity = 650 
+// Ustawiamy kolor i intensywność drugiego światła (wypełniające, różowe)
+bg.grid.light2.color.set(0xe91e63) // Różowo-fioletowy - dla kontrastu
+bg.grid.light2.intensity = 350 
 
-// Obsługa przycisku zmiany kolorów tła (LOSOWE - opcjonalnie możesz to też usunąć)
+// Obsługa przycisku zmiany kolorów tła
 const button1 = document.getElementById('colors-btn')
 button1.addEventListener('click', () => {
   bg.grid.setColors([0xffffff * Math.random(), 0xffffff * Math.random(), 0xffffff * Math.random()])
