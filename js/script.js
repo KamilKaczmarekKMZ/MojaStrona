@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modelViewer.style.transform = `translate(-50%, -50%) scale(${scale})`;
       modelViewer.style.filter = `drop-shadow(0 0 20px rgba(0, 255, 255, ${0.7 + Math.sin(scrollProgress * Math.PI) * 0.3}))`;
     } 
-    else if (scrollProgress > 0.8 && scrollProgress < 0.95) {
+    else if (scrollProgress > 0.8 && scrollProgress < 0.20) {
       const transitionProgress = (scrollProgress - 0.8) / 0.15;
       const scale = 1 - (transitionProgress * 0.8);
       const yPos = 50 + (transitionProgress * 30);
