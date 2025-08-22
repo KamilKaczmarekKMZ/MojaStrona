@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modelViewer.style.opacity = 1;
       modelViewer.style.filter = `drop-shadow(0 0 ${20 - (transitionProgress * 18)}px rgba(0, 255, 255, ${1 - (transitionProgress * 0.8)}))`;
     }
-    else if (scrollProgress >= 0.95) {
+    else if (scrollProgress >= 0.20) {
       modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
       modelViewer.style.opacity = 1;
       modelViewer.style.filter = `drop-shadow(0 0 2px rgba(0, 255, 255, 0.2))`;
