@@ -17,7 +17,6 @@ button1.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const modelViewer = document.querySelector('model-viewer');
   const buttonContainer = document.querySelector('.button-container');
-  const bottomButtons = document.querySelector('.button-container-bottom');
   const maxRotation = 720;
   const scrollHeight = document.body.scrollHeight - window.innerHeight;
   let lastScrollY = 0;
@@ -26,42 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const handleScroll = () => {
     const scrollY = window.scrollY;
     const scrollProgress = Math.min(scrollY / scrollHeight, 1);
-    const bottomThreshold = 0.7;
     
     velocity = scrollY - lastScrollY;
     lastScrollY = scrollY;
     
-    if (scrollY >= scrollHeight * bottomThreshold) {
-      const opacity = Math.min((scrollY - scrollHeight * bottomThreshold) / 500, 1);
-      bottomButtons.style.opacity = opacity;
-      bottomButtons.classList.add('visible');
-      buttonContainer.style.opacity = 1 - opacity;
-    } else {
-      bottomButtons.style.opacity = '0';
-      bottomButtons.classList.remove('visible');
-      buttonContainer.style.opacity = '1';
-    }
-    
-    if (scrollProgress <= 0.1) {
-      const rotation = (scrollProgress / 0.1) * maxRotation;
+    // Główna faza obrotu i początek ruchu w górę (0% - 20% scrolla)
+    if (scrollProgress <= 0.2) {
+      const rotation = (scrollProgress / 0.2) * maxRotation;
       const inertiaRotation = rotation + (velocity * 0.2);
       modelViewer.cameraOrbit = `${inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
       modelViewer.style.opacity = 1;
       
-      const scale = 1 + Math.sin(scrollProgress * Math.PI) * 0.2;
-      modelViewer.style.transform = `translate(-50%, -50%) scale(${scale})`;
-      modelViewer.style.filter = `drop-shadow(0 0 20px rgba(0, 255, 255, ${0.7 + Math.sin(scrollProgress * Math.PI) * 0.3}))`;
-    } 
-    else if (scrollProgress > 0.1 && scrollProgress < 0.20) {
-      const transitionProgress = (scrollProgress - 0.1) / 0.1;
-      const scale = 1 - (transitionProgress * 0.8);
-      const yPos = 50 + (transitionProgress * 90);
+      // Jednoczesne skalowanie i przesuwanie w górę od razu
+      const scale = 1 - (scrollProgress * 0.8); // Zmniejszanie od 1 do 0.2
+      const yPos = 50 + (scrollProgress * 90); // Przesuwanie w górę od 50% do 140%
       
       modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
-      modelViewer.style.opacity = 1;
-      modelViewer.style.filter = `drop-shadow(0 0 ${20 - (transitionProgress * 18)}px rgba(0, 255, 255, ${1 - (transitionProgress * 0.8)}))`;
-    }
-    else if (scrollProgress >= 0.20) {
+      modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(0, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
+    } 
+    // Pozycja końcowa (powyżej 20% scrolla)
+    else {
       modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
       modelViewer.style.opacity = 1;
       modelViewer.style.filter = `drop-shadow(0 0 2px rgba(0, 255, 255, 0.2))`;
