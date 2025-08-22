@@ -91,6 +91,42 @@ button {
   z-index: 3;
 }
 
+/* Style dla nowego elementu 3D tekstu */
+#three-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+
+#three-container.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#instructions {
+  position: absolute;
+  color: #666;
+  bottom: 0;
+  padding-bottom: 6px;
+  font-family: sans-serif;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+#three-container.visible ~ #instructions {
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   model-viewer {
     width: 80vw;
@@ -101,5 +137,10 @@ button {
 
   .buttons {
     bottom: 60px;
+  }
+
+  #instructions {
+    font-size: 14px;
+    padding-bottom: 10px;
   }
 }
