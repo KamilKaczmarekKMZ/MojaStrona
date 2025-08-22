@@ -4,10 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KK Automations</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  
+  <!-- WSZYSTKIE POTRZEBNE BIBLIOTEKI -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three.bas@0.0.14/dist/three.bas.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pnltri@1.6.0/pnltri.min.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -46,7 +51,7 @@
     </button>
   </div>
 
-  <!-- Nowy element 3D tekstu - DOKŁADNIE TAK JAK CHCESZ -->
+  <!-- Nowy element 3D tekstu -->
   <script>
     THREE.ShapeUtils.triangulateShape = (function () {
       var pnlTriangulator = new PNLTRI.Triangulator();
