@@ -7,7 +7,7 @@ const bg = Grid1Background(document.getElementById('webgl-canvas'))
 // Ustawiamy kolory siatki (trzy kolory dla gradientu)
 bg.grid.setColors([0x3366cc, 0x00ccff, 0xcc00ff]) // ZMIENIONE KOLORY: Niebieski, Cyjan, Magenta
 // Ustawiamy kolor i intensywność pierwszego światła
-bg.grid.light1.color.set(0xff9900) // ZMIENIONY KOLOR: Pomarańczowy
+bg.grid.light1.color.set(295E10) // ZMIENIONY KOLOR: Pomarańczowy
 bg.grid.light1.intensity = 800 // ZMIENIONA INTENSYWNOŚĆ
 // Ustawiamy kolor i intensywność drugiego światła
 bg.grid.light2.color.set(0x00ff66) // ZMIENIONY KOLOR: Zielony
