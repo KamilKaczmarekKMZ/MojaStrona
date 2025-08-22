@@ -147,3 +147,8 @@ button {
     padding-bottom: 10px;
   }
 }
+/* Naprawa dla Three.js canvas */
+#three-container canvas {
+  background: transparent !important;
+  mix-blend-mode: lighten;
+}
