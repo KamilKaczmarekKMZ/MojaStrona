@@ -91,50 +91,6 @@ button {
   z-index: 3;
 }
 
-/* Style dla nowego elementu 3D tekstu */
-#three-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 4;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 1s ease;
-}
-
-#three-container.visible {
-  opacity: 1;
-  pointer-events: all;
-}
-
-#instructions {
-  position: fixed;
-  color: #fff;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  padding-bottom: 6px;
-  font-family: sans-serif;
-  width: 100%;
-  text-align: center;
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0;
-  transition: opacity 1s ease;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-
-#three-container.visible ~ #instructions {
-  opacity: 1;
-}
-
-/* PRZEZROCZYSTE TŁO DLA ANIMACJI TEKSTU */
-#three-container canvas {
-  background: transparent !important;
-}
-
 @media (max-width: 768px) {
   model-viewer {
     width: 80vw;
@@ -145,10 +101,5 @@ button {
 
   .buttons {
     bottom: 60px;
-  }
-
-  #instructions {
-    font-size: 14px;
-    padding-bottom: 10px;
   }
 }
