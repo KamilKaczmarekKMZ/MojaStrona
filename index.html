@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KK Automations</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pnltri@1.6.0/pnltri.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -14,8 +17,6 @@
   </div>
 
   <!-- Oryginalna zawartość strony -->
- 
-
   <model-viewer
     src="assets/twoje-logo.glb"
     alt="Moje logo 3D"
@@ -45,6 +46,23 @@
     </button>
   </div>
 
+  <!-- Nowy element 3D tekstu -->
+  <script>
+    THREE.ShapeUtils.triangulateShape = (function () {
+      var pnlTriangulator = new PNLTRI.Triangulator();
+      return function triangulateShape(contour, holes) {
+        return pnlTriangulator.triangulate_polygon([contour].concat(holes));
+      };
+    })();
+  </script>
+
+  <div id="three-container"></div>
+
+  <div id="instructions">
+    click and drag to control the animation
+  </div>
+
   <script type="module" src="js/script.js"></script>
+  <script src="js/text-animation.js"></script>
 </body>
 </html>
