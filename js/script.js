@@ -3,14 +3,14 @@ import Grid1Background from 'https://cdn.jsdelivr.net/npm/threejs-components@0.0
 
 const bg = Grid1Background(document.getElementById('webgl-canvas'))
 
-// DOPASOWANE KOLORY POCZĄTKOWE - ELEGANCKA FIOLETOWO-GRANATOWA PALETA
+// DOPASOWANE KOLORY POCZĄTKOWE - ZIEMISTA PALETA
 // Ustawiamy kolory siatki (gradient przez podane kolory)
-bg.grid.setColors([0x171842, 0x2C1742, 0x411742]) // Ciemny granat, Fioletowy granat, Głęboki fiolet
-// Ustawiamy kolor i intensywność pierwszego światła (główne, fioletowe)
-bg.grid.light1.color.set(0x9c27b0) // Średni fiolet - pasujący do palety
+bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]) // Jasny beż, Ciemny brąz, Średni beż
+// Ustawiamy kolor i intensywność pierwszego światła (główne, kremowe)
+bg.grid.light1.color.set(0xF5F5DC) // Kremowy/biały - bardziej neutralny
 bg.grid.light1.intensity = 650 
-// Ustawiamy kolor i intensywność drugiego światła (wypełniające, różowe)
-bg.grid.light2.color.set(0xe91e63) // Różowo-fioletowy - dla kontrastu
+// Ustawiamy kolor i intensywność drugiego światła (wypełniające, brązowe)
+bg.grid.light2.color.set(0x8B4513) // Ciepły brąz - bardziej ziemisty
 bg.grid.light2.intensity = 350 
 
 // Obsługa przycisku zmiany kolorów tła
