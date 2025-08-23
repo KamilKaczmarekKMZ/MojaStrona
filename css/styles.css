@@ -1,160 +1,105 @@
-/* NOWY ELEMENT - Process Visualization */
-.process-container {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10%;
-  opacity: 0;
-  transform: translateY(100px);
-  transition: opacity 1s ease, transform 1s ease;
-  pointer-events: none;
+/* Tło Hexagonal Grid */
+#bg-app, #webgl-canvas {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -1; /* Umieszczamy tło za wszystkimi elementami */
 }
 
-.process-container.visible {
+body, html {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.8) 200%);
+}
+
+/* Oryginalne style strony */
+/* styles.css */
+@keyframes flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+    opacity: 1;
+  }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+    opacity: 0.4;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  block-size: 100%;
+  color-scheme: dark light;
+}
+
+body {
+  min-block-size: 1000vh; /* STRona jest teraz BARDZO długa */
+  font-family: system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+model-viewer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  height: 50vh;
+  max-width: 500px;
+  max-height: 500px;
+  background: transparent;
+  border: none;
+  --poster-color: transparent;
   opacity: 1;
-  transform: translateY(0);
-  pointer-events: all;
+  animation: none;
+  will-change: transform, opacity;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.7)); /* BIAŁA POŚWIATA */
+  transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
 }
 
-.process-title {
-  flex: 1;
-  max-width: 400px;
-  color: white;
-  text-align: left;
+model-viewer:hover {
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1)); /* BIAŁA POŚWIATA */
+  transform: translate(-50%, -50%) scale(1.05);
 }
 
-.process-title h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  font-weight: 300;
-}
-
-.process-title p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  opacity: 0.8;
-}
-
-.process-animation {
-  flex: 1;
+/* Style dla przycisku zmiany kolorów tła */
+.buttons {
+  position: fixed;
+  width: 100%;
+  bottom: 70px;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 15px;
+  z-index: 3;
 }
 
-/* Style dla stack animacji */
-.stack {
-  display: grid;
-  grid: [stack] / [stack];
-  perspective: 5000;
-  position: relative;
+button {
+  font-family: "Montserrat", serif;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  border: 1px solid grey;
+  padding: 4px 8px;
+  z-index: 3;
 }
 
-.card {
-  grid-area: stack;
-  --z-offset: 0;
-  --easeInOutCirc: cubic-bezier(0.85, 0, 0.15, 1);
-  --bg-opacity: 0%;
-  --scroll-progress: 0%;
-  
-  transform: 
-    rotateX(calc(45deg * var(--scroll-progress))) 
-    rotate(calc(45deg * var(--scroll-progress))) 
-    translateZ(calc(var(--z-offset) * var(--scroll-progress))) 
-    translateY(calc(10vh * var(--scroll-progress))) 
-    translateX(calc(10vh * var(--scroll-progress)));
-  
-  transition: none;
-  inline-size: 30vmin;
-  block-size: 30vmin;
-  box-sizing: border-box;
-  color: white;
-  background: lch(100 0 0 / 5%);
-  position: relative;
-}
-
-.card:nth-child(1) { --z-offset: 60vh; z-index: 5; }
-.card:nth-child(2) { --z-offset: 40vh; z-index: 4; }
-.card:nth-child(3) { --z-offset: 20vh; z-index: 3; }
-.card:nth-child(4) { --z-offset: 0vh; z-index: 2; }
-.card:nth-child(5) { --z-offset: -20vh; z-index: 1; }
-
-.card::after {
-  content: "Box";
-  position: absolute;
-  left: -45%;
-  top: 110%;
-  font-size: 1rem;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.75);
-  white-space: nowrap;
-  padding: 0.5ch 1ch;
-  border-radius: 3ch;
-  opacity: var(--scroll-progress);
-  transform: 
-    rotate(calc(-45deg * var(--scroll-progress))) 
-    rotateY(calc(45deg * var(--scroll-progress))) 
-    translateX(calc(15px * (1 - var(--scroll-progress))));
-  background: rgba(0, 0, 0, calc(0.7 * var(--scroll-progress)));
-}
-
-.card.content {
-  z-index: 5;
-  padding: 3vmin;
-  font-size: max(1.8vmin, 0.8rem);
-  line-height: 1.4;
-  background: rgba(255, 255, 255, var(--scroll-progress));
-  border: 3px solid rgba(255, 105, 180, var(--scroll-progress));
-  color: rgba(0, 0, 0, var(--scroll-progress));
-}
-
-.card.content::after { 
-  content: "Find area to automate"; 
-  left: -55%;
-}
-
-.card.padding::after { content: "Formalise"; }
-.card.border::after { content: "Build"; }
-.card.background::after { content: "Test"; }
-.card.box-shadow::after { content: "Implement"; }
-
-/* Responsywność */
-@media (max-width: 968px) {
-  .process-container {
-    flex-direction: column;
-    text-align: center;
-    padding: 0 5%;
-  }
-  
-  .process-title {
+@media (max-width: 768px) {
+  model-viewer {
+    width: 80vw;
+    height: 80vw;
     max-width: none;
-    margin-bottom: 3rem;
+    max-height: none;
   }
-  
-  .process-title h2 {
-    font-size: 2rem;
-  }
-  
-  .card {
-    inline-size: 25vmin;
-    block-size: 25vmin;
-  }
-}
 
-@media (max-width: 540px) {
-  .card {
-    inline-size: 35vmin;
-    block-size: 35vmin;
-  }
-  
-  .card::after {
-    left: -30%;
-    top: 80%;
-    font-size: 0.8rem;
-  }
-  
-  .card.content::after {
-    left: -40%;
+  .buttons {
+    bottom: 60px;
   }
 }
