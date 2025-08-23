@@ -56,8 +56,6 @@ body {
   max-height: 500px;
   z-index: 2;
   pointer-events: none;
-  transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
-  will-change: transform, opacity, filter;
 }
 
 model-viewer {
@@ -75,6 +73,7 @@ model-viewer {
 .model-container:hover {
   filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1)); /* BIAŁA POŚWIATA */
   transform: translate(-50%, -50%) scale(1.05);
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 /* Style dla przycisku zmiany kolorów tła */
@@ -96,6 +95,7 @@ button {
   border: 1px solid grey;
   padding: 4px 8px;
   z-index: 3;
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
