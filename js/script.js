@@ -25,74 +25,41 @@ button1.addEventListener('click', () => {
 
 // Oryginalny kod strony
 document.addEventListener('DOMContentLoaded', () => {
-  const modelContainer = document.querySelector('.model-container');
   const modelViewer = document.querySelector('model-viewer');
   const maxRotation = 720;
-  let scrollHeight = document.body.scrollHeight - window.innerHeight;
+  const scrollHeight = document.body.scrollHeight - window.innerHeight;
   let lastScrollY = 0;
   let velocity = 0;
-  let scrollRequestId = null;
   
   const handleScroll = () => {
     const scrollY = window.scrollY;
     const scrollProgress = Math.min(scrollY / scrollHeight, 1);
     
     velocity = scrollY - lastScrollY;
-    // Ograniczenie wartości velocity dla płynniejszej animacji
-    velocity = Math.max(Math.min(velocity, 50), -50);
     lastScrollY = scrollY;
     
     // Główna faza obrotu i początek ruchu w górę (0% - 20% scrolla)
     if (scrollProgress <= 0.2) {
       const rotation = (scrollProgress / 0.2) * maxRotation;
       const inertiaRotation = rotation + (velocity * 0.2);
+      modelViewer.cameraOrbit = `${inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
+      modelViewer.style.opacity = 1;
       
       // Jednoczesne skalowanie i przesuwanie w górę od razu
       const scale = 1 - (scrollProgress * 0.8); // Zmniejszanie od 1 do 0.2
       const yPos = 50 + (scrollProgress * 90); // Przesuwanie w górę od 50% do 140%
       
-      // ZMIANA: rotateX na rotateY dla obrotu wokół osi Y (bok)
-      modelContainer.style.transform = `translate(-50%, -${yPos}%) scale(${scale}) rotateY(${inertiaRotation}deg)`;
-      modelContainer.style.opacity = 1;
-      modelContainer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
+      modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
+      modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`; /* BIAŁA POŚWIATA */
     } 
     // Pozycja końcowa (powyżej 20% scrolla)
     else {
-      // ZMIANA: rotateX na rotateY
-      modelContainer.style.transform = `translate(-50%, -140%) scale(0.2) rotateY(${maxRotation}deg)`;
-      modelContainer.style.opacity = 1;
-      modelContainer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`;
+      modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
+      modelViewer.style.opacity = 1;
+      modelViewer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`; /* BIAŁA POŚWIATA */
     }
-    
-    scrollRequestId = null;
   };
 
-  // Obsługa zmiany rozmiaru okna
-  const handleResize = () => {
-    scrollHeight = document.body.scrollHeight - window.innerHeight;
-    if (scrollRequestId) {
-      cancelAnimationFrame(scrollRequestId);
-    }
-    scrollRequestId = requestAnimationFrame(handleScroll);
-  };
-
-  window.addEventListener('scroll', () => {
-    if (!scrollRequestId) {
-      scrollRequestId = requestAnimationFrame(handleScroll);
-    }
-  });
-
-  window.addEventListener('resize', handleResize);
-  
-  // Inicjalne wywołanie
+  window.addEventListener('scroll', handleScroll);
   handleScroll();
-
-  // Czyszczenie przy opuszczeniu strony
-  window.addEventListener('beforeunload', () => {
-    if (scrollRequestId) {
-      cancelAnimationFrame(scrollRequestId);
-    }
-    window.removeEventListener('resize', handleResize);
-    window.removeEventListener('scroll', handleScroll);
-  });
 });
