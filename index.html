@@ -13,30 +13,30 @@
     <canvas id="webgl-canvas"></canvas>
   </div>
 
-  <!-- Oryginalna zawartość strony -->
- 
-
-  <model-viewer
-    src="assets/twoje-logo.glb"
-    alt="Moje logo 3D"
-    interaction-prompt="none"
-    disable-zoom
-    disable-pan
-    disable-tap
-    camera-orbit="0deg 90deg 0deg"
-    exposure="1.2"
-    environment-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
-    shadow-intensity="1"
-    shadow-softness="0.5"
-    auto-rotate
-    auto-rotate-delay="1000"
-    loading="eager"
-    reveal="auto"
-    style="background-color: transparent;"
-  >
-    <div slot="hotspot-1" data-position="1m 1m 1m" data-normal="0 0 1"></div>
-    <div slot="hotspot-2" data-position="-1m -1m -1m" data-normal="0 0 -1"></div>
-  </model-viewer>
+  <!-- Kontener dla model-viewer do kontrolowania transformacji -->
+  <div class="model-container">
+    <model-viewer
+      src="assets/twoje-logo.glb"
+      alt="Moje logo 3D"
+      interaction-prompt="none"
+      disable-zoom
+      disable-pan
+      disable-tap
+      camera-orbit="0deg 90deg 0deg"
+      exposure="1.2"
+      environment-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
+      shadow-intensity="1"
+      shadow-softness="0.5"
+      auto-rotate="false"
+      auto-rotate-delay="1000"
+      loading="eager"
+      reveal="auto"
+      style="background-color: transparent;"
+    >
+      <div slot="hotspot-1" data-position="1m 1m 1m" data-normal="0 0 1"></div>
+      <div slot="hotspot-2" data-position="-1m -1m -1m" data-normal="0 0 -1"></div>
+    </model-viewer>
+  </div>
 
   <!-- Nowy przycisk do zmiany kolorów tła -->
   <div class="buttons">
