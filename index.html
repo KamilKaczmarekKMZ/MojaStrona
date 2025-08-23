@@ -6,6 +6,8 @@
   <title>KK Automations</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
+  <!-- Nowy CSS dla elementu "stack" -->
+  <link rel="stylesheet" href="css/stack-element.css">
 </head>
 <body>
   <!-- Tło Hexagonal Grid -->
@@ -14,8 +16,6 @@
   </div>
 
   <!-- Oryginalna zawartość strony -->
- 
-
   <model-viewer
     src="assets/twoje-logo.glb"
     alt="Moje logo 3D"
@@ -38,6 +38,20 @@
     <div slot="hotspot-2" data-position="-1m -1m -1m" data-normal="0 0 -1"></div>
   </model-viewer>
 
+  <!-- NOWY ELEMENT "STACK" DODANY TUTAJ -->
+  <section class="new-stack-section">
+    <div class="stack">
+      <div class="content card">
+        <p><b><span id="desktop-prompt"></span><span id="mobile-prompt"></span> Our Simple & Smart Process</b></p>
+        <p>Everything you need to collaborate, create, and scale, all in one place.</p>
+      </div>
+      <div class="padding card"></div>
+      <div class="border card"></div>
+      <div class="background card"></div>
+      <div class="box-shadow card"></div>
+    </div>
+  </section>
+
   <!-- Nowy przycisk do zmiany kolorów tła -->
   <div class="buttons">
     <button type="button" id="colors-btn">
@@ -46,5 +60,7 @@
   </div>
 
   <script type="module" src="js/script.js"></script>
+  <!-- Nowy JS dla elementu "stack" -->
+  <script type="module" src="js/stack-element.js"></script>
 </body>
 </html>
