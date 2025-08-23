@@ -25,41 +25,52 @@ button1.addEventListener('click', () => {
 
 // Oryginalny kod strony
 document.addEventListener('DOMContentLoaded', () => {
+  const modelContainer = document.querySelector('.model-container');
   const modelViewer = document.querySelector('model-viewer');
   const maxRotation = 720;
   const scrollHeight = document.body.scrollHeight - window.innerHeight;
   let lastScrollY = 0;
   let velocity = 0;
+  let scrollRequestId = null;
   
   const handleScroll = () => {
     const scrollY = window.scrollY;
     const scrollProgress = Math.min(scrollY / scrollHeight, 1);
     
     velocity = scrollY - lastScrollY;
+    // Ograniczenie wartości velocity dla płynniejszej animacji
+    velocity = Math.max(Math.min(velocity, 50), -50);
     lastScrollY = scrollY;
     
     // Główna faza obrotu i początek ruchu w górę (0% - 20% scrolla)
     if (scrollProgress <= 0.2) {
       const rotation = (scrollProgress / 0.2) * maxRotation;
       const inertiaRotation = rotation + (velocity * 0.2);
-      modelViewer.cameraOrbit = `${inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
-      modelViewer.style.opacity = 1;
       
       // Jednoczesne skalowanie i przesuwanie w górę od razu
       const scale = 1 - (scrollProgress * 0.8); // Zmniejszanie od 1 do 0.2
       const yPos = 50 + (scrollProgress * 90); // Przesuwanie w górę od 50% do 140%
       
-      modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
-      modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`; /* BIAŁA POŚWIATA */
+      modelContainer.style.transform = `translate(-50%, -${yPos}%) scale(${scale}) rotateX(${inertiaRotation}deg)`;
+      modelContainer.style.opacity = 1;
+      modelContainer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
     } 
     // Pozycja końcowa (powyżej 20% scrolla)
     else {
-      modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
-      modelViewer.style.opacity = 1;
-      modelViewer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`; /* BIAŁA POŚWIATA */
+      modelContainer.style.transform = `translate(-50%, -140%) scale(0.2) rotateX(${maxRotation}deg)`;
+      modelContainer.style.opacity = 1;
+      modelContainer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`;
     }
+    
+    scrollRequestId = null;
   };
 
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', () => {
+    if (!scrollRequestId) {
+      scrollRequestId = requestAnimationFrame(handleScroll);
+    }
+  });
+  
+  // Inicjalne wywołanie
   handleScroll();
 });
