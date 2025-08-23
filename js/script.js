@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modelContainer = document.querySelector('.model-container');
   const modelViewer = document.querySelector('model-viewer');
   const maxRotation = 720;
-  const scrollHeight = document.body.scrollHeight - window.innerHeight;
+  let scrollHeight = document.body.scrollHeight - window.innerHeight;
   let lastScrollY = 0;
   let velocity = 0;
   let scrollRequestId = null;
@@ -51,13 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const scale = 1 - (scrollProgress * 0.8); // Zmniejszanie od 1 do 0.2
       const yPos = 50 + (scrollProgress * 90); // Przesuwanie w górę od 50% do 140%
       
-      modelContainer.style.transform = `translate(-50%, -${yPos}%) scale(${scale}) rotateX(${inertiaRotation}deg)`;
+      // ZMIANA: rotateX na rotateY dla obrotu wokół osi Y (bok)
+      modelContainer.style.transform = `translate(-50%, -${yPos}%) scale(${scale}) rotateY(${inertiaRotation}deg)`;
       modelContainer.style.opacity = 1;
       modelContainer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
     } 
     // Pozycja końcowa (powyżej 20% scrolla)
     else {
-      modelContainer.style.transform = `translate(-50%, -140%) scale(0.2) rotateX(${maxRotation}deg)`;
+      // ZMIANA: rotateX na rotateY
+      modelContainer.style.transform = `translate(-50%, -140%) scale(0.2) rotateY(${maxRotation}deg)`;
       modelContainer.style.opacity = 1;
       modelContainer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`;
     }
@@ -65,12 +67,32 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollRequestId = null;
   };
 
+  // Obsługa zmiany rozmiaru okna
+  const handleResize = () => {
+    scrollHeight = document.body.scrollHeight - window.innerHeight;
+    if (scrollRequestId) {
+      cancelAnimationFrame(scrollRequestId);
+    }
+    scrollRequestId = requestAnimationFrame(handleScroll);
+  };
+
   window.addEventListener('scroll', () => {
     if (!scrollRequestId) {
       scrollRequestId = requestAnimationFrame(handleScroll);
     }
   });
+
+  window.addEventListener('resize', handleResize);
   
   // Inicjalne wywołanie
   handleScroll();
+
+  // Czyszczenie przy opuszczeniu strony
+  window.addEventListener('beforeunload', () => {
+    if (scrollRequestId) {
+      cancelAnimationFrame(scrollRequestId);
+    }
+    window.removeEventListener('resize', handleResize);
+    window.removeEventListener('scroll', handleScroll);
+  });
 });
