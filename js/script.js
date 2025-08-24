@@ -20,7 +20,7 @@ button1.addEventListener('click', () => {
   bg.grid.light2.intensity = 250 + Math.random() * 250
 })
 
-// Oryginalny kod strony
+// Oryginalny kod strony - ZMIENIONE Z 0.2 NA 0.05
 document.addEventListener('DOMContentLoaded', () => {
   const modelViewer = document.querySelector('model-viewer');
   const maxRotation = 720;
@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     totalRotation += Math.abs(velocity) * 0.2;
 
-    if (scrollProgress <= 0.2) {
+    // ZMIENIONE: 0.2 → 0.05 (20% → 5%)
+    if (scrollProgress <= 0.05) {
       modelViewer.cameraOrbit = `${-totalRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
       modelViewer.style.opacity = 1;
       
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modelViewer.style.transform = `translate(-50%, -${yPos}%) scale(${scale})`;
       modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
     } 
+    // Pozycja końcowa (powyżej 5% scrolla)
     else {
       modelViewer.style.transform = `translate(-50%, -140%) scale(0.2)`;
       modelViewer.style.opacity = 1;
