@@ -6,18 +6,16 @@
   bottom: 0;
   left: 0;
   overflow: hidden;
-  z-index: -1; /* Umieszczamy tło za wszystkimi elementami */
+  z-index: -1;
 }
 
 body, html {
   margin: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.8) 200%);
+  /* USUŃ TĘ LINIĘ: background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.8) 200%); */
 }
 
-/* Oryginalne style strony */
-/* styles.css */
 @keyframes flicker {
   0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
     opacity: 1;
@@ -39,9 +37,10 @@ html {
 }
 
 body {
-  min-block-size: 1000vh; /* STRona jest teraz BARDZO długa */
+  min-block-size: 1000vh;
   font-family: system-ui, sans-serif;
   overflow-x: hidden;
+  background: transparent !important; /* DODAJ TO */
 }
 
 model-viewer {
@@ -61,16 +60,15 @@ model-viewer {
   will-change: transform, opacity;
   z-index: 2;
   pointer-events: none;
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.7)); /* BIAŁA POŚWIATA */
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.7));
   transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
 }
 
 model-viewer:hover {
-  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1)); /* BIAŁA POŚWIATA */
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1));
   transform: translate(-50%, -50%) scale(1.05);
 }
 
-/* Style dla przycisku zmiany kolorów tła */
 .buttons {
   position: fixed;
   width: 100%;
@@ -91,6 +89,126 @@ button {
   z-index: 3;
 }
 
+/* NOWE STYLE DLA SEKCJI - CAŁKOWICIE PRZEZROCZYSTE */
+.content-sections {
+  position: relative;
+  z-index: 1;
+  margin-top: 100vh;
+  padding: 0;
+}
+
+.section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.hero {
+  text-align: center;
+  padding-top: 10vh;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.hero .lead {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.services h2,
+.about h2,
+.contact h2 {
+  font-size: 3rem;
+  color: white;
+  text-align: center;
+  margin-bottom: 3rem;
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background: transparent;
+  padding: 2rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h3 {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.card p {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.about p {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.8;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.contact {
+  text-align: center;
+}
+
+.contact p {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.contact-info {
+  background: transparent;
+  padding: 2rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: inline-block;
+}
+
+.contact-info p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
 @media (max-width: 768px) {
   model-viewer {
     width: 80vw;
@@ -101,5 +219,27 @@ button {
 
   .buttons {
     bottom: 60px;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero .lead {
+    font-size: 1.2rem;
+  }
+
+  .services h2,
+  .about h2,
+  .contact h2 {
+    font-size: 2rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 1.5rem;
   }
 }
