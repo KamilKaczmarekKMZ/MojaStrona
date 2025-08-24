@@ -45,7 +45,6 @@ window.addEventListener('load', () => {
         return;
     }
     
-    const maxRotation = 720;
     const scrollHeight = document.body.scrollHeight - window.innerHeight;
     let lastScrollY = 0;
     let velocity = 0;
@@ -68,17 +67,15 @@ window.addEventListener('load', () => {
     let isAnimating = false;
     let originalPosition = null;
     let originalStyles = {};
+    let lastScrollDirection = 'down'; // Śledzenie kierunku scrolla
 
-    // INTERSECTION OBSERVER - wykrywanie kiedy sekcja wchodzi do widoku
+    // INTERSECTION OBSERVER - TYLKO START ANIMACJI
     const observer = new IntersectionObserver(
         (entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !isAnimating) {
                     // Sekcja w widoku - przyklejamy stack
                     startAnimation();
-                } else if (!entry.isIntersecting && isAnimating) {
-                    // Sekcja poza widokiem - odklejamy stack
-                    stopAnimation();
                 }
             });
         },
@@ -110,7 +107,8 @@ window.addEventListener('load', () => {
             margin: stack.style.margin,
             zIndex: stack.style.zIndex,
             opacity: stack.style.opacity,
-            pointerEvents: stack.style.pointerEvents
+            pointerEvents: stack.style.pointerEvents,
+            transition: stack.style.transition
         };
         
         // Przyklej do środka
@@ -124,44 +122,39 @@ window.addEventListener('load', () => {
         stack.style.zIndex = '100';
         stack.style.opacity = '1';
         stack.style.pointerEvents = 'auto';
-        stack.style.transition = 'opacity 0.3s ease';
+        stack.style.transition = 'opacity 0.3s ease, transform 0.3s ease'; // SZYBSZE przejścia (0.3s)
         
         isAnimating = true;
     }
 
-    function stopAnimation() {
-        if (!stack || !originalPosition || !originalStyles) return;
+    function reverseAnimation() {
+        if (!stack || !isAnimating) return;
         
-        // ZAPISZ AKTUALNĄ POZYCJĘ W DOKUMENCIE (gdzie użytkownik aktualnie scrolluje)
-        const currentScrollY = window.scrollY;
+        // SZYBSZE ODWROTNE ZANIKANIE (0.3s)
+        stack.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        stack.style.opacity = '0';
+        stack.style.pointerEvents = 'none';
+        stack.style.transform = 'translate(-50%, -50%) scale(0.9)'; // Delikatne zmniejszenie
         
-        // Po prostu przywróć oryginalne style - element wróci na swoje miejsce w flow dokumentu
-        // To jest najprostsze i najbardziej przewidywalne rozwiązanie
-        Object.keys(originalStyles).forEach(key => {
-            stack.style[key] = originalStyles[key];
-        });
-        
-        // Przeskrolluj delikatnie do pozycji gdzie element powinien być
-        // To zapobiegnie gwałtownym przeskokom
+        // Po zakończeniu animacji, przywróć oryginalne style
         setTimeout(() => {
-            const elementTop = stack.offsetTop;
-            const viewportHeight = window.innerHeight;
+            if (!stack || !originalStyles) return;
             
-            // Jeśli element jest poniżej viewportu, przeskrolluj do niego płynnie
-            if (elementTop > currentScrollY + viewportHeight) {
-                window.scrollTo({
-                    top: elementTop - viewportHeight / 3,
-                    behavior: 'smooth'
-                });
-            }
-        }, 100);
-        
-        isAnimating = false;
+            Object.keys(originalStyles).forEach(key => {
+                stack.style[key] = originalStyles[key];
+            });
+            
+            isAnimating = false;
+        }, 300); // SZYBSZE - czas trwania odwrotnej animacji (300ms)
     }
 
     const handleModelScroll = () => {
         const scrollY = window.scrollY;
         const scrollProgress = Math.min(scrollY / scrollHeight, 1);
+        
+        // Śledzenie kierunku scrolla
+        const currentScrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+        lastScrollDirection = currentScrollDirection;
         
         velocity = scrollY - lastScrollY;
         lastScrollY = scrollY;
@@ -192,6 +185,7 @@ window.addEventListener('load', () => {
         const sectionRect = processSection.getBoundingClientRect();
         const sectionTop = scrollY + sectionRect.top;
         const sectionHeight = sectionRect.height;
+        const sectionBottom = sectionTop + sectionHeight;
         
         // Oblicz progres względem pozycji sekcji process
         let progress = (scrollY - sectionTop + windowHeight) / (sectionHeight + windowHeight);
@@ -202,18 +196,36 @@ window.addEventListener('load', () => {
             card.style.setProperty('--scroll-progress', progress);
         });
 
-        // Płynne zanikanie elementu gdy jest poniżej sekcji
-        if (scrollY > sectionTop + sectionHeight) {
-            // Oblicz jak daleko poniżej sekcji jest użytkownik
-            const distanceBelow = scrollY - (sectionTop + sectionHeight);
-            const fadeDistance = windowHeight * 0.5; // Odległość w której ma nastąpić zanikanie
-            const opacity = Math.max(0, 1 - (distanceBelow / fadeDistance));
+        if (isAnimating) {
+            // SZYBSZE ZANIKANIE - mniejsza odległość dla szybszej reakcji
+            const distanceFromSection = Math.abs(scrollY - (sectionTop - windowHeight * 0.3));
+            const maxFadeDistance = windowHeight * 1.5; // MNIEJ: 1.5x wysokość okna dla SZYBSZEGO zanikania
             
-            stack.style.opacity = opacity;
+            let opacity = 1;
+            
+            if (scrollY > sectionBottom) {
+                // Poniżej sekcji - SZYBSZE zanikanie
+                const distanceBelow = scrollY - sectionBottom;
+                opacity = Math.max(0, 1 - (distanceBelow / maxFadeDistance));
+            } else if (scrollY < sectionTop - windowHeight * 0.3) {
+                // Powyżej sekcji - SZYBSZE pojawianie się przy scrollu w dół
+                const distanceAbove = (sectionTop - windowHeight * 0.3) - scrollY;
+                opacity = Math.max(0, 1 - (distanceAbove / maxFadeDistance));
+            }
+            
+            // SZYBSZA zmiana opacity z animacją
+            stack.style.transition = 'opacity 0.2s ease'; // SZYBCIEJ (0.2s)
+            stack.style.opacity = opacity.toString();
             stack.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
-        } else {
-            stack.style.opacity = '1';
-            stack.style.pointerEvents = 'auto';
+            
+            // SZYBSZE reakcje - mniejsze odległości dla triggerowania
+            if (lastScrollDirection === 'up' && scrollY < sectionTop - windowHeight * 0.6) {
+                reverseAnimation(); // SZYBCIEJ przy scrollu w górę
+            }
+            
+            if (lastScrollDirection === 'down' && scrollY > sectionBottom + windowHeight * 1.8) {
+                reverseAnimation(); // SZYBCIEJ przy scrollu w dół
+            }
         }
     };
 
