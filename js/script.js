@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scrollProgress <= 0.2) {
       const rotation = (scrollProgress / 0.2) * maxRotation;
       const inertiaRotation = rotation + (velocity * 0.2);
-      modelViewer.cameraOrbit = `${inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
+      modelViewer.cameraOrbit = `${-inertiaRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
       modelViewer.style.opacity = 1;
       
       // Jednoczesne skalowanie i przesuwanie w górę od razu
