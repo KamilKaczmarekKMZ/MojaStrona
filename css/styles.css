@@ -13,7 +13,6 @@ body, html {
   margin: 0;
   width: 100%;
   height: 100%;
-  /* USUŃ TĘ LINIĘ: background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.8) 200%); */
 }
 
 @keyframes flicker {
@@ -40,7 +39,7 @@ body {
   min-block-size: 1000vh;
   font-family: system-ui, sans-serif;
   overflow-x: hidden;
-  background: transparent !important; /* DODAJ TO */
+  background: transparent !important;
 }
 
 model-viewer {
@@ -209,6 +208,227 @@ button {
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
 }
 
+/* SEKCJA PROCESS */
+.process {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* STACK - normalny element w flow strony z PŁYNNYM PRZEJŚCIEM */
+.stack {
+  display: grid;
+  grid: [stack] / [stack];
+  perspective: 5000px;
+  margin: 2rem 0;
+  z-index: 10;
+  opacity: 1;
+  pointer-events: auto;
+  transition: all 0.8s ease;
+  will-change: transform, opacity;
+}
+
+.stack:before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: color-mix(in lch, lch(95 0 0) calc(100% - var(--scroll-progress, 0%)), lch(15 0 0) var(--scroll-progress, 0%));
+  pointer-events: none;
+  z-index: -1;
+}
+
+.stack .card {
+  grid-area: stack;
+  --z-offset: 0;
+  --easeInOutCirc: cubic-bezier(0.85, 0, 0.15, 1);
+  --bg-opacity: 0%;
+  transform: 
+    rotateX(calc(45deg * var(--scroll-progress, 0))) 
+    rotate(calc(45deg * var(--scroll-progress, 0))) 
+    translateZ(calc(var(--z-offset) * var(--scroll-progress, 0))) 
+    translateY(calc(20vh * var(--scroll-progress, 0))) 
+    translateX(calc(20vh * var(--scroll-progress, 0)));
+  transition: transform 0.1s linear;
+  inline-size: 40vmin;
+  block-size: 40vmin;
+  box-sizing: border-box;
+  color: white;
+  background: lch(100 0 0 / 5%);
+  position: relative;
+  will-change: transform;
+}
+
+@media (orientation: landscape) {
+  .stack .card {
+    inline-size: 40vh;
+    block-size: 40vh;
+  }
+}
+
+@media (max-width: 540px) {
+  .stack .card {
+    inline-size: 60vw;
+    block-size: 60vw;
+  }
+}
+
+.stack .card:nth-child(1) {
+  z-index: 5;
+  --z-offset: 75vh;
+}
+
+.stack .card:nth-child(2) {
+  z-index: 4;
+  --z-offset: 50vh;
+}
+
+.stack .card:nth-child(3) {
+  z-index: 3;
+  --z-offset: 25vh;
+}
+
+.stack .card:nth-child(4) {
+  z-index: 2;
+  --z-offset: 0vh;
+}
+
+.stack .card:nth-child(5) {
+  z-index: 1;
+  --z-offset: -25vh;
+}
+
+.stack .card::after {
+  content: "Box";
+  position: absolute;
+  left: -45%;
+  top: 110%;
+  font-size: 1.25rem;
+  text-shadow: 0 1px 3px lch(0 0 0 / 75%);
+  white-space: nowrap;
+  padding: 1ch 2ch;
+  border-radius: 4ch;
+  opacity: var(--scroll-progress, 0);
+  transform: 
+    rotate(calc(-45deg * var(--scroll-progress, 0))) 
+    rotateY(calc(45deg * var(--scroll-progress, 0))) 
+    translateX(calc(20px * (1 - var(--scroll-progress, 0))));
+  background: lch(100 100 50 / calc(90% * var(--scroll-progress, 0)));
+  color: black;
+  font-weight: bold;
+}
+
+@media (max-width: 540px) {
+  .stack .card::after {
+    left: -20%;
+    top: 70%;
+    font-size: 1rem;
+  }
+}
+
+.stack .card.content {
+  padding: 5vmin;
+  font-size: max(2.5vmin, .9rem);
+  line-height: 1.5;
+  background: color-mix(in lch, lch(100 0 0) calc(100% - var(--scroll-progress, 0)), transparent var(--scroll-progress, 0));
+  border: 5px solid color-mix(in lch, hotpink calc(100% - var(--scroll-progress, 0)), transparent var(--scroll-progress, 0));
+  color: color-mix(in lch, black calc(100% - var(--scroll-progress, 0)), white var(--scroll-progress, 0));
+}
+
+.stack .card.content::after { 
+  content: "Find area to automate"; 
+  left: -50%;
+  background: lch(100 100 50 / calc(90% * var(--scroll-progress, 0)));
+}
+
+@media (max-width: 540px) {
+  .stack .card.content::after {
+    left: -23%;
+  }
+}
+
+.stack .card.padding {
+  background: transparent;
+}
+
+.stack .card.padding::after { content: "Formalise"; }
+
+.stack .card.padding::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    0% 0%, 0% 100%, 
+    5vmin 100%, 5vmin 5vmin, 
+    calc(100% - 5vmin) 5vmin, 
+    calc(100% - 5vmin) calc(100% - 5vmin), 
+    5vmin calc(100% - 5vmin), 5vmin 100%, 
+    100% 100%, 100% 0%
+  );
+  background: repeating-linear-gradient(
+    -45deg, 
+    cyan, cyan 1px, 
+    lch(100 0 0 / 5%) 1px, lch(100 0 0 / 5%) 10px
+  );
+  opacity: var(--scroll-progress, 0);
+}
+
+.stack .card.border {
+  background: transparent;
+}
+
+.stack .card.border::after { content: "Build"; }
+
+.stack .card.border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    0% 0%, 0% 100%, 
+    5px 100%, 5px 5px, 
+    calc(100% - 5px) 5px, 
+    calc(100% - 5px) calc(100% - 5px), 
+    5px calc(100% - 5px), 5px 100%, 
+    100% 100%, 100% 0%
+  );
+  background: linear-gradient(hotpink, hotpink);
+  opacity: var(--scroll-progress, 0);
+}
+
+.stack .card.background {
+  background: rgba(255, 255, 255, var(--scroll-progress, 0));
+}
+
+.stack .card.background::after { 
+  content: "Test"; 
+  left: -45%;
+}
+
+@media (max-width: 540px) {
+  .stack .card.background::after {
+    left: -20%;
+  }
+}
+
+.stack .card.box-shadow {
+  background: transparent;
+  box-shadow:
+    0 2.8px 2.2px rgba(0, 0, 0, calc(0.02 * var(--scroll-progress, 0))),
+    0 6.7px 5.3px rgba(0, 0, 0, calc(0.028 * var(--scroll-progress, 0))),
+    0 12.5px 10px rgba(0, 0, 0, calc(0.035 * var(--scroll-progress, 0))),
+    0 22.3px 17.9px rgba(0, 0, 0, calc(0.042 * var(--scroll-progress, 0))),
+    0 41.8px 33.4px rgba(0, 0, 0, calc(0.05 * var(--scroll-progress, 0))),
+    0 100px 80px rgba(0, 0, 0, calc(0.07 * var(--scroll-progress, 0)))
+  ;
+}
+
+.stack .card.box-shadow::after { content: "Implement"; }
+
+#desktop-prompt, #mobile-prompt {
+  display: inline !important;
+}
+
 @media (max-width: 768px) {
   model-viewer {
     width: 80vw;
@@ -241,5 +461,14 @@ button {
 
   .card {
     padding: 1.5rem;
+  }
+
+  .stack {
+    margin: 1rem 0;
+  }
+  
+  .stack .card {
+    inline-size: 80vw;
+    block-size: 80vw;
   }
 }
