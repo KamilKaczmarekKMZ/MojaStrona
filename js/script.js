@@ -45,6 +45,7 @@ window.addEventListener('load', () => {
         return;
     }
     
+    const maxRotation = 720;
     const scrollHeight = document.body.scrollHeight - window.innerHeight;
     let lastScrollY = 0;
     let velocity = 0;
@@ -57,6 +58,7 @@ window.addEventListener('load', () => {
         return;
     }
     
+    const cards = document.querySelectorAll('.stack .card');
     const processSection = document.querySelector('.process');
     if (!processSection) {
         console.error('Sekcja .process nie istnieje');
@@ -64,18 +66,19 @@ window.addEventListener('load', () => {
     }
     
     let isAnimating = false;
-    let animationCompleted = false;
+    let originalPosition = null;
     let originalStyles = {};
-    let lastAnimationTime = 0;
-    const ANIMATION_THROTTLE = 16; // ~60fps
 
     // INTERSECTION OBSERVER - wykrywanie kiedy sekcja wchodzi do widoku
     const observer = new IntersectionObserver(
         (entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting && !isAnimating && !animationCompleted) {
-                    // Sekcja w widoku - płynne pojawianie i przyklejanie stack
-                    startSmoothAnimation();
+                if (entry.isIntersecting && !isAnimating) {
+                    // Sekcja w widoku - przyklejamy stack
+                    startAnimation();
+                } else if (!entry.isIntersecting && isAnimating) {
+                    // Sekcja poza widokiem - odklejamy stack
+                    stopAnimation();
                 }
             });
         },
@@ -84,25 +87,17 @@ window.addEventListener('load', () => {
 
     observer.observe(processSection);
 
-    // Obsługa zmiany rozmiaru okna
-    window.addEventListener('resize', handleWindowResize);
-
-    function handleWindowResize() {
-        if (isAnimating || animationCompleted) {
-            repositionFixedStack();
-        }
-    }
-
-    function repositionFixedStack() {
-        if (stack.style.position === 'fixed') {
-            stack.style.left = '50%';
-            stack.style.top = '50%';
-            stack.style.transform = 'translate(-50%, -50%)';
-        }
-    }
-
-    function startSmoothAnimation() {
-        if (!stack || animationCompleted) return;
+    function startAnimation() {
+        if (!stack) return;
+        
+        // Zapisz oryginalną pozycję i style
+        const rect = stack.getBoundingClientRect();
+        originalPosition = {
+            top: rect.top + window.scrollY,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height
+        };
         
         // Zapisz oryginalne style
         originalStyles = {
@@ -118,38 +113,50 @@ window.addEventListener('load', () => {
             pointerEvents: stack.style.pointerEvents
         };
         
-        // Ustaw początkowy styl - pojawianie się
-        stack.style.opacity = '0';
-        stack.style.pointerEvents = 'none';
+        // Przyklej do środka
+        stack.style.position = 'fixed';
+        stack.style.top = '50%';
+        stack.style.left = '50%';
+        stack.style.transform = 'translate(-50%, -50%)';
+        stack.style.width = originalPosition.width + 'px';
+        stack.style.height = originalPosition.height + 'px';
+        stack.style.margin = '0';
+        stack.style.zIndex = '100';
+        stack.style.opacity = '1';
+        stack.style.pointerEvents = 'auto';
+        stack.style.transition = 'opacity 0.3s ease';
         
-        // Poczekaj chwilę i płynnie pojaw oraz przyklej do środka
-        setTimeout(() => {
-            stack.style.opacity = '1';
-            stack.style.position = 'fixed';
-            stack.style.top = '50%';
-            stack.style.left = '50%';
-            stack.style.transform = 'translate(-50%, -50%)';
-            stack.style.width = 'auto';
-            stack.style.height = 'auto';
-            stack.style.margin = '0';
-            stack.style.zIndex = '1000'; // Wyższy niż inne elementy
-            stack.style.pointerEvents = 'auto';
-            
-            isAnimating = true;
-            animationCompleted = false;
-        }, 100);
+        isAnimating = true;
     }
 
-    function resetStackStyles() {
-        if (!stack) return;
+    function stopAnimation() {
+        if (!stack || !originalPosition || !originalStyles) return;
         
-        // Przywróć oryginalne style
-        Object.keys(originalStyles).forEach(property => {
-            stack.style[property] = originalStyles[property];
+        // ZAPISZ AKTUALNĄ POZYCJĘ W DOKUMENCIE (gdzie użytkownik aktualnie scrolluje)
+        const currentScrollY = window.scrollY;
+        
+        // Po prostu przywróć oryginalne style - element wróci na swoje miejsce w flow dokumentu
+        // To jest najprostsze i najbardziej przewidywalne rozwiązanie
+        Object.keys(originalStyles).forEach(key => {
+            stack.style[key] = originalStyles[key];
         });
         
-        stack.style.removeProperty('--scroll-progress');
-        stack.style.removeProperty('display');
+        // Przeskrolluj delikatnie do pozycji gdzie element powinien być
+        // To zapobiegnie gwałtownym przeskokom
+        setTimeout(() => {
+            const elementTop = stack.offsetTop;
+            const viewportHeight = window.innerHeight;
+            
+            // Jeśli element jest poniżej viewportu, przeskrolluj do niego płynnie
+            if (elementTop > currentScrollY + viewportHeight) {
+                window.scrollTo({
+                    top: elementTop - viewportHeight / 3,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+        
+        isAnimating = false;
     }
 
     const handleModelScroll = () => {
@@ -178,14 +185,6 @@ window.addEventListener('load', () => {
     };
 
     const handleStackScroll = () => {
-        if (!stack || !processSection) return;
-        
-        const currentTime = Date.now();
-        if (currentTime - lastAnimationTime < ANIMATION_THROTTLE) {
-            return; // Throttle animacji
-        }
-        lastAnimationTime = currentTime;
-        
         const scrollY = window.scrollY;
         const windowHeight = window.innerHeight;
         
@@ -193,44 +192,28 @@ window.addEventListener('load', () => {
         const sectionRect = processSection.getBoundingClientRect();
         const sectionTop = scrollY + sectionRect.top;
         const sectionHeight = sectionRect.height;
-        const sectionBottom = sectionTop + sectionHeight;
         
-        // Oblicz progres animacji (0-1)
-        let animationProgress = 0;
+        // Oblicz progres względem pozycji sekcji process
+        let progress = (scrollY - sectionTop + windowHeight) / (sectionHeight + windowHeight);
+        progress = Math.max(0, Math.min(1, progress));
         
-        if (scrollY >= sectionTop && scrollY <= sectionBottom) {
-            // Podczas przechodzenia przez sekcję - animacja od 0 do 1
-            animationProgress = (scrollY - sectionTop) / sectionHeight;
-        } else if (scrollY > sectionBottom) {
-            // Po sekcji - animacja zakończona (1)
-            animationProgress = 1;
-        }
-        
-        animationProgress = Math.max(0, Math.min(1, animationProgress));
-        
-        // Ustaw zmienną CSS tylko na stack (karty odziedziczą)
-        stack.style.setProperty('--scroll-progress', animationProgress);
+        stack.style.setProperty('--scroll-progress', progress);
+        cards.forEach(card => {
+            card.style.setProperty('--scroll-progress', progress);
+        });
 
-        // Zakończ animację i rozpocznij zanikanie po osiągnięciu 95%
-        if (animationProgress >= 0.95 && isAnimating && !animationCompleted) {
-            animationCompleted = true;
-            isAnimating = false;
-        }
-        
-        // Płynne zanikanie elementu po zakończeniu animacji
-        if (animationCompleted) {
-            const distancePastSection = Math.max(0, scrollY - sectionBottom);
-            const fadeDistance = windowHeight * 0.8;
-            const opacity = Math.max(0, 1 - (distancePastSection / fadeDistance));
+        // Płynne zanikanie elementu gdy jest poniżej sekcji
+        if (scrollY > sectionTop + sectionHeight) {
+            // Oblicz jak daleko poniżej sekcji jest użytkownik
+            const distanceBelow = scrollY - (sectionTop + sectionHeight);
+            const fadeDistance = windowHeight * 0.5; // Odległość w której ma nastąpić zanikanie
+            const opacity = Math.max(0, 1 - (distanceBelow / fadeDistance));
             
             stack.style.opacity = opacity;
             stack.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
-            
-            // Całkowite ukrycie i reset po pełnym zaniknięciu
-            if (opacity <= 0) {
-                stack.style.display = 'none';
-                resetStackStyles();
-            }
+        } else {
+            stack.style.opacity = '1';
+            stack.style.pointerEvents = 'auto';
         }
     };
 
@@ -251,7 +234,5 @@ window.addEventListener('load', () => {
     };
 
     window.addEventListener('scroll', onScroll);
-    
-    // Inicjalne wywołanie
     handleScroll();
 });
