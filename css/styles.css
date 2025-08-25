@@ -217,17 +217,19 @@ button {
   position: relative;
 }
 
-/* STACK - normalny element w flow strony z PŁYNNYM PRZEJŚCIEM */
+/* STACK - IDEALNE SKALOWANIE WEKTOROWE DO 70% */
 .stack {
   display: grid;
   grid: [stack] / [stack];
-  perspective: 5000px;
-  margin: 2rem 0;
+  perspective: 3500px; /* ZMIANA: 70% z 5000px */
+  margin: 1.4rem 0; /* ZMIANA: 70% z 2rem */
   z-index: 10;
   opacity: 1;
   pointer-events: auto;
-  transition: all 0.8s ease;
+  transition: all 0.56s ease; /* ZMIANA: 70% z 0.8s */
   will-change: transform, opacity;
+  transform: scale(0.7); /* SKALOWANIE GŁÓWNE */
+  transform-origin: center center;
 }
 
 .stack:before {
@@ -248,45 +250,46 @@ button {
     rotateX(calc(45deg * var(--scroll-progress, 0))) 
     rotate(calc(45deg * var(--scroll-progress, 0))) 
     translateZ(calc(var(--z-offset) * var(--scroll-progress, 0))) 
-    translateY(calc(20vh * var(--scroll-progress, 0))) 
-    translateX(calc(20vh * var(--scroll-progress, 0)));
-  transition: transform 0.1s linear;
-  inline-size: 40vmin;
-  block-size: 40vmin;
+    translateY(calc(14vh * var(--scroll-progress, 0))) /* ZMIANA: 70% z 20vh */
+    translateX(calc(14vh * var(--scroll-progress, 0))); /* ZMIANA: 70% z 20vh */
+  transition: transform 0.07s linear; /* ZMIANA: 70% z 0.1s */
+  inline-size: 28vmin; /* ZMIANA: 70% z 40vmin */
+  block-size: 28vmin; /* ZMIANA: 70% z 40vmin */
   box-sizing: border-box;
   color: white;
   background: lch(100 0 0 / 5%);
   position: relative;
   will-change: transform;
+  font-size: 0.7em; /* ZMIANA: skalowanie tekstu */
 }
 
 @media (orientation: landscape) {
   .stack .card {
-    inline-size: 40vh;
-    block-size: 40vh;
+    inline-size: 28vh; /* ZMIANA: 70% z 40vh */
+    block-size: 28vh; /* ZMIANA: 70% z 40vh */
   }
 }
 
 @media (max-width: 540px) {
   .stack .card {
-    inline-size: 60vw;
-    block-size: 60vw;
+    inline-size: 42vw; /* ZMIANA: 70% z 60vw */
+    block-size: 42vw; /* ZMIANA: 70% z 60vw */
   }
 }
 
 .stack .card:nth-child(1) {
   z-index: 5;
-  --z-offset: 75vh;
+  --z-offset: 52.5vh; /* ZMIANA: 70% z 75vh */
 }
 
 .stack .card:nth-child(2) {
   z-index: 4;
-  --z-offset: 50vh;
+  --z-offset: 35vh; /* ZMIANA: 70% z 50vh */
 }
 
 .stack .card:nth-child(3) {
   z-index: 3;
-  --z-offset: 25vh;
+  --z-offset: 17.5vh; /* ZMIANA: 70% z 25vh */
 }
 
 .stack .card:nth-child(4) {
@@ -296,24 +299,24 @@ button {
 
 .stack .card:nth-child(5) {
   z-index: 1;
-  --z-offset: -25vh;
+  --z-offset: -17.5vh; /* ZMIANA: 70% z -25vh */
 }
 
 .stack .card::after {
   content: "Box";
   position: absolute;
-  left: -45%;
-  top: 110%;
-  font-size: 1.25rem;
-  text-shadow: 0 1px 3px lch(0 0 0 / 75%);
+  left: -31.5%; /* ZMIANA: 70% z -45% */
+  top: 77%; /* ZMIANA: 70% z 110% */
+  font-size: 0.875rem; /* ZMIANA: 70% z 1.25rem */
+  text-shadow: 0 0.7px 2.1px lch(0 0 0 / 75%); /* ZMIANA: 70% */
   white-space: nowrap;
-  padding: 1ch 2ch;
-  border-radius: 4ch;
+  padding: 0.7ch 1.4ch; /* ZMIANA: 70% */
+  border-radius: 2.8ch; /* ZMIANA: 70% z 4ch */
   opacity: var(--scroll-progress, 0);
   transform: 
     rotate(calc(-45deg * var(--scroll-progress, 0))) 
     rotateY(calc(45deg * var(--scroll-progress, 0))) 
-    translateX(calc(20px * (1 - var(--scroll-progress, 0))));
+    translateX(calc(14px * (1 - var(--scroll-progress, 0)))); /* ZMIANA: 70% z 20px */
   background: lch(100 100 50 / calc(90% * var(--scroll-progress, 0)));
   color: black;
   font-weight: bold;
@@ -321,30 +324,30 @@ button {
 
 @media (max-width: 540px) {
   .stack .card::after {
-    left: -20%;
-    top: 70%;
-    font-size: 1rem;
+    left: -14%; /* ZMIANA: 70% z -20% */
+    top: 49%; /* ZMIANA: 70% z 70% */
+    font-size: 0.7rem; /* ZMIANA: 70% z 1rem */
   }
 }
 
 .stack .card.content {
-  padding: 5vmin;
-  font-size: max(2.5vmin, .9rem);
+  padding: 3.5vmin; /* ZMIANA: 70% z 5vmin */
+  font-size: max(1.75vmin, 0.63rem); /* ZMIANA: 70% */
   line-height: 1.5;
   background: color-mix(in lch, lch(100 0 0) calc(100% - var(--scroll-progress, 0)), transparent var(--scroll-progress, 0));
-  border: 5px solid color-mix(in lch, hotpink calc(100% - var(--scroll-progress, 0)), transparent var(--scroll-progress, 0));
+  border: 3.5px solid color-mix(in lch, hotpink calc(100% - var(--scroll-progress, 0)), transparent var(--scroll-progress, 0)); /* ZMIANA: 70% z 5px */
   color: color-mix(in lch, black calc(100% - var(--scroll-progress, 0)), white var(--scroll-progress, 0));
 }
 
 .stack .card.content::after { 
   content: "Find area to automate"; 
-  left: -50%;
+  left: -35%; /* ZMIANA: 70% z -50% */
   background: lch(100 100 50 / calc(90% * var(--scroll-progress, 0)));
 }
 
 @media (max-width: 540px) {
   .stack .card.content::after {
-    left: -23%;
+    left: -16.1%; /* ZMIANA: 70% z -23% */
   }
 }
 
@@ -360,16 +363,16 @@ button {
   inset: 0;
   clip-path: polygon(
     0% 0%, 0% 100%, 
-    5vmin 100%, 5vmin 5vmin, 
-    calc(100% - 5vmin) 5vmin, 
-    calc(100% - 5vmin) calc(100% - 5vmin), 
-    5vmin calc(100% - 5vmin), 5vmin 100%, 
+    3.5vmin 100%, 3.5vmin 3.5vmin, /* ZMIANA: 70% z 5vmin */
+    calc(100% - 3.5vmin) 3.5vmin, /* ZMIANA: 70% z 5vmin */
+    calc(100% - 3.5vmin) calc(100% - 3.5vmin), /* ZMIANA: 70% z 5vmin */
+    3.5vmin calc(100% - 3.5vmin), 3.5vmin 100%, /* ZMIANA: 70% z 5vmin */
     100% 100%, 100% 0%
   );
   background: repeating-linear-gradient(
     -45deg, 
-    cyan, cyan 1px, 
-    lch(100 0 0 / 5%) 1px, lch(100 0 0 / 5%) 10px
+    cyan, cyan 0.7px, /* ZMIANA: 70% z 1px */
+    lch(100 0 0 / 5%) 0.7px, lch(100 0 0 / 5%) 7px /* ZMIANA: 70% z 10px */
   );
   opacity: var(--scroll-progress, 0);
 }
@@ -386,10 +389,10 @@ button {
   inset: 0;
   clip-path: polygon(
     0% 0%, 0% 100%, 
-    5px 100%, 5px 5px, 
-    calc(100% - 5px) 5px, 
-    calc(100% - 5px) calc(100% - 5px), 
-    5px calc(100% - 5px), 5px 100%, 
+    3.5px 100%, 3.5px 3.5px, /* ZMIANA: 70% z 5px */
+    calc(100% - 3.5px) 3.5px, /* ZMIANA: 70% z 5px */
+    calc(100% - 3.5px) calc(100% - 3.5px), /* ZMIANA: 70% z 5px */
+    3.5px calc(100% - 3.5px), 3.5px 100%, /* ZMIANA: 70% z 5px */
     100% 100%, 100% 0%
   );
   background: linear-gradient(hotpink, hotpink);
@@ -402,24 +405,24 @@ button {
 
 .stack .card.background::after { 
   content: "Test"; 
-  left: -45%;
+  left: -31.5%; /* ZMIANA: 70% z -45% */
 }
 
 @media (max-width: 540px) {
   .stack .card.background::after {
-    left: -20%;
+    left: -14%; /* ZMIANA: 70% z -20% */
   }
 }
 
 .stack .card.box-shadow {
   background: transparent;
   box-shadow:
-    0 2.8px 2.2px rgba(0, 0, 0, calc(0.02 * var(--scroll-progress, 0))),
-    0 6.7px 5.3px rgba(0, 0, 0, calc(0.028 * var(--scroll-progress, 0))),
-    0 12.5px 10px rgba(0, 0, 0, calc(0.035 * var(--scroll-progress, 0))),
-    0 22.3px 17.9px rgba(0, 0, 0, calc(0.042 * var(--scroll-progress, 0))),
-    0 41.8px 33.4px rgba(0, 0, 0, calc(0.05 * var(--scroll-progress, 0))),
-    0 100px 80px rgba(0, 0, 0, calc(0.07 * var(--scroll-progress, 0)))
+    0 1.96px 1.54px rgba(0, 0, 0, calc(0.02 * var(--scroll-progress, 0))), /* ZMIANA: 70% */
+    0 4.69px 3.71px rgba(0, 0, 0, calc(0.028 * var(--scroll-progress, 0))), /* ZMIANA: 70% */
+    0 8.75px 7px rgba(0, 0, 0, calc(0.035 * var(--scroll-progress, 0))), /* ZMIANA: 70% */
+    0 15.61px 12.53px rgba(0, 0, 0, calc(0.042 * var(--scroll-progress, 0))), /* ZMIANA: 70% */
+    0 29.26px 23.38px rgba(0, 0, 0, calc(0.05 * var(--scroll-progress, 0))), /* ZMIANA: 70% */
+    0 70px 56px rgba(0, 0, 0, calc(0.07 * var(--scroll-progress, 0))) /* ZMIANA: 70% */
   ;
 }
 
@@ -434,11 +437,11 @@ button {
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  transition: all 0.5s ease-in-out;
+  transform: translate(-50%, -50%) scale(0.7) !important;
+  transition: all 0.35s ease-in-out; /* ZMIANA: 70% z 0.5s */
   z-index: 1000;
-  width: 40vmin;
-  height: 40vmin;
+  width: 28vmin; /* ZMIANA: 70% z 40vmin */
+  height: 28vmin; /* ZMIANA: 70% z 40vmin */
   pointer-events: none;
   opacity: 1 !important;
 }
@@ -448,7 +451,7 @@ button {
 }
 
 .stack.completing {
-  transition: all 0.8s ease-in-out;
+  transition: all 0.56s ease-in-out; /* ZMIANA: 70% z 0.8s */
 }
 
 @media (max-width: 768px) {
@@ -486,16 +489,16 @@ button {
   }
 
   .stack {
-    margin: 1rem 0;
+    margin: 0.7rem 0; /* ZMIANA: 70% z 1rem */
   }
   
   .stack .card {
-    inline-size: 80vw;
-    block-size: 80vw;
+    inline-size: 56vw; /* ZMIANA: 70% z 80vw */
+    block-size: 56vw; /* ZMIANA: 70% z 80vw */
   }
 
   .stack.animating {
-    width: 80vw;
-    height: 80vw;
+    width: 56vw; /* ZMIANA: 70% z 80vw */
+    height: 56vw; /* ZMIANA: 70% z 80vw */
   }
 }
