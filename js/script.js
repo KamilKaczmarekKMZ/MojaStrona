@@ -226,6 +226,11 @@ window.addEventListener('load', () => {
             if (lastScrollDirection === 'down' && scrollY > sectionBottom + windowHeight * 1.8) {
                 reverseAnimation(); // SZYBCIEJ przy scrollu w dół
             }
+        } else if (!isAnimating && lastScrollDirection === 'down' && 
+                  scrollY >= (sectionTop - windowHeight * 0.3) && 
+                  scrollY <= sectionBottom) {
+            // Pojawianie się podczas scrollowania w dół - tak samo jak znikanie
+            startAnimation();
         }
     };
 
