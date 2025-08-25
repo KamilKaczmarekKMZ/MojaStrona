@@ -1,0 +1,173 @@
+// Import i inicjalizacja tła Hexagonal Grid z obsługą błędów
+try {
+    import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.16/build/backgrounds/grid1.cdn.min.js')
+        .then((module) => {
+            const Grid1Background = module.default;
+            const canvas = document.getElementById('webgl-canvas');
+            if (canvas) {
+                const bg = Grid1Background(canvas);
+                // DOPASOWANE KOLORY POCZĄTKOWE - ZIEMISTA PALETA
+                bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
+                bg.grid.light1.color.set(0xF5F5DC);
+                bg.grid.light1.intensity = 650;
+                bg.grid.light2.color.set(0x8B4513);
+                bg.grid.light2.intensity = 350;
+            }
+        })
+        .catch((error) => {
+            console.error('Błąd podczas ładowania tła:', error);
+        });
+} catch (error) {
+    console.error('Błąd podczas importowania modułu:', error);
+}
+
+// Ładowanie strony
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        document.querySelector('.loader').classList.add('hidden');
+        
+        // Animacja sekcji hero po załadowaniu strony
+        document.querySelector('.hero h1').style.animation = 'fadeInUp 1s forwards 0.3s';
+        document.querySelector('.hero p').style.animation = 'fadeInUp 1s forwards 0.6s';
+        document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
+        document.querySelector('.scroll-indicator').style.animation = 'fadeInUp 1s forwards 1.2s';
+    }, 1500);
+});
+
+// Obsługa scrollowania nagłówka
+window.addEventListener('scroll', function() {
+    const header = document.querySelector('header');
+    if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+
+// Obsługa animacji podczas scrollowania
+const projects = document.querySelectorAll('.project');
+const options = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries, observer) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            entry.target.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.unobserve(entry.target);
+        }
+    });
+}, options);
+
+projects.forEach(project => {
+    project.style.opacity = '0';
+    project.style.transform = 'translateY(50px)';
+    observer.observe(project);
+});
+
+// Płynne przewijanie do sekcji
+document.querySelector('.scroll-indicator').addEventListener('click', function() {
+    document.querySelector('.projects').scrollIntoView({ 
+        behavior: 'smooth' 
+    });
+});
+
+// Efekt parallax dla obrazków projektów
+window.addEventListener('scroll', function() {
+    const scrolled = window.pageYOffset;
+    const rate = scrolled * -0.2;
+    
+    document.querySelectorAll('.project-image img').forEach(img => {
+        img.style.transform = `translateY(${rate}px) scale(1.05)`;
+    });
+});
+
+// Custom cursor
+const cursor = document.querySelector('.cursor');
+const cursorFollower = document.querySelector('.cursor-follower');
+
+document.addEventListener('mousemove', function(e) {
+    cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+    
+    setTimeout(function() {
+        cursorFollower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+    }, 100);
+});
+
+// Zmiana kursora przy najeżdżaniu na linki i przyciski
+const hoverElements = document.querySelectorAll('a, button, .project-image');
+
+hoverElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'scale(1.5)';
+        cursorFollower.style.transform = 'scale(1.2)';
+    });
+    
+    el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'scale(1)';
+        cursorFollower.style.transform = 'scale(1)';
+    });
+});
+
+// Obsługa menu mobilnego
+document.querySelector('.menu-toggle').addEventListener('click', function() {
+    this.classList.toggle('active');
+    document.querySelector('.nav-links').classList.toggle('active');
+});
+
+// OBSŁUGA SCROLLA DLA MODELU 3D
+window.addEventListener('load', () => {
+    // MODEL 3D
+    const modelViewer = document.querySelector('.hero-model');
+    if (!modelViewer) {
+        console.error('Element model-viewer nie istnieje');
+        return;
+    }
+    
+    const scrollHeight = document.body.scrollHeight - window.innerHeight;
+    let lastScrollY = 0;
+    let velocity = 0;
+    let totalRotation = 0;
+
+    const handleModelScroll = () => {
+        const scrollY = window.scrollY;
+        const scrollProgress = Math.min(scrollY / scrollHeight, 1);
+        
+        velocity = scrollY - lastScrollY;
+        lastScrollY = scrollY;
+
+        totalRotation += Math.abs(velocity) * 0.2;
+
+        if (scrollProgress <= 0.05) {
+            modelViewer.cameraOrbit = `${-totalRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
+            modelViewer.style.opacity = 1;
+            
+            const scale = 1 - (scrollProgress * 0.8);
+            const yPos = 50 + (scrollProgress * 90);
+            
+            modelViewer.style.transform = `translateY(-${yPos}%) scale(${scale})`;
+            modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
+        } else {
+            modelViewer.style.transform = `translateY(-140%) scale(0.2)`;
+            modelViewer.style.opacity = 1;
+            modelViewer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`;
+        }
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                handleModelScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    };
+
+    window.addEventListener('scroll', onScroll);
+    handleModelScroll();
+});
