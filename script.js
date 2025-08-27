@@ -21,6 +21,29 @@ try {
     console.error('Błąd podczas importowania modułu:', error);
 }
 
+// Funkcja do generowania randomowego linku
+function getRandomLink() {
+    const randomLinks = [
+        'https://example.com/page1',
+        'https://example.com/page2',
+        'https://example.com/page3',
+        'https://example.com/page4',
+        'https://example.com/page5'
+    ];
+    return randomLinks[Math.floor(Math.random() * randomLinks.length)];
+}
+
+// Funkcja do płynnego przewijania do elementu
+function smoothScrollToElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
 // Ładowanie strony
 window.addEventListener('load', function() {
     setTimeout(function() {
@@ -75,16 +98,6 @@ document.querySelector('.scroll-indicator').addEventListener('click', function()
     });
 });
 
-// Efekt parallax dla obrazków projektów
-window.addEventListener('scroll', function() {
-    const scrolled = window.pageYOffset;
-    const rate = scrolled * -0.2;
-    
-    document.querySelectorAll('.project-image img').forEach(img => {
-        img.style.transform = `translateY(${rate}px) scale(1.05)`;
-    });
-});
-
 // Custom cursor
 const cursor = document.querySelector('.cursor');
 const cursorFollower = document.querySelector('.cursor-follower');
@@ -98,7 +111,7 @@ document.addEventListener('mousemove', function(e) {
 });
 
 // Zmiana kursora przy najeżdżaniu na linki i przyciski
-const hoverElements = document.querySelectorAll('a, button, .project-image');
+const hoverElements = document.querySelectorAll('a, button, .project-thumb');
 
 hoverElements.forEach(el => {
     el.addEventListener('mouseenter', () => {
@@ -170,4 +183,50 @@ window.addEventListener('load', () => {
 
     window.addEventListener('scroll', onScroll);
     handleModelScroll();
+});
+
+// OBSŁUGA PRZYCISKÓW
+document.addEventListener('DOMContentLoaded', function() {
+    // Przycisk "Let's begin" - randomowy link
+    const letsBeginBtn = document.getElementById('letsBeginBtn');
+    if (letsBeginBtn) {
+        letsBeginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = getRandomLink();
+        });
+    }
+
+    // Przycisk "Learn more" - przewijanie do sekcji Knowledge
+    const learnMoreBtn = document.getElementById('learnMoreBtn');
+    if (learnMoreBtn) {
+        learnMoreBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            smoothScrollToElement('knowledgeSection');
+        });
+    }
+
+    // Przyciski "View project" w sekcji Knowledge
+    const projectLinks = [
+        document.getElementById('projectLink1'),
+        document.getElementById('projectLink2'),
+        document.getElementById('projectLink3')
+    ];
+
+    projectLinks.forEach(link => {
+        if (link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = getRandomLink();
+            });
+        }
+    });
+
+    // Przycisk "Contact us" na dole strony - randomowy link
+    const contactBtn = document.getElementById('contactBtn');
+    if (contactBtn) {
+        contactBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = getRandomLink();
+        });
+    }
 });
