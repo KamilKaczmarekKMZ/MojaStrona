@@ -216,6 +216,7 @@ header.scrolled {
     margin-bottom: 24px;
     opacity: 0;
     transform: translateY(50px);
+    animation: fadeInUp 1s forwards 0.3s;
 }
 
 .hero p {
@@ -225,6 +226,7 @@ header.scrolled {
     color: var(--text-secondary);
     opacity: 0;
     transform: translateY(50px);
+    animation: fadeInUp 1s forwards 0.6s;
 }
 
 .hero-buttons {
@@ -233,6 +235,7 @@ header.scrolled {
     justify-content: flex-end;
     opacity: 0;
     transform: translateY(50px);
+    animation: fadeInUp 1s forwards 0.9s;
 }
 
 .btn {
@@ -279,6 +282,7 @@ header.scrolled {
     align-items: center;
     opacity: 0;
     z-index: 3;
+    animation: fadeInUp 1s forwards 1.2s;
 }
 
 .scroll-indicator span {
@@ -414,6 +418,150 @@ header.scrolled {
     transform-origin: left;
 }
 
+/* STYLES FOR GEARBOX - ZĘBATKI Z PRZEZROCZYSTYMI ŚRODKAMI */
+.gearbox-container {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 55%;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gearbox {
+    background: transparent;
+    height: 240px;
+    width: 320px;
+    position: relative;
+    border: none;
+    overflow: visible;
+}
+
+.gearbox .overlay {
+    display: none;
+}
+
+.gear {
+    position: absolute;
+    height: 96px;
+    width: 96px;
+    box-shadow: 0px -1px 0px 0px #888888, 0px 1px 0px 0px black;
+    border-radius: 48px;
+}
+
+.gear.large {
+    height: 192px;
+    width: 192px;
+    border-radius: 96px;
+}
+
+.gear.one {
+    top: 19px;
+    left: 16px;
+}
+
+.gear.two {
+    top: 98px;
+    left: 96px;
+}
+
+.gear.three {
+    top: 176px;
+    left: 16px;
+}
+
+.gear.four {
+    top: 21px;
+    left: 205px;
+}
+
+/* PRZEZROCZYSTE ŚRODKI */
+.gear:after {
+    display: none;
+}
+
+.gear-inner {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background: #555;
+    border-radius: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.large .gear-inner {
+    border-radius: 96px;
+}
+
+.gear.one .gear-inner {
+    animation: counter-clockwise 3s infinite linear;
+}
+
+.gear.two .gear-inner {
+    animation: clockwise 3s infinite linear;
+}
+
+.gear.three .gear-inner {
+    animation: counter-clockwise 3s infinite linear;
+}
+
+.gear.four .gear-inner {
+    animation: counter-clockwise 6s infinite linear;
+}
+
+.gear-inner .bar {
+    background: #555;
+    height: 26px;
+    width: 122px;
+    position: absolute;
+    left: 50%;
+    margin-left: -61px;
+    top: 50%;
+    margin-top: -13px;
+    border-radius: 3px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.large .gear-inner .bar {
+    margin-left: -109px;
+    width: 218px;
+}
+
+.gear-inner .bar:nth-child(2) {
+    transform: rotate(60deg);
+}
+
+.gear-inner .bar:nth-child(3) {
+    transform: rotate(120deg);
+}
+
+.gear-inner .bar:nth-child(4) {
+    transform: rotate(90deg);
+}
+
+.gear-inner .bar:nth-child(5) {
+    transform: rotate(30deg);
+}
+
+.gear-inner .bar:nth-child(6) {
+    transform: rotate(150deg);
+}
+
+@keyframes clockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes counter-clockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+/* STYLES FOR REGULAR PROJECT IMAGES */
 .project-image {
     position: absolute;
     top: 50%;
@@ -595,6 +743,18 @@ footer {
 
 /* Responsywność */
 @media (max-width: 1100px) {
+    .gearbox-container {
+        position: relative;
+        width: 100%;
+        margin-top: 40px;
+        transform: none;
+        height: 300px;
+    }
+    
+    .gearbox {
+        transform: scale(0.8);
+    }
+    
     .project-image {
         position: relative;
         width: 100%;
@@ -677,6 +837,10 @@ footer {
     
     .project {
         margin-bottom: 120px;
+    }
+    
+    .gearbox {
+        transform: scale(0.6);
     }
     
     .services {
