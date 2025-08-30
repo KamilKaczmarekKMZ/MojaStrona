@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hexagonal Grid Background</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway:400,400i,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #0a0a0a;
@@ -27,7 +28,8 @@
             color: var(--text);
             overflow-x: hidden;
             line-height: 1.6;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 20px;
         }
 
         /* TŁO HEX GRID */
@@ -77,12 +79,10 @@
 
         /* Gooey Marquee styles */
         .marquee-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: relative;
             width: 90%;
             max-width: 1200px;
+            margin: 100px auto 40px;
             z-index: 10;
         }
 
@@ -134,20 +134,136 @@
             place-items: center;
         }
 
-        .text {
-            margin-block: 2em;
-            line-height: 1.5;
-            text-align: center;
-            font-family: Raleway, sans-serif;
-            font-size: 1.5rem;
-            color: var(--text);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 1.5rem;
+        .content-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 12px;
             backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .content-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .content-section h2 {
+            color: var(--accent);
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        .content-section h3 {
+            color: var(--text);
+            font-size: 1.6rem;
+            margin: 1.5rem 0 1rem;
+            font-weight: 600;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .content-section ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .content-section li {
+            margin-bottom: 0.7rem;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 62, 120, 0.3);
+        }
+
+        /* Responsywność */
+        @media (max-width: 992px) {
+            .marquee {
+                font-size: 4em;
+            }
+            
+            .content-container {
+                padding: 1.5rem;
+            }
+            
+            .content-section h2 {
+                font-size: 1.8rem;
+            }
+            
+            .content-section h3 {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .marquee {
+                font-size: 3em;
+                height: 1.5em;
+            }
+            
+            .content-container {
+                padding: 1rem;
+            }
+            
+            .content-section h2 {
+                font-size: 1.6rem;
+            }
+            
+            .content-section h3 {
+                font-size: 1.3rem;
+            }
+            
+            .content-section p, .content-section li {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .marquee {
+                font-size: 2.2em;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .marquee-container {
+                margin: 80px auto 20px;
+            }
         }
     </style>
 </head>
@@ -172,102 +288,153 @@
                 <p class="marquee_text">SmartSystems Automation Solutions!</p>
             </div>
         </div>
+    </div>
 
-        <p class="text">
-            Of course. Here is the Polish sales text translated and adapted into compelling, professional English for a SaaS automation audience.
+    <!-- Content Container -->
+    <div class="content-container">
+        <div class="content-section">
+            <h2>The Efficiency Revolution: Why Our Clients Choose Automation</h2>
+            <p><span class="highlight">Work smarter, not harder</span> – our SaaS solutions aren't just about cost savings; they represent a fundamental transformation in how you do business. Imagine a company that runs with the precision of a Swiss watch, 24/7/365, without fatigue, without errors, without breaks.</p>
+        </div>
 
----
+        <div class="content-section">
+            <h3>Unbeatable Cost Advantage</h3>
+            <ul>
+                <li><span class="highlight">Save up to 70% on operational costs</span> – no salaries, vacations, sick leave, social security contributions, or recruitment fees.</li>
+                <li><span class="highlight">Immediate Return on Investment (ROI)</span> – achieve a full return on your implementation costs within just 3-6 months on average.</li>
+                <li><span class="highlight">Predictable monthly expenses</span> – no more budgetary surprises.</li>
+            </ul>
+        </div>
 
-## **The Efficiency Revolution: Why Our Clients Choose Automation**
+        <div class="content-section">
+            <h3>Superhuman Efficiency and Precision</h3>
+            <ul>
+                <li><span class="highlight">Non-stop operation</span> – automation never sleeps, never gets sick, never takes a vacation.</li>
+                <li><span class="highlight">Zero errors</span> – executes tasks with mathematical precision, eliminating costly mistakes.</li>
+                <li><span class="highlight">Instant scalability</span> – unlike a human team, you can increase your work volume in minutes, not months.</li>
+            </ul>
+        </div>
 
-**Work smarter, not harder** – our SaaS solutions aren't just about cost savings; they represent a fundamental transformation in how you do business. Imagine a company that runs with the precision of a Swiss watch, 24/7/365, without fatigue, without errors, without breaks.
+        <div class="content-section">
+            <h2>Business Transformation: How Automation Increases Revenue While Reducing Costs</h2>
+            <p>Our advanced SaaS solutions don't just lower costs; they primarily <span class="highlight">generate real, measurable revenue growth</span> – often by 30-50% within the first 12 months.</p>
+        </div>
 
-### **Unbeatable Cost Advantage**
-- **Save up to 70% on operational costs** – no salaries, vacations, sick leave, social security contributions, or recruitment fees.
-- **Immediate Return on Investment (ROI)** – achieve a full return on your implementation costs within just 3-6 months on average.
-- **Predictable monthly expenses** – no more budgetary surprises.
+        <div class="content-section">
+            <h3>🚀 Marketing Automation: Turn Leads into Revenue</h3>
+            <ul>
+                <li><span class="highlight">Personalized email campaigns</span> – automatically send thousands of tailored messages based on user behavior.</li>
+                <li><span class="highlight">Real-time customer segmentation</span> – automatically categorize leads by their purchase readiness.</li>
+                <li><span class="highlight">Multi-channel marketing</span> – synchronized communication across email, SMS, social media, and push notifications.</li>
+                <li><span class="highlight">Example: An e-commerce client saw a 217% increase in conversion rates</span> after implementing automated abandoned cart email sequences.</li>
+            </ul>
+        </div>
 
-### **Superhuman Efficiency and Precision**
-- **Non-stop operation** – automation never sleeps, never gets sick, never takes a vacation.
-- **Zero errors** – executes tasks with mathematical precision, eliminating costly mistakes.
-- **Instant scalability** – unlike a human team, you can increase your work volume in minutes, not months.
+        <div class="content-section">
+            <h3>🎯 Automated Lead Generation & Qualification</h3>
+            <ul>
+                <li><span class="highlight">Web scraping and lead generation</span> – automatically find potential customers based on your ideal client profile.</li>
+                <li><span class="highlight">Intelligent lead scoring</span> – the system qualifies leads and assigns them to the appropriate department.</li>
+                <li><span class="highlight">Automatic follow-ups</span> – ensure no potential customer falls through the cracks.</li>
+                <li><span class="highlight">Case study: A consulting firm reduced customer acquisition cost by 68%</span> while simultaneously increasing lead volume by 140%.</li>
+            </ul>
+        </div>
 
-### **Business Transformation: How Automation Increases Revenue While Reducing Costs**
+        <div class="content-section">
+            <h3>🤖 24/7 Chatbots: Unlimited Customer Service</h3>
+            <ul>
+                <li><span class="highlight">Instant answers</span> – customers get help in 3 seconds, not 3 hours.</li>
+                <li><span class="highlight">Resolves 85% of queries without human intervention</span> – only complex issues are escalated to agents.</li>
+                <li><span class="highlight">CRM and knowledge base integration</span> – the chatbot knows each customer's history and can make informed decisions.</li>
+                <li><span class="highlight">Example: An educational platform recorded a 40% increase in conversions</span> after deploying a chatbot that helps users choose courses.</li>
+            </ul>
+        </div>
 
-Our advanced SaaS solutions don't just lower costs; they primarily **generate real, measurable revenue growth** – often by 30-50% within the first 12 months.
+        <div class="content-section">
+            <h3>📧 Email Management Automation: Order from Chaos</h3>
+            <ul>
+                <li><span class="highlight">Automatic sorting and categorization</span> – the system recognizes the intent of each email and routes it to the right department.</li>
+                <li><span class="highlight">Personalized response templates</span> – ready-made templates filled with specific customer data.</li>
+                <li><span class="highlight">Escalation of critical messages</span> – important emails are prioritized at the top of the queue.</li>
+                <li><span class="highlight">Case study: A service company now handles 1,200 emails daily</span> with 80% less team involvement.</li>
+            </ul>
+        </div>
 
-### **🚀 Marketing Automation: Turn Leads into Revenue**
-- **Personalized email campaigns** – automatically send thousands of tailored messages based on user behavior.
-- **Real-time customer segmentation** – automatically categorize leads by their purchase readiness.
-- **Multi-channel marketing** – synchronized communication across email, SMS, social media, and push notifications.
-- **Example: An e-commerce client saw a 217% increase in conversion rates** after implementing automated abandoned cart email sequences.
+        <div class="content-section">
+            <h3>The Flexibility Every Business Dreams Of</h3>
+            <ul>
+                <li><span class="highlight">Custom workflows</span> – every process is perfectly tailored to your unique needs.</li>
+                <li><span class="highlight">Modular design</span> – add, modify, or remove features as your business evolves.</li>
+                <li><span class="highlight">Integration with existing systems</span> – seamless connection with the tools you already use.</li>
+            </ul>
+        </div>
 
-### **🎯 Automated Lead Generation & Qualification**
-- **Web scraping and lead generation** – automatically find potential customers based on your ideal client profile.
-- **Intelligent lead scoring** – the system qualifies leads and assigns them to the appropriate department.
-- **Automatic follow-ups** – ensure no potential customer falls through the cracks.
-- **Case study: A consulting firm reduced customer acquisition cost by 68%** while simultaneously increasing lead volume by 140%.
+        <div class="content-section">
+            <h3>Revenue Growth with Less Effort</h3>
+            <ul>
+                <li><span class="highlight">Process acceleration by up to 10x</span> – faster execution = more transactions.</li>
+                <li><span class="highlight">Freeing your team from repetitive tasks</span> – people can focus on what truly matters: creativity and strategy.</li>
+                <li><span class="highlight">Increased customer satisfaction</span> – faster responses, flawless service, 24/7 availability.</li>
+            </ul>
+        </div>
 
-### **🤖 24/7 Chatbots: Unlimited Customer Service**
-- **Instant answers** – customers get help in 3 seconds, not 3 hours.
-- **Resolves 85% of queries without human intervention** – only complex issues are escalated to agents.
-- **CRM and knowledge base integration** – the chatbot knows each customer's history and can make informed decisions.
-- **Example: An educational platform recorded a 40% increase in conversions** after deploying a chatbot that helps users choose courses.
+        <div class="content-section">
+            <h3>💸 Boosted ROI: Hard Data, Soft Costs</h3>
+            <ul>
+                <li><span class="highlight">Average ROI of 347% over 2 years</span> – according to independent Forrester research.</li>
+                <li><span class="highlight">45-70% reduction in operational costs</span> in automated processes.</li>
+                <li><span class="highlight">5x faster order and service fulfillment times</span>.</li>
+                <li><span class="highlight">Scalability without extra costs</span> – handle 100 or 10,000 customers without growing your team.</li>
+            </ul>
+        </div>
 
-### **📧 Email Management Automation: Order from Chaos**
-- **Automatic sorting and categorization** – the system recognizes the intent of each email and routes it to the right department.
-- **Personalized response templates** – ready-made templates filled with specific customer data.
-- **Escalation of critical messages** – important emails are prioritized at the top of the queue.
-- **Case study: A service company now handles 1,200 emails daily** with 80% less team involvement.
+        <div class="content-section">
+            <h3>Next-Level Security and Control</h3>
+            <ul>
+                <li><span class="highlight">Full operational transparency</span> – you know exactly what, when, and how things are happening.</li>
+                <li><span class="highlight">Advanced real-time analytics</span> – hard data instead of guesswork.</li>
+                <li><span class="highlight">Data security</span> – eliminates the risk of sensitive information leaks due to human error.</li>
+                <li><span class="highlight">Automatic data cleansing</span> – the system removes outdated information without your involvement.</li>
+                <li><span class="highlight">Marketing consent management</span> – full control and documentation for GDPR compliance.</li>
+                <li><span class="highlight">End-to-end encryption</span> – all data protected at the highest level.</li>
+            </ul>
+        </div>
 
-### **The Flexibility Every Business Dreams Of**
-- **Custom workflows** – every process is perfectly tailored to your unique needs.
-- **Modular design** – add, modify, or remove features as your business evolves.
-- **Integration with existing systems** – seamless connection with the tools you already use.
+        <div class="content-section">
+            <h3>The Future is Today: AI and Machine Learning</h3>
+            <ul>
+                <li><span class="highlight">Self-learning systems</span> – the longer they work, the smarter and more efficient they become.</li>
+                <li><span class="highlight">Predictive optimization</span> – automation anticipates problems before they arise.</li>
+                <li><span class="highlight">Personalization at scale</span> – every customer feels unique, with no additional effort.</li>
+            </ul>
+        </div>
 
-### **Revenue Growth with Less Effort**
-- **Process acceleration by up to 10x** – faster execution = more transactions.
-- **Freeing your team from repetitive tasks** – people can focus on what truly matters: creativity and strategy.
-- **Increased customer satisfaction** – faster responses, flawless service, 24/7 availability.
+        <div class="content-section">
+            <h3>📊 Advanced Analytics & Optimization</h3>
+            <ul>
+                <li><span class="highlight">Customer Journey Tracking</span> – a complete map from lead to sale.</li>
+                <li><span class="highlight">Automatic A/B testing</span> – the system tests different versions and selects the most effective one.</li>
+                <li><span class="highlight">Sales forecasting</span> – algorithms predict trends and suggest optimal actions.</li>
+                <li><span class="highlight">Real-time reporting</span> – KPI metrics available anytime, anywhere.</li>
+            </ul>
+        </div>
 
-### **💸 Boosted ROI: Hard Data, Soft Costs**
-- **Average ROI of 347% over 2 years** – according to independent Forrester research.
-- **45-70% reduction in operational costs** for automated processes.
-- **5x faster order and service fulfillment times**.
-- **Scalability without extra costs** – handle 100 or 10,000 customers without growing your team.
+        <div class="content-section">
+            <h3>🌐 Integrations and Ecosystem</h3>
+            <ul>
+                <li><span class="highlight">Connectivity with 500+ tools</span> – including Shopify, Salesforce, HubSpot, WordPress, Google Workspace, and many more.</li>
+                <li><span class="highlight">Custom API for unique integrations</span> – developers can build their own connections.</li>
+                <li><span class="highlight">Automatic backups and synchronization</span> – no data is ever lost.</li>
+            </ul>
+        </div>
 
-### **Next-Level Security and Control**
-- **Full operational transparency** – you know exactly what, when, and how things are happening.
-- **Advanced real-time analytics** – hard data instead of guesswork.
-- **Data security** – eliminates the risk of sensitive information leaks due to human error.
-- **Automatic data cleansing** – the system removes outdated information without your involvement.
-- **Marketing consent management** – full control and documentation for GDPR compliance.
-- **End-to-end encryption** – all data protected at the highest level.
-
-### **The Future is Today: AI and Machine Learning**
-- **Self-learning systems** – the longer they work, the smarter and more efficient they become.
-- **Predictive optimization** – automation anticipates problems before they arise.
-- **Personalization at scale** – every customer feels unique, with no additional effort.
-
-### **📊 Advanced Analytics & Optimization**
-- **Customer Journey Tracking** – a complete map from lead to sale.
-- **Automatic A/B testing** – the system tests different versions and selects the most effective one.
-- **Sales forecasting** – algorithms predict trends and suggest optimal actions.
-- **Real-time reporting** – KPI metrics available anytime, anywhere.
-
-### **🌐 Integrations and Ecosystem**
-- **Connectivity with 500+ tools** – including Shopify, Salesforce, HubSpot, WordPress, Google Workspace, and many more.
-- **Custom API for unique integrations** – developers can build their own connections.
-- **Automatic backups and synchronization** – no data is ever lost.
-
----
-
-**Investing in automation isn't an expense – it's a strategic move that puts you lightyears ahead of the competition.** While others are still stuck in 20th-century patterns, you are building the company of the future: efficient, flexible, and constantly growing.
-
-**The best time to automate is NOW.** Every day of delay means thousands in lost opportunities and wasted resources.
-
-**Ready to turn costs into revenue?**
-        </p>
+        <div class="cta-section">
+            <p><span class="highlight">Investing in automation isn't an expense – it's a strategic move that puts you lightyears ahead of the competition.</span> While others are still stuck in 20th-century patterns, you are building the company of the future: efficient, flexible, and constantly growing.</p>
+            
+            <p><span class="highlight">The best time to automate is NOW.</span> Every day of delay means thousands in lost opportunities and wasted resources.</p>
+            
+            <a href="#contact" class="cta-button">Ready to turn costs into revenue?</a>
+        </div>
     </div>
 
     <script>
