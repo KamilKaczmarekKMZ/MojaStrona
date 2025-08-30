@@ -21,7 +21,7 @@ try {
     console.error('Błąd podczas importowania modułu:', error);
 }
 
-// Funkcja do generowania randomowego linku
+// Funkcja do generowania randomowego linku (dla pozostałych przycisków)
 function getRandomLink() {
     const randomLinks = [
         'https://example.com/page1',
@@ -205,21 +205,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Przyciski "View project" w sekcji Knowledge
-    const projectLinks = [
-        document.getElementById('projectLink1'),
-        document.getElementById('projectLink2'),
-        document.getElementById('projectLink3')
-    ];
+    // SPECJALNA OBSŁUGA DLA PRZYCISKU "View project" pod "How automation can help you grow"
+    const projectLink1 = document.getElementById('projectLink1');
+    if (projectLink1) {
+        projectLink1.addEventListener('click', function(e) {
+            e.preventDefault();
+            // TYLKO TEN PRZYCISK PRZEKIEROWUJE NA TEN SPECJALNY LINK
+            window.location.href = 'https://kamilkaczmarekkmz.github.io/MojaStrona/Why.html';
+        });
+    }
 
-    projectLinks.forEach(link => {
-        if (link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = getRandomLink();
-            });
-        }
-    });
+    // Pozostałe przyciski "View project" w sekcji Knowledge (losowe linki)
+    const projectLink2 = document.getElementById('projectLink2');
+    if (projectLink2) {
+        projectLink2.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = getRandomLink();
+        });
+    }
+
+    const projectLink3 = document.getElementById('projectLink3');
+    if (projectLink3) {
+        projectLink3.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = getRandomLink();
+        });
+    }
 
     // Przycisk "Contact us" na dole strony - randomowy link
     const contactBtn = document.getElementById('contactBtn');
