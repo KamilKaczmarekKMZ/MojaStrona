@@ -157,14 +157,10 @@ window.addEventListener('load', () => {
         if (scrollProgress <= 0.05) {
             modelViewer.cameraOrbit = `${-totalRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
             modelViewer.style.opacity = 1;
-            
-            const scale = 1 - (scrollProgress * 0.8);
-            const yPos = 50 + (scrollProgress * 90);
-            
-            modelViewer.style.transform = `translateY(-${yPos}%) scale(${scale})`;
             modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
         } else {
-            modelViewer.style.transform = `translateY(-140%) scale(0.2)`;
+            // USUNIĘTE: Przesuwanie i skalowanie poza granicą
+            // modelViewer.style.transform = `translateY(-140%) scale(0.2)`;
             modelViewer.style.opacity = 1;
             modelViewer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`;
         }
