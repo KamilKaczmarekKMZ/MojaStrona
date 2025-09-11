@@ -592,19 +592,68 @@ header.scrolled {
     transform: scale(1.05);
 }
 
-/* Sekcja usług */
+/* EFEKT LIQUID GLASS DLA SEKCJI SERVICES I FOOTER */
 .services {
     padding: 120px 40px;
-    background: var(--secondary);
     border-radius: 40px;
     margin: 40px;
+    position: relative;
+    overflow: hidden;
+    background: transparent !important;
 }
 
+footer {
+    padding: 120px 40px 60px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    position: relative;
+    overflow: hidden;
+    background: transparent !important;
+}
+
+.liquidGlass-effect {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    backdrop-filter: blur(3px);
+    filter: url(#glass-distortion);
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.liquidGlass-tint {
+    z-index: 1;
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.50);
+    border-radius: inherit;
+}
+
+.liquidGlass-shine {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+    box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+                inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.services > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shine),
+footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shine) {
+    position: relative;
+    z-index: 3;
+}
+
+/* Sekcja usług - style kart */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 40px;
     margin-top: 60px;
+    position: relative;
+    z-index: 3;
 }
 
 .service-card {
@@ -612,6 +661,7 @@ header.scrolled {
     padding: 40px;
     border-radius: 20px;
     transition: var(--transition);
+    backdrop-filter: blur(5px);
 }
 
 .service-card:hover {
@@ -637,18 +687,13 @@ header.scrolled {
     line-height: 1.6;
 }
 
-/* Stopka */
-footer {
-    padding: 120px 40px 60px;
-    background: var(--secondary);
-    border-top-left-radius: 40px;
-    border-top-right-radius: 40px;
-}
-
+/* Stopka - style zawartości */
 .footer-content {
     max-width: 1000px;
     margin: 0 auto;
     text-align: center;
+    position: relative;
+    z-index: 3;
 }
 
 .footer-title {
