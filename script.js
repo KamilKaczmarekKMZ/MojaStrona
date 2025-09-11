@@ -131,7 +131,7 @@ document.querySelector('.menu-toggle').addEventListener('click', function() {
     document.querySelector('.nav-links').classList.toggle('active');
 });
 
-// OBSŁUGA SCROLLA DLA MODELU 3D
+// OBSŁUGA SCROLLA DLA MODELU 3D - USUNIĘTE WSZYSTKIE EFEKTY
 window.addEventListener('load', () => {
     // MODEL 3D
     const modelViewer = document.querySelector('.hero-model');
@@ -140,45 +140,8 @@ window.addEventListener('load', () => {
         return;
     }
     
-    const scrollHeight = document.body.scrollHeight - window.innerHeight;
-    let lastScrollY = 0;
-    let velocity = 0;
-    let totalRotation = 0;
-
-    const handleModelScroll = () => {
-        const scrollY = window.scrollY;
-        const scrollProgress = Math.min(scrollY / scrollHeight, 1);
-        
-        velocity = scrollY - lastScrollY;
-        lastScrollY = scrollY;
-
-        totalRotation += Math.abs(velocity) * 0.2;
-
-        if (scrollProgress <= 0.05) {
-            modelViewer.cameraOrbit = `${-totalRotation}deg 90deg ${Math.sin(scrollProgress * Math.PI * 4) * 15}deg`;
-            modelViewer.style.opacity = 1;
-            modelViewer.style.filter = `drop-shadow(0 0 ${20 - (scrollProgress * 18)}px rgba(255, 255, 255, ${1 - (scrollProgress * 0.8)}))`;
-        } else {
-            // USUNIĘTE: Przesuwanie i skalowanie poza granicą
-            // modelViewer.style.transform = `translateY(-140%) scale(0.2)`;
-            modelViewer.style.opacity = 1;
-            modelViewer.style.filter = `drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))`;
-        }
-    };
-
-    let ticking = false;
-    const onScroll = () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                handleModelScroll();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    };
-
-    window.addEventListener('scroll', onScroll);
-    handleModelScroll();
+    // USUNIĘTE: Cała logika scrollowania i transformacji
+    // Model pozostaje statyczny bez żadnych efektów scrollowania
 });
 
 // OBSŁUGA PRZYCISKÓW
