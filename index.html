@@ -159,6 +159,10 @@
 
     <!-- Sekcja usług -->
     <section class="services">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        
         <h2 class="section-title">Our Services</h2>
         <div class="services-grid">
             <div class="service-card">
@@ -189,6 +193,10 @@
 
     <!-- Stopka -->
     <footer>
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        
         <div class="footer-content">
             <h2 class="footer-title">Let's create something amazing together</h2>
             <p class="footer-description">We're always open to discussing new projects and opportunities. Get in touch with us and let's turn your ideas into reality.</p>
@@ -205,6 +213,58 @@
             </div>
         </div>
     </footer>
+
+    <!-- Filtr SVG dla efektu liquid glass -->
+    <svg style="display: none">
+        <filter
+            id="glass-distortion"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            filterUnits="objectBoundingBox"
+        >
+            <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.01 0.01"
+                numOctaves="1"
+                seed="5"
+                result="turbulence"
+            />
+            <feComponentTransfer in="turbulence" result="mapped">
+                <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+                <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+                <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+            </feComponentTransfer>
+            <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+            <feSpecularLighting
+                in="softMap"
+                surfaceScale="5"
+                specularConstant="1"
+                specularExponent="100"
+                lighting-color="white"
+                result="specLight"
+            >
+                <fePointLight x="-200" y="-200" z="300" />
+            </feSpecularLighting>
+            <feComposite
+                in="specLight"
+                operator="arithmetic"
+                k1="0"
+                k2="1"
+                k3="1"
+                k4="0"
+                result="litImage"
+            />
+            <feDisplacementMap
+                in="SourceGraphic"
+                in2="softMap"
+                scale="150"
+                xChannelSelector="R"
+                yChannelSelector="G"
+            />
+        </filter>
+    </svg>
 
     <script src="script.js"></script>
 </body>
