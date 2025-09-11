@@ -92,24 +92,33 @@ body {
     transform: translateY(-50%) scale(1.05);
 }
 
-/* Nagłówek */
-header {
+/* NAGŁÓWEK Z EFEKTEM LIQUID GLASS */
+.liquidGlass-header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
+    padding: 0;
+    z-index: 1000;
+    transition: var(--transition);
+    background: transparent !important;
+    overflow: hidden;
+}
+
+.liquidGlass-header .header-content {
+    position: relative;
+    z-index: 3;
     padding: 24px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 1000;
-    transition: var(--transition);
-    backdrop-filter: blur(10px);
-    background: rgba(10, 10, 10, 0.8);
 }
 
-header.scrolled {
+.liquidGlass-header.scrolled .header-content {
     padding: 16px 40px;
+}
+
+.liquidGlass-header.scrolled {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -238,7 +247,9 @@ header.scrolled {
     animation: fadeInUp 1s forwards 0.9s;
 }
 
-.btn {
+/* PRZYCISKI Z EFEKTEM LIQUID GLASS */
+.liquidGlass-btn {
+    position: relative;
     padding: 16px 32px;
     border-radius: 50px;
     font-weight: 600;
@@ -247,29 +258,32 @@ header.scrolled {
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    overflow: hidden;
+    border: none;
+    background: transparent !important;
+}
+
+.liquidGlass-btn .btn-text {
+    position: relative;
+    z-index: 3;
+    color: white;
 }
 
 .btn-primary {
-    background: var(--accent);
-    color: white;
-    box-shadow: 0 10px 30px rgba(255, 62, 120, 0.3);
-}
-
-.btn-primary:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(255, 62, 120, 0.4);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary {
-    background: transparent;
-    color: var(--text);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.3);
+.liquidGlass-btn:hover {
     transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+}
+
+.liquidGlass-btn:hover .btn-text {
+    gap: 15px;
 }
 
 .scroll-indicator {
@@ -592,25 +606,7 @@ header.scrolled {
     transform: scale(1.05);
 }
 
-/* EFEKT LIQUID GLASS DLA SEKCJI SERVICES I FOOTER */
-.services {
-    padding: 120px 40px;
-    border-radius: 40px;
-    margin: 40px;
-    position: relative;
-    overflow: hidden;
-    background: transparent !important;
-}
-
-footer {
-    padding: 120px 40px 60px;
-    border-top-left-radius: 40px;
-    border-top-right-radius: 40px;
-    position: relative;
-    overflow: hidden;
-    background: transparent !important;
-}
-
+/* EFEKT LIQUID GLASS DLA WSZYSTKICH ELEMENTÓW */
 .liquidGlass-effect {
     position: absolute;
     z-index: 0;
@@ -640,7 +636,31 @@ footer {
     pointer-events: none;
 }
 
-.services > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shine),
+/* Sekcja usług z efektem liquid glass */
+.services {
+    padding: 120px 40px;
+    border-radius: 40px;
+    margin: 40px;
+    position: relative;
+    overflow: hidden;
+    background: transparent !important;
+}
+
+.services > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shine) {
+    position: relative;
+    z-index: 3;
+}
+
+/* Stopka z efektem liquid glass */
+footer {
+    padding: 120px 40px 60px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    position: relative;
+    overflow: hidden;
+    background: transparent !important;
+}
+
 footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shine) {
     position: relative;
     z-index: 3;
@@ -727,6 +747,13 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
     transition: var(--transition);
     margin-bottom: 80px;
     box-shadow: 0 15px 35px rgba(255, 62, 120, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-button .btn-text {
+    position: relative;
+    z-index: 3;
 }
 
 .contact-button:hover {
@@ -851,7 +878,7 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
 }
 
 @media (max-width: 768px) {
-    header {
+    .liquidGlass-header .header-content {
         padding: 20px;
     }
     
