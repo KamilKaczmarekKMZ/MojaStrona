@@ -154,74 +154,6 @@ body {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--text);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-}
-
-.logo-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    margin-left: 4px;
-}
-
-.nav-links {
-    display: flex;
-    gap: 40px;
-}
-
-.nav-link {
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 500;
-    position: relative;
-    transition: var(--transition);
-}
-
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--accent);
-    transition: var(--transition);
-}
-
-.nav-link:hover {
-    color: var(--accent);
-}
-
-.nav-link:hover::after {
-    width: 100%;
-}
-
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 20px;
-    cursor: pointer;
-}
-
-.menu-toggle span {
-    display: block;
-    height: 3px;
-    width: 100%;
-    background-color: var(--text);
-    transition: var(--transition);
-    border-radius: 3px;
-}
-
 /* Sekcja powitalna */
 .hero {
     height: 100vh;
@@ -644,7 +576,7 @@ body {
     transform: scale(1.05);
 }
 
-/* Sekcja usług z efektem liquid glass */
+/* Sekcja usług z efektom liquid glass */
 .services {
     padding: 120px 40px;
     border-radius: 40px;
@@ -888,18 +820,6 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
 }
 
 @media (max-width: 768px) {
-    .liquidGlass-header .header-content {
-        padding: 20px;
-    }
-    
-    .nav-links {
-        display: none;
-    }
-    
-    .menu-toggle {
-        display: flex;
-    }
-    
     .hero h1 {
         font-size: 36px;
     }
