@@ -5,7 +5,7 @@ try {
             const Grid1Background = module.default;
             const canvas = document.getElementById('webgl-canvas');
             if (canvas) {
-                const bg = Grid1Background(canvas);
+                const bg = Grid1Background(canvas); // POPRAWIONE: canvas zamiast cancanvas
                 // DOPASOWANE KOLORY POCZĄTKOWE - ZIEMISTA PALETA
                 bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
                 bg.grid.light1.color.set(0xF5F5DC);
@@ -123,12 +123,6 @@ hoverElements.forEach(el => {
         cursor.style.transform = 'scale(1)';
         cursorFollower.style.transform = 'scale(1)';
     });
-});
-
-// Obsługa menu mobilnego
-document.querySelector('.menu-toggle').addEventListener('click', function() {
-    this.classList.toggle('active');
-    document.querySelector('.nav-links').classList.toggle('active');
 });
 
 // OBSŁUGA SCROLLA DLA MODELU 3D - USUNIĘTE WSZYSTKIE EFEKTY
