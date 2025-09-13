@@ -46,7 +46,6 @@ function smoothScrollToElement(elementId) {
 
 // Zmienne globalne
 let scrollTimeout;
-let cursorTimeout;
 
 // Ładowanie strony
 window.addEventListener('load', function() {
@@ -100,34 +99,6 @@ projects.forEach(project => {
 document.querySelector('.scroll-indicator').addEventListener('click', function() {
     document.querySelector('.projects').scrollIntoView({ 
         behavior: 'smooth' 
-    });
-});
-
-// Custom cursor
-const cursor = document.querySelector('.cursor');
-const cursorFollower = document.querySelector('.cursor-follower');
-
-document.addEventListener('mousemove', function(e) {
-    cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-    
-    clearTimeout(cursorTimeout);
-    cursorTimeout = setTimeout(function() {
-        cursorFollower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-    }, 50);
-});
-
-// Zmiana kursora przy najeżdżaniu na linki i przyciski
-const hoverElements = document.querySelectorAll('a, button, .project-link, .contact-button, .social-link');
-
-hoverElements.forEach(el => {
-    el.addEventListener('mouseenter', () => {
-        cursor.style.transform = 'scale(1.5)';
-        cursorFollower.style.transform = 'scale(1.2)';
-    });
-    
-    el.addEventListener('mouseleave', () => {
-        cursor.style.transform = 'scale(1)';
-        cursorFollower.style.transform = 'scale(1)';
     });
 });
 
