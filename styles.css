@@ -30,6 +30,16 @@ body {
     left: 0;
     overflow: hidden;
     z-index: -1;
+    transform: none !important;
+    will-change: auto;
+}
+
+#bg-app {
+    transform: none !important;
+}
+
+#webgl-canvas {
+    transform: none !important;
 }
 
 /* Loader */
@@ -277,6 +287,7 @@ header.scrolled {
     z-index: 3;
     animation: fadeInUp 1s forwards 1.2s;
     cursor: pointer;
+    width: auto;
 }
 
 .scroll-indicator span {
@@ -750,30 +761,6 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
     transform: translateY(-5px);
 }
 
-/* Custom cursor */
-.cursor, .cursor-follower {
-    position: fixed;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.1s ease;
-}
-
-.cursor {
-    width: 8px;
-    height: 8px;
-    background: var(--accent);
-    transition: transform 0.2s ease;
-}
-
-.cursor-follower {
-    width: 40px;
-    height: 40px;
-    border: 2px solid rgba(255, 62, 120, 0.3);
-    transition: all 0.3s ease;
-}
-
 /* Animacje */
 @keyframes fadeInUp {
     from {
@@ -831,7 +818,7 @@ a:focus, button:focus {
         transform: none;
         width: 50vw;
         height: 50vw;
-        margin: 80px auto 40px;
+        margin: 40px auto 30px;
     }
     
     .hero {
@@ -839,7 +826,8 @@ a:focus, button:focus {
         justify-content: center;
         align-items: center;
         text-align: center;
-        padding-top: 80px;
+        padding-top: 60px;
+        min-height: 100vh;
     }
     
     .hero-content {
@@ -907,7 +895,7 @@ a:focus, button:focus {
     .hero-model {
         width: 70vw;
         height: 70vw;
-        margin: 100px auto 30px;
+        margin: 40px auto 30px;
     }
     
     .services-grid {
