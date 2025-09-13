@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Three Dimensions - Premium Design Studio specializing in automation and revenue growth">
+    <meta property="og:title" content="Three Dimensions | Premium Design Studio">
+    <meta property="og:description" content="We create intuitive and engaging user interfaces that enhance user experience and drive conversions">
     <title>Three Dimensions | Premium Design Studio</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
@@ -35,7 +38,7 @@
         <model-viewer
             class="hero-model"
             src="assets/twoje-logo.glb"
-            alt="Moje logo 3D"
+            alt="3D logo Three Dimensions Studio"
             interaction-prompt="none"
             disable-zoom
             disable-pan
@@ -51,14 +54,18 @@
             reveal="auto"
             style="background-color: transparent;"
         >
+            <div class="model-placeholder" slot="poster">
+                <i class="fas fa-cube"></i>
+                <p>3D Model Loading...</p>
+            </div>
             <div slot="hotspot-1" data-position="1m 1m 1m" data-normal="0 0 1"></div>
             <div slot="hotspot-2" data-position="-1m -1m -1m" data-normal="0 0 -1"></div>
         </model-viewer>
 
         <div class="hero-bg"></div>
         <div class="hero-content">
-            <h1>Automate Proceses Grow Revenue <span></span></h1>
-            <p>Your competetive advantage starts now</p>
+            <h1>Automate Processes Grow Revenue <span></span></h1>
+            <p>Your competitive advantage starts now</p>
             <div class="hero-buttons">
                 <a href="#" class="btn btn-primary" id="letsBeginBtn">Let's begin <i class="fas fa-arrow-right"></i></a>
                 <a href="#" class="btn btn-secondary" id="learnMoreBtn">Learn more</a>
@@ -78,7 +85,7 @@
             <div class="project-content">
                 <div class="project-number">01</div>
                 <h2 class="project-title">How automation can help you grow</h2>
-                <p class="project-description"></p>
+                <p class="project-description">Discover how implementing automation strategies can significantly improve your business efficiency and revenue streams.</p>
                 <a href="#" class="project-link" id="projectLink1">View project <i class="fas fa-arrow-right"></i></a>
             </div>
             <!-- ZĘBATKI Z PRZEZROCZYSTYMI ŚRODKAMI -->
@@ -128,7 +135,7 @@
                 <a href="#" class="project-link" id="projectLink2">View project <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="project-image">
-                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Project 2">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="E-commerce website redesign project" loading="lazy">
             </div>
         </div>
 
@@ -140,7 +147,7 @@
                 <a href="#" class="project-link" id="projectLink3">View project <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="project-image">
-                <img src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Project 3">
+                <img src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Fitness tracking mobile app design" loading="lazy">
             </div>
         </div>
     </section>
