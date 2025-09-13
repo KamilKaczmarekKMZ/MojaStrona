@@ -153,26 +153,6 @@ body {
     pointer-events: none;
 }
 
-/* NAGŁÓWEK Z EFEKTEM LIQUID GLASS - POPRAWIONY */
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 0;
-    z-index: 1000;
-    transition: var(--transition);
-    background: transparent !important;
-    overflow: hidden;
-    height: 80px;
-}
-
-header.scrolled {
-    background: rgba(10, 10, 10, 0.9) !important;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-}
-
 /* Sekcja powitalna */
 .hero {
     height: 100vh;
