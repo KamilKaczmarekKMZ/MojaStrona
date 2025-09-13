@@ -5,7 +5,7 @@ try {
             const Grid1Background = module.default;
             const canvas = document.getElementById('webgl-canvas');
             if (canvas) {
-                const bg = Grid1Background(canvas); // POPRAWIONE: canvas zamiast cancanvas
+                const bg = Grid1Background(canvas);
                 // DOPASOWANE KOLORY POCZĄTKOWE - ZIEMISTA PALETA
                 bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
                 bg.grid.light1.color.set(0xF5F5DC);
@@ -44,27 +44,32 @@ function smoothScrollToElement(elementId) {
     }
 }
 
+// Zmienne globalne
+let scrollTimeout;
+let cursorTimeout;
+
 // Ładowanie strony
 window.addEventListener('load', function() {
-    setTimeout(function() {
-        document.querySelector('.loader').classList.add('hidden');
-        
-        // Animacja sekcji hero po załadowaniu strony
-        document.querySelector('.hero h1').style.animation = 'fadeInUp 1s forwards 0.3s';
-        document.querySelector('.hero p').style.animation = 'fadeInUp 1s forwards 0.6s';
-        document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
-        document.querySelector('.scroll-indicator').style.animation = 'fadeInUp 1s forwards 1.2s';
-    }, 1500);
+    document.querySelector('.loader').classList.add('hidden');
+    
+    // Animacja sekcji hero po załadowaniu strony
+    document.querySelector('.hero h1').style.animation = 'fadeInUp 1s forwards 0.3s';
+    document.querySelector('.hero p').style.animation = 'fadeInUp 1s forwards 0.6s';
+    document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
+    document.querySelector('.scroll-indicator').style.animation = 'fadeInUp 1s forwards 1.2s';
 });
 
 // Obsługa scrollowania nagłówka
 window.addEventListener('scroll', function() {
-    const header = document.querySelector('header');
-    if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
-    }
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function() {
+        const header = document.querySelector('header');
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    }, 100);
 });
 
 // Obsługa animacji podczas scrollowania
@@ -105,13 +110,14 @@ const cursorFollower = document.querySelector('.cursor-follower');
 document.addEventListener('mousemove', function(e) {
     cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
     
-    setTimeout(function() {
+    clearTimeout(cursorTimeout);
+    cursorTimeout = setTimeout(function() {
         cursorFollower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-    }, 100);
+    }, 50);
 });
 
 // Zmiana kursora przy najeżdżaniu na linki i przyciski
-const hoverElements = document.querySelectorAll('a, button, .project-thumb');
+const hoverElements = document.querySelectorAll('a, button, .project-link, .contact-button, .social-link');
 
 hoverElements.forEach(el => {
     el.addEventListener('mouseenter', () => {
@@ -123,19 +129,6 @@ hoverElements.forEach(el => {
         cursor.style.transform = 'scale(1)';
         cursorFollower.style.transform = 'scale(1)';
     });
-});
-
-// OBSŁUGA SCROLLA DLA MODELU 3D - USUNIĘTE WSZYSTKIE EFEKTY
-window.addEventListener('load', () => {
-    // MODEL 3D
-    const modelViewer = document.querySelector('.hero-model');
-    if (!modelViewer) {
-        console.error('Element model-viewer nie istnieje');
-        return;
-    }
-    
-    // USUNIĘTE: Cała logika scrollowania i transformacji
-    // Model pozostaje statyczny bez żadnych efektów scrollowania
 });
 
 // OBSŁUGA PRZYCISKÓW
@@ -194,3 +187,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Fallback dla modelu 3D - jeśli nie załaduje się w ciągu 5 sekund
+setTimeout(() => {
+    const modelViewer = document.querySelector('model-viewer');
+    const poster = document.querySelector('.model-placeholder');
+    if (modelViewer && poster && !modelViewer.loaded) {
+        poster.style.display = 'flex';
+    }
+}, 5000);
