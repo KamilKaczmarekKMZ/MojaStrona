@@ -50,6 +50,7 @@ body {
 .loader.hidden {
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
 }
 
 .loader-spinner {
@@ -64,6 +65,26 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Placeholder dla modelu 3D */
+.model-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    color: var(--text-secondary);
+    font-size: 16px;
+}
+
+.model-placeholder i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: var(--accent);
 }
 
 /* MODEL VIEWER - NOWE STYLE DLA SEKCJI HERO */
@@ -123,7 +144,7 @@ body {
 }
 
 /* NAGŁÓWEK Z EFEKTEM LIQUID GLASS - POPRAWIONY */
-.liquidGlass-header {
+header {
     position: fixed;
     top: 0;
     left: 0;
@@ -136,21 +157,9 @@ body {
     height: 80px;
 }
 
-.liquidGlass-header .header-content {
-    position: relative;
-    z-index: 3;
-    padding: 24px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100%;
-}
-
-.liquidGlass-header.scrolled .header-content {
-    padding: 16px 40px;
-}
-
-.liquidGlass-header.scrolled {
+header.scrolled {
+    background: rgba(10, 10, 10, 0.9) !important;
+    backdrop-filter: blur(10px);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -211,8 +220,7 @@ body {
     animation: fadeInUp 1s forwards 0.9s;
 }
 
-/* PRZYCISKI Z EFEKTEM LIQUID GLASS - POPRAWIONE */
-.liquidGlass-btn {
+.btn {
     position: relative;
     padding: 16px 32px;
     border-radius: 50px;
@@ -228,32 +236,33 @@ body {
     justify-content: center;
 }
 
-.liquidGlass-btn .btn-text {
-    position: relative;
-    z-index: 3;
+.btn-primary {
+    background: var(--accent);
     color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    border: 2px solid var(--accent);
 }
 
-/* Pierwszy przycisk - przezroczysty z białym tekstem */
-.btn-primary.liquidGlass-btn {
+.btn-secondary {
+    background: transparent;
+    color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Drugi przycisk - przezroczysty z białym tekstem */
-.btn-secondary.liquidGlass-btn {
-    border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.liquidGlass-btn:hover {
+.btn:hover {
     transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 62, 120, 0.3);
+}
+
+.btn-secondary:hover {
     box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
 }
 
-.liquidGlass-btn:hover .btn-text {
-    gap: 15px;
+.btn:hover i {
+    transform: translateX(5px);
+}
+
+.btn i {
+    transition: transform 0.3s ease;
 }
 
 .scroll-indicator {
@@ -267,6 +276,7 @@ body {
     opacity: 0;
     z-index: 3;
     animation: fadeInUp 1s forwards 1.2s;
+    cursor: pointer;
 }
 
 .scroll-indicator span {
@@ -339,6 +349,7 @@ body {
     opacity: 0;
     transform: translateY(50px);
     transition: var(--transition);
+    will-change: transform, opacity;
 }
 
 .project-content {
@@ -622,6 +633,7 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
     border-radius: 20px;
     transition: var(--transition);
     backdrop-filter: blur(5px);
+    will-change: transform;
 }
 
 .service-card:hover {
@@ -687,21 +699,16 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
     position: relative;
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.contact-button .btn-text {
-    position: relative;
-    z-index: 3;
+    background: transparent;
     color: white;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    cursor: pointer;
 }
 
 .contact-button:hover {
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
     gap: 20px;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .footer-bottom {
@@ -743,6 +750,30 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
     transform: translateY(-5px);
 }
 
+/* Custom cursor */
+.cursor, .cursor-follower {
+    position: fixed;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+}
+
+.cursor {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    transition: transform 0.2s ease;
+}
+
+.cursor-follower {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 62, 120, 0.3);
+    transition: all 0.3s ease;
+}
+
 /* Animacje */
 @keyframes fadeInUp {
     from {
@@ -753,6 +784,12 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Focus states dla dostępności */
+a:focus, button:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
 }
 
 /* Responsywność */
@@ -871,5 +908,31 @@ footer > *:not(.liquidGlass-effect):not(.liquidGlass-tint):not(.liquidGlass-shin
         width: 70vw;
         height: 70vw;
         margin: 100px auto 30px;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 0 15px;
+    }
+    
+    .projects, .services {
+        padding: 60px 15px;
+    }
+    
+    .service-card {
+        padding: 30px 20px;
+    }
+    
+    .footer-title {
+        font-size: 28px;
+    }
+    
+    .contact-button {
+        padding: 16px 32px;
     }
 }
