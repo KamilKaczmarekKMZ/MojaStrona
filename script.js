@@ -12,6 +12,21 @@ try {
                 bg.grid.light1.intensity = 650;
                 bg.grid.light2.color.set(0x8B4513);
                 bg.grid.light2.intensity = 350;
+
+                // Ustaw stały zoom kamery
+                if (bg.camera) {
+                    bg.camera.zoom = 1;
+                    bg.camera.updateProjectionMatrix();
+                }
+
+                // Blokuj zdarzenia wheel i touchmove na canvas, aby zapobiec zmianom skali
+                canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                }, { passive: false });
+
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                }, { passive: false });
             }
         })
         .catch((error) => {
