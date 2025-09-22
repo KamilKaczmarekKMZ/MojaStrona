@@ -27,6 +27,17 @@ try {
                 canvas.addEventListener('touchmove', (e) => {
                     e.preventDefault();
                 }, { passive: false });
+
+                // Obsługa zmiany rozmiaru okna (dla dynamicznego viewport na mobilkach)
+                window.addEventListener('resize', () => {
+                    const width = window.innerWidth;
+                    const height = window.innerHeight;
+                    bg.renderer.setSize(width, height);
+                    if (bg.camera) {
+                        bg.camera.aspect = width / height;
+                        bg.camera.updateProjectionMatrix();
+                    }
+                });
             }
         })
         .catch((error) => {
