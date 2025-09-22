@@ -40,6 +40,8 @@ body {
 
 #webgl-canvas {
     transform: none !important;
+    width: 100vw !important;
+    height: 100vh !important;
 }
 
 /* Loader */
