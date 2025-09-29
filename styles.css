@@ -1,6 +1,6 @@
 :root {
     --primary: #0a0a0a;
-    --accent: #ff3e78;
+    --accent: #A67A5B; /* Ciepły brązowy, pasujący do tła heksagonalnego */
     --text: #ffffff;
     --text-secondary: #aaaaaa;
     --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -131,7 +131,7 @@ body {
 
 .btn:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(255, 62, 120, 0.3);
+    box-shadow: 0 15px 40px rgba(166, 122, 91, 0.3); /* Cień dopasowany do nowego --accent */
 }
 
 .btn-secondary:hover {
