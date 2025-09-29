@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Three Dimensions - Premium Design Studio specializing in automation and revenue growth">
-    <meta property="og:title" content="Three Dimensions | Premium Design Studio">
-    <meta property="og:description" content="We create intuitive and engaging user interfaces that enhance user experience and drive conversions">
     <title>Three Dimensions | Premium Design Studio</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -18,257 +15,34 @@
         <canvas id="webgl-canvas"></canvas>
     </div>
 
-    <!-- Loader -->
-    <div class="loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <!-- Sekcja powitalna -->
     <section class="hero">
-        <!-- 3D Model w sekcji Hero -->
+        <!-- 3D Model -->
         <model-viewer
             class="hero-model"
             src="assets/twoje-logo.glb"
             alt="3D logo Three Dimensions Studio"
             interaction-prompt="none"
-            disable-zoom
-            disable-pan
-            disable-tap
             camera-orbit="0deg 90deg 0deg"
             exposure="1.2"
             environment-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
             shadow-intensity="1"
             shadow-softness="0.5"
             auto-rotate
-            auto-rotate-delay="1000"
-            loading="eager"
-            reveal="auto"
             style="background-color: transparent;"
         >
             <div class="model-placeholder" slot="poster">
-                <i class="fas fa-cube"></i>
                 <p>3D Model Loading...</p>
             </div>
-            <div slot="hotspot-1" data-position="1m 1m 1m" data-normal="0 0 1"></div>
-            <div slot="hotspot-2" data-position="-1m -1m -1m" data-normal="0 0 -1"></div>
         </model-viewer>
 
-        <div class="hero-bg"></div>
-        <div class="hero-content">
-            <h1>Automate Processes Grow Revenue <span></span></h1>
-            <p>Your competitive advantage starts now</p>
-            <div class="hero-buttons">
-                <a href="#" class="btn btn-primary" id="letsBeginBtn">Let's begin <i class="fas fa-arrow-right"></i></a>
-                <a href="#" class="btn btn-secondary" id="learnMoreBtn">Learn more</a>
-            </div>
+        <h1>Automate Processes Grow Revenue</h1>
+        <p>Your competitive advantage starts now</p>
+        <div class="hero-buttons">
+            <a href="#" class="btn btn-primary" id="letsBeginBtn">Let's begin</a>
+            <a href="#" class="btn btn-secondary" id="learnMoreBtn">Learn more</a>
         </div>
     </section>
-
-    <!-- Sekcja z projektami -->
-    <section class="projects" id="knowledgeSection">
-        <h2 class="section-title">Knowledge</h2>
-        
-        <div class="project">
-            <div class="project-content">
-                <div class="project-number">01</div>
-                <h2 class="project-title">How automation can help you grow</h2>
-                <p class="project-description">Discover how implementing automation strategies can significantly improve your business efficiency and revenue streams.</p>
-                <a href="#" class="project-link" id="projectLink1">View project <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <!-- ZĘBATKI Z PRZEZROCZYSTYMI ŚRODKAMI -->
-            <div class="gearbox-container">
-                <div class="gearbox">
-                    <div class="overlay"></div>
-                    <div class="gear one">
-                        <div class="gear-inner">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                    <div class="gear two">
-                        <div class="gear-inner">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                    <div class="gear three">
-                        <div class="gear-inner">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                    <div class="gear four large">
-                        <div class="gear-inner">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="project">
-            <div class="project-content">
-                <div class="project-number">02</div>
-                <h2 class="project-title">Step by step </h2>
-                <p class="project-description">Learn how to implement AI to your business</p>
-                <a href="#" class="project-link" id="projectLink2">View project <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <!-- POPRAWIONE - 3D TOWER LOADER Z NOWĄ NAZWĄ KLASY -->
-            <div class="gearbox-container">
-                <div class="tower-loader-wrapper tower-loader">
-                    <div class="box box-1">
-                        <div class="side-left"></div>
-                        <div class="side-right"></div>
-                        <div class="side-top"></div>
-                    </div>
-                    <div class="box box-2">
-                        <div class="side-left"></div>
-                        <div class="side-right"></div>
-                        <div class="side-top"></div>
-                    </div>
-                    <div class="box box-3">
-                        <div class="side-left"></div>
-                        <div class="side-right"></div>
-                        <div class="side-top"></div>
-                    </div>
-                    <div class="box box-4">
-                        <div class="side-left"></div>
-                        <div class="side-right"></div>
-                        <div class="side-top"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="project">
-            <div class="project-content">
-                <div class="project-number">03</div>
-                <h2 class="project-title">Mobile App for Fitness Tracking</h2>
-                <p class="project-description">Design and development of a fitness tracking application with personalized workout plans and progress analytics.</p>
-                <a href="#" class="project-link" id="projectLink3">View project <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="project-image">
-                <img src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Fitness tracking mobile app design" loading="lazy">
-            </div>
-        </div>
-    </section>
-
-    <!-- Sekcja usług -->
-    <section class="services">
-        <div class="liquidGlass-effect"></div>
-        <div class="liquidGlass-tint"></div>
-        <div class="liquidGlass-shine"></div>
-        
-        <h2 class="section-title">Our Services</h2>
-        <div class="services-grid">
-            <div class="service-card">
-                <div class="service-icon"><i class="fas fa-pencil-ruler"></i></div>
-                <h3 class="service-title">UI/UX Design</h3>
-                <p class="service-description">We create intuitive and engaging user interfaces that enhance user experience and drive conversions.</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon"><i class="fas fa-code"></i></div>
-                <h3 class="service-title">Web Development</h3>
-                <p class="service-description">From responsive websites to complex web applications, we build digital solutions that perform.</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon"><i class="fas fa-mobile-alt"></i></div>
-                <h3 class="service-title">App Development</h3>
-                <p class="service-description">Native and cross-platform mobile app development that delivers seamless user experiences.</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon"><i class="fas fa-bullhorn"></i></div>
-                <h3 class="service-title">Digital Marketing</h3>
-                <p class="service-description">Data-driven marketing strategies that increase brand visibility and customer engagement.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stopka -->
-    <footer>
-        <div class="liquidGlass-effect"></div>
-        <div class="liquidGlass-tint"></div>
-        <div class="liquidGlass-shine"></div>
-        
-        <div class="footer-content">
-            <h2 class="footer-title">Let's create something amazing together</h2>
-            <p class="footer-description">We're always open to discussing new projects and opportunities. Get in touch with us and let's turn your ideas into reality.</p>
-            <a href="#" class="contact-button" id="contactBtn">Contact us <i class="fas fa-arrow-right"></i></a>
-            
-            <div class="footer-bottom">
-                <div class="copyright">© 2023 Three Dimensions. All rights reserved.</div>
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-dribbble"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Filtr SVG dla efektu liquid glass -->
-    <svg style="display: none">
-        <filter
-            id="glass-distortion"
-            x="0%"
-            y="0%"
-            width="100%"
-            height="100%"
-            filterUnits="objectBoundingBox"
-        >
-            <feTurbulence
-                type="fractalNoise"
-                baseFrequency="0.01 0.01"
-                numOctaves="1"
-                seed="5"
-                result="turbulence"
-            />
-            <feComponentTransfer in="turbulence" result="mapped">
-                <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
-                <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
-                <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
-            </feComponentTransfer>
-            <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
-            <feSpecularLighting
-                in="softMap"
-                surfaceScale="5"
-                specularConstant="1"
-                specularExponent="100"
-                lighting-color="white"
-                result="specLight"
-            >
-                <fePointLight x="-200" y="-200" z="300" />
-            </feSpecularLighting>
-            <feComposite
-                in="specLight"
-                operator="arithmetic"
-                k1="0"
-                k2="1"
-                k3="1"
-                k4="0"
-                result="litImage"
-            />
-            <feDisplacementMap
-                in="SourceGraphic"
-                in2="softMap"
-                scale="150"
-                xChannelSelector="R"
-                yChannelSelector="G"
-            />
-        </filter>
-    </svg>
 
     <script src="script.js"></script>
 </body>
