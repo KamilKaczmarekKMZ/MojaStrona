@@ -7,21 +7,26 @@ try {
             const bg = Grid1Background(canvas);
             bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
             bg.grid.light1.color.set(0xF5F5DC);
-            bg.grid.light1.intensity = 400; // Zmniejszona intensywność
+            bg.grid.light1.intensity = 400;
             bg.grid.light2.color.set(0x8B4513);
-            bg.grid.light2.intensity = 200; // Zmniejszona intensywność
+            bg.grid.light2.intensity = 200;
 
-            // Ustawienie świateł na środku ekranu
+            // Ustawienie świateł na środku ekranu, za modelem 3D (Z=-100)
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            bg.grid.light1.position.set(centerX, centerY, 300);
-            bg.grid.light2.position.set(centerX, centerY, 150);
+            bg.grid.light1.position.set(centerX, centerY, -100);
+            bg.grid.light2.position.set(centerX, centerY, -100);
 
             bg.camera.zoom = 1;
             bg.camera.updateProjectionMatrix();
 
-            canvas.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
-            canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+            // Pętla animacyjna zapewniająca statyczną pozycję świateł
+            function animate() {
+                bg.grid.light1.position.set(centerX, centerY, -100);
+                bg.grid.light2.position.set(centerX, centerY, -100);
+                requestAnimationFrame(animate);
+            }
+            animate();
 
             window.addEventListener('resize', () => {
                 const width = window.innerWidth;
@@ -30,8 +35,8 @@ try {
                 bg.camera.aspect = width / height;
                 bg.camera.updateProjectionMatrix();
                 // Aktualizacja pozycji świateł przy zmianie rozmiaru okna
-                bg.grid.light1.position.set(width / 2, height / 2, 300);
-                bg.grid.light2.position.set(width / 2, height / 2, 150);
+                bg.grid.light1.position.set(width / 2, height / 2, -100);
+                bg.grid.light2.position.set(width / 2, height / 2, -100);
             });
         })
         .catch((error) => console.error('Błąd podczas ładowania tła:', error));
