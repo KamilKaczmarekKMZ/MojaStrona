@@ -7,9 +7,16 @@ try {
             const bg = Grid1Background(canvas);
             bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
             bg.grid.light1.color.set(0xF5F5DC);
-            bg.grid.light1.intensity = 650;
+            bg.grid.light1.intensity = 400; // Zmniejszona intensywność
             bg.grid.light2.color.set(0x8B4513);
-            bg.grid.light2.intensity = 350;
+            bg.grid.light2.intensity = 200; // Zmniejszona intensywność
+
+            // Ustawienie świateł na środku ekranu
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            bg.grid.light1.position.set(centerX, centerY, 300);
+            bg.grid.light2.position.set(centerX, centerY, 150);
+
             bg.camera.zoom = 1;
             bg.camera.updateProjectionMatrix();
 
@@ -22,6 +29,9 @@ try {
                 bg.renderer.setSize(width, height);
                 bg.camera.aspect = width / height;
                 bg.camera.updateProjectionMatrix();
+                // Aktualizacja pozycji świateł przy zmianie rozmiaru okna
+                bg.grid.light1.position.set(width / 2, height / 2, 300);
+                bg.grid.light2.position.set(width / 2, height / 2, 150);
             });
         })
         .catch((error) => console.error('Błąd podczas ładowania tła:', error));
