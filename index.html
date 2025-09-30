@@ -50,45 +50,101 @@
         <button class="btn btn-back" id="backBtn">Back</button>
         <div class="form-steps">
             <div class="step active" data-step="1">
-                <h3>Krok 1: Podstawowe informacje</h3>
+                <h3>Podstawowe informacje</h3>
                 <label for="name">Imię:</label>
                 <input type="text" id="name" placeholder="Wpisz swoje imię">
                 <label for="email">Email:</label>
                 <input type="email" id="email" placeholder="Wpisz swój email">
             </div>
             <div class="step" data-step="2">
-                <h3>Krok 2: Branża</h3>
-                <label>
-                    <input type="checkbox" name="industry" value="IT"> IT/Technologia
+                <h3>Branża</h3>
+                <label class="container">
+                    <input type="checkbox" name="industry" value="IT">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>IT/Technologia</span>
                 </label>
-                <label>
-                    <input type="checkbox" name="industry" value="Finanse"> Finanse
+                <label class="container">
+                    <input type="checkbox" name="industry" value="Finanse">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>Finanse</span>
                 </label>
-                <label>
-                    <input type="checkbox" name="industry" value="Produkcja"> Produkcja
+                <label class="container">
+                    <input type="checkbox" name="industry" value="Produkcja">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>Produkcja</span>
                 </label>
-                <label>
-                    <input type="checkbox" name="industry" value="Inna"> Inna
+                <label class="container">
+                    <input type="checkbox" name="industry" value="Inna">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>Inna</span>
                 </label>
             </div>
             <div class="step" data-step="3">
-                <h3>Krok 3: Czym się zajmujesz?</h3>
+                <h3>Czym się zajmujesz?</h3>
                 <textarea id="occupation" placeholder="Opisz swoją działalność..."></textarea>
             </div>
             <div class="step" data-step="4">
-                <h3>Krok 4: Doświadczenie z automatyzacją</h3>
-                <label>
-                    <input type="checkbox" name="experience" value="Brak"> Brak doświadczenia
+                <h3>Doświadczenie z automatyzacją</h3>
+                <label class="container">
+                    <input type="checkbox" name="experience" value="Brak">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>Brak doświadczenia</span>
                 </label>
-                <label>
-                    <input type="checkbox" name="experience" value="Podstawowe"> Podstawowe doświadczenie
+                <label class="container">
+                    <input type="checkbox" name="experience" value="Podstawowe">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>Podstawowe doświadczenie</span>
                 </label>
-                <label>
-                    <input type="checkbox" name="experience" value="Zaawansowane"> Zaawansowane doświadczenie
+                <label class="container">
+                    <input type="checkbox" name="experience" value="Zaawansowane">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>Zaawansowane doświadczenie</span>
                 </label>
             </div>
             <div class="step" data-step="5">
-                <h3>Krok 5: Czy chcesz zacząć od podstaw?</h3>
+                <h3>Czy chcesz zacząć od podstaw?</h3>
                 <label>
                     <input type="radio" name="fromBeginning" value="Tak"> Tak
                 </label>
