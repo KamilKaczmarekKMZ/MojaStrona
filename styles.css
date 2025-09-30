@@ -34,6 +34,7 @@ body {
 #webgl-canvas {
     width: 100vw;
     height: 100vh;
+    z-index: -1; /* Ensure canvas is behind all content */
 }
 
 /* Placeholder for 3D model */
@@ -219,7 +220,26 @@ body {
     padding: 20px;
 }
 
-.form-steps {
+/* Chat Section */
+.chat-section {
+    display: none; /* Managed by JavaScript */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    padding: 20px;
+}
+
+.chat-section.active {
+    display: flex;
+}
+
+.form-steps, .chat-container {
     width: 100%;
     max-width: 600px;
     background: rgba(255, 255, 255, 0.05);
@@ -391,28 +411,8 @@ body {
     color: var(--accent);
 }
 
-/* Chat Section */
-.chat-section {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 3;
-    padding: 20px;
-}
-
+/* Chat Section Specific Styles */
 .chat-container {
-    width: 100%;
-    max-width: 600px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     height: 80vh;
@@ -524,6 +524,10 @@ body {
     
     .step-indicators {
         bottom: 20px;
+    }
+    
+    .chat-container {
+        height: 90vh;
     }
 }
 
