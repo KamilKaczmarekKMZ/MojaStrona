@@ -16,7 +16,7 @@
     </div>
 
     <!-- Sekcja powitalna -->
-    <section class="hero">
+    <section class="hero" id="hero-section">
         <!-- 3D Model -->
         <model-viewer
             class="hero-model"
@@ -42,6 +42,70 @@
         <div class="hero-buttons">
             <a href="#" class="btn btn-primary" id="letsBeginBtn">Let's begin</a>
             <a href="#" class="btn btn-secondary" id="learnMoreBtn">Learn more</a>
+        </div>
+    </section>
+
+    <!-- Forma z krokami -->
+    <section class="form-section" id="form-section">
+        <button class="btn btn-back" id="backBtn">Back</button>
+        <div class="form-steps">
+            <div class="step active" data-step="1">
+                <h3>Krok 1: Podstawowe informacje</h3>
+                <label for="name">Imię:</label>
+                <input type="text" id="name" placeholder="Wpisz swoje imię">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Wpisz swój email">
+            </div>
+            <div class="step" data-step="2">
+                <h3>Krok 2: Branża</h3>
+                <label>
+                    <input type="checkbox" name="industry" value="IT"> IT/Technologia
+                </label>
+                <label>
+                    <input type="checkbox" name="industry" value="Finanse"> Finanse
+                </label>
+                <label>
+                    <input type="checkbox" name="industry" value="Produkcja"> Produkcja
+                </label>
+                <label>
+                    <input type="checkbox" name="industry" value="Inna"> Inna
+                </label>
+            </div>
+            <div class="step" data-step="3">
+                <h3>Krok 3: Czym się zajmujesz?</h3>
+                <textarea id="occupation" placeholder="Opisz swoją działalność..."></textarea>
+            </div>
+            <div class="step" data-step="4">
+                <h3>Krok 4: Doświadczenie z automatyzacją</h3>
+                <label>
+                    <input type="checkbox" name="experience" value="Brak"> Brak doświadczenia
+                </label>
+                <label>
+                    <input type="checkbox" name="experience" value="Podstawowe"> Podstawowe doświadczenie
+                </label>
+                <label>
+                    <input type="checkbox" name="experience" value="Zaawansowane"> Zaawansowane doświadczenie
+                </label>
+            </div>
+            <div class="step" data-step="5">
+                <h3>Krok 5: Czy chcesz zacząć od podstaw?</h3>
+                <label>
+                    <input type="radio" name="fromBeginning" value="Tak"> Tak
+                </label>
+                <label>
+                    <input type="radio" name="fromBeginning" value="Nie"> Nie
+                </label>
+                <button id="submitForm">Wyślij</button>
+            </div>
+        </div>
+        <div class="step-indicators">
+            <button class="nav-arrow prev-arrow" id="prevStepBtn">&larr;</button>
+            <span class="indicator active"></span>
+            <span class="indicator"></span>
+            <span class="indicator"></span>
+            <span class="indicator"></span>
+            <span class="indicator"></span>
+            <button class="nav-arrow next-arrow" id="nextStepBtn">&rarr;</button>
         </div>
     </section>
 
