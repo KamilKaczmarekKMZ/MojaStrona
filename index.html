@@ -32,7 +32,7 @@
             style="background-color: transparent;"
         >
             <div class="model-placeholder" slot="poster">
-                <p></p>
+                <p>3D Model Loading...</p>
             </div>
         </model-viewer>
 
@@ -107,8 +107,8 @@
                 </label>
             </div>
             <div class="step" data-step="3">
-                <h3>Describe your company</h3>
-                <textarea id="occupation" placeholder="What does your company do?"></textarea>
+                <h3>What do you do?</h3>
+                <textarea id="occupation" placeholder="Describe your activities..."></textarea>
                 <p class="error-message" id="occupation-error"></p>
             </div>
             <div class="step" data-step="4">
@@ -184,6 +184,19 @@
             <span class="indicator"></span>
             <span class="indicator"></span>
             <button class="nav-arrow next-arrow" id="nextStepBtn">&rarr;</button>
+        </div>
+    </section>
+
+    <!-- Chat Section -->
+    <section class="chat-section" id="chat-section">
+        <button class="btn btn-close" id="closeChatBtn">Close</button>
+        <div class="chat-container">
+            <h3>Chat with Us</h3>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <button id="sendMessageBtn">Send</button>
+            </div>
         </div>
     </section>
 
