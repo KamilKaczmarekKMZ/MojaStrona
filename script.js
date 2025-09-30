@@ -71,6 +71,92 @@ window.addEventListener('load', () => {
     document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
 });
 
+// Validation functions
+function validateStep1() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const nameError = document.getElementById('name-error');
+    const emailError = document.getElementById('email-error');
+
+    let isValid = true;
+
+    if (!name) {
+        nameError.textContent = 'Name is required';
+        isValid = false;
+    } else {
+        nameError.textContent = '';
+    }
+
+    if (!email) {
+        emailError.textContent = 'Email is required';
+        isValid = false;
+    } else if (!emailRegex.test(email)) {
+        emailError.textContent = 'Please enter a valid email';
+        isValid = false;
+    } else {
+        emailError.textContent = '';
+    }
+
+    return isValid;
+}
+
+function validateStep2() {
+    const companySize = document.querySelector('input[name="companySize"]:checked');
+    const companySizeError = document.getElementById('companySize-error');
+
+    if (!companySize) {
+        companySizeError.textContent = 'Please select a company size';
+        return false;
+    } else {
+        companySizeError.textContent = '';
+        return true;
+    }
+}
+
+function validateStep3() {
+    const occupation = document.getElementById('occupation').value.trim();
+    const occupationError = document.getElementById('occupation-error');
+
+    if (!occupation) {
+        occupationError.textContent = 'Please describe your activities';
+        return false;
+    } else {
+        occupationError.textContent = '';
+        return true;
+    }
+}
+
+function validateStep4() {
+    const experience = document.querySelector('input[name="experience"]:checked');
+    const experienceError = document.getElementById('experience-error');
+
+    if (!experience) {
+        experienceError.textContent = 'Please select your automation experience';
+        return false;
+    } else {
+        experienceError.textContent = '';
+        return true;
+    }
+}
+
+function validateStep5() {
+    const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked');
+    const receiveEmailsError = document.getElementById('receiveEmails-error');
+
+    if (!receiveEmails) {
+        receiveEmailsError.textContent = 'Please select an option';
+        return false;
+    } else {
+        receiveEmailsError.textContent = '';
+        return true;
+    }
+}
+
+function validateAllSteps() {
+    return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
+}
+
 // Button handlers
 document.addEventListener('DOMContentLoaded', () => {
     const letsBeginBtn = document.getElementById('letsBeginBtn');
@@ -82,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const steps = document.querySelectorAll('.step');
     const prevStepBtn = document.getElementById('prevStepBtn');
     const nextStepBtn = document.getElementById('nextStepBtn');
+    const submitBtn = document.getElementById('submitForm');
     let currentStep = 0;
 
     // Function to switch steps
@@ -92,7 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStep = newStep;
             steps[currentStep].classList.add('active');
             indicators[currentStep].classList.add('active');
+            updateSubmitButton();
         }
+    }
+
+    // Function to update Submit button state
+    function updateSubmitButton() {
+        submitBtn.disabled = !validateAllSteps();
     }
 
     // Ensure single selection for receiveEmails checkboxes
@@ -104,8 +197,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (cb !== checkbox) cb.checked = false;
                 });
             }
+            updateSubmitButton();
         });
     });
+
+    // Add event listeners for form inputs
+    document.getElementById('name').addEventListener('input', () => {
+        validateStep1();
+        updateSubmitButton();
+    });
+
+    document.getElementById('email').addEventListener('input', () => {
+        validateStep1();
+        updateSubmitButton();
+    });
+
+    document.querySelectorAll('input[name="companySize"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            validateStep2();
+            updateSubmitButton();
+        });
+    });
+
+    document.getElementById('occupation').addEventListener('input', () => {
+        validateStep3();
+        updateSubmitButton();
+    });
+
+    document.querySelectorAll('input[name="experience"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            validateStep4();
+            updateSubmitButton();
+        });
+    });
+
+    // Initial validation
+    updateSubmitButton();
 
     learnMoreBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -119,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             heroSection.style.display = 'none';
             formSection.style.display = 'flex';
             formSection.style.animation = 'fadeInUp 1s forwards';
+            updateSubmitButton();
         }, 1000);
     });
 
@@ -145,6 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStep = 0;
             steps[currentStep].classList.add('active');
             indicators[currentStep].classList.add('active');
+            updateSubmitButton();
         }, 1000);
     });
 
@@ -195,15 +324,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Form submission
     document.getElementById('submitForm').addEventListener('click', () => {
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const companySize = document.querySelector('input[name="companySize"]:checked')?.value;
-        const occupation = document.getElementById('occupation').value;
-        const experience = document.querySelector('input[name="experience"]:checked')?.value;
-        const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked')?.value;
+        if (validateAllSteps()) {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const companySize = document.querySelector('input[name="companySize"]:checked')?.value;
+            const occupation = document.getElementById('occupation').value;
+            const experience = document.querySelector('input[name="experience"]:checked')?.value;
+            const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked')?.value;
 
-        console.log({ name, email, companySize, occupation, experience, receiveEmails });
-        alert('Form submitted!'); // Can be customized for server-side submission
+            console.log({ name, email, companySize, occupation, experience, receiveEmails });
+            alert('Form submitted!'); // Can be customized for server-side submission
+        } else {
+            // Find the first invalid step and switch to it
+            if (!validateStep1()) {
+                switchStep(0);
+            } else if (!validateStep2()) {
+                switchStep(1);
+            } else if (!validateStep3()) {
+                switchStep(2);
+            } else if (!validateStep4()) {
+                switchStep(3);
+            } else if (!validateStep5()) {
+                switchStep(4);
+            }
+        }
     });
 });
 
