@@ -279,6 +279,22 @@ body {
     user-select: none;
 }
 
+.step button:disabled {
+    background: rgba(166, 122, 91, 0.5);
+    cursor: not-allowed;
+}
+
+/* Error messages */
+.error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: -15px;
+    margin-bottom: 15px;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
 /* Checkbox/Radio styles (Uiverse.io) */
 .container {
     display: flex;
