@@ -73,14 +73,125 @@ window.addEventListener('load', () => {
 
 // Obsługa przycisków
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('letsBeginBtn').addEventListener('click', (e) => {
+    const letsBeginBtn = document.getElementById('letsBeginBtn');
+    const learnMoreBtn = document.getElementById('learnMoreBtn');
+    const backBtn = document.getElementById('backBtn');
+    const heroSection = document.getElementById('hero-section');
+    const formSection = document.getElementById('form-section');
+    const indicators = document.querySelectorAll('.indicator');
+    const steps = document.querySelectorAll('.step');
+    const prevStepBtn = document.getElementById('prevStepBtn');
+    const nextStepBtn = document.getElementById('nextStepBtn');
+    let currentStep = 0;
+
+    // Funkcja do przełączania kroków
+    function switchStep(newStep) {
+        if (newStep >= 0 && newStep < steps.length) {
+            steps[currentStep].classList.remove('active');
+            indicators[currentStep].classList.remove('active');
+            currentStep = newStep;
+            steps[currentStep].classList.add('active');
+            indicators[currentStep].classList.add('active');
+        }
+    }
+
+    learnMoreBtn.addEventListener('click', (e) => {
         e.preventDefault();
         window.location.href = getRandomLink();
     });
 
-    document.getElementById('learnMoreBtn').addEventListener('click', (e) => {
+    letsBeginBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        window.location.href = getRandomLink();
+        heroSection.style.animation = 'fadeOut 1s forwards';
+        setTimeout(() => {
+            heroSection.style.display = 'none';
+            formSection.style.display = 'flex';
+            formSection.style.animation = 'fadeInUp 1s forwards';
+        }, 1000);
+    });
+
+    backBtn.addEventListener('click', () => {
+        formSection.style.animation = 'fadeOut 1s forwards';
+        setTimeout(() => {
+            formSection.style.display = 'none';
+            heroSection.style.display = 'flex';
+            heroSection.style.animation = 'fadeInUp 1s forwards';
+            // Reset animacji dla elementów hero
+            document.querySelector('.hero h1').style.animation = 'none';
+            document.querySelector('.hero h2').style.animation = 'none';
+            document.querySelector('.hero p').style.animation = 'none';
+            document.querySelector('.hero-buttons').style.animation = 'none';
+            setTimeout(() => {
+                document.querySelector('.hero h1').style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
+                document.querySelector('.hero h2').style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
+                document.querySelector('.hero p').style.animation = 'fadeInUp 1s forwards 0.6s';
+                document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
+            }, 10);
+            // Reset formularza i kroku
+            steps[currentStep].classList.remove('active');
+            indicators[currentStep].classList.remove('active');
+            currentStep = 0;
+            steps[currentStep].classList.add('active');
+            indicators[currentStep].classList.add('active');
+        }, 1000);
+    });
+
+    // Nawigacja między krokami (kropki)
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            switchStep(index);
+        });
+    });
+
+    // Nawigacja strzałkami wizualnymi
+    prevStepBtn.addEventListener('click', () => {
+        switchStep(currentStep - 1);
+    });
+
+    nextStepBtn.addEventListener('click', () => {
+        switchStep(currentStep + 1);
+    });
+
+    // Nawigacja klawiaturą (strzałki lewo/prawo)
+    document.addEventListener('keydown', (e) => {
+        if (formSection.style.display !== 'none') {
+            if (e.key === 'ArrowLeft') {
+                switchStep(currentStep - 1);
+            } else if (e.key === 'ArrowRight') {
+                switchStep(currentStep + 1);
+            }
+        }
+    });
+
+    // Nawigacja swipe (przesunięcie palcem) na urządzeniach dotykowych
+    const formSteps = document.querySelector('.form-steps');
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    formSteps.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    formSteps.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) {
+            switchStep(currentStep + 1); // Swipe lewo -> następny krok
+        } else if (touchEndX - touchStartX > 50) {
+            switchStep(currentStep - 1); // Swipe prawo -> poprzedni krok
+        }
+    });
+
+    // Submit formy (przykład)
+    document.getElementById('submitForm').addEventListener('click', () => {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const industry = Array.from(document.querySelectorAll('input[name="industry"]:checked')).map(cb => cb.value);
+        const occupation = document.getElementById('occupation').value;
+        const experience = Array.from(document.querySelectorAll('input[name="experience"]:checked')).map(cb => cb.value);
+        const fromBeginning = document.querySelector('input[name="fromBeginning"]:checked')?.value;
+
+        console.log({ name, email, industry, occupation, experience, fromBeginning });
+        alert('Formularz wysłany!'); // Możesz dostosować do wysyłki na serwer
     });
 });
 
