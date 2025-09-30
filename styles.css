@@ -1,6 +1,6 @@
 :root {
     --primary: #0a0a0a;
-    --accent: #A67A5B; /* Ciepły brązowy, pasujący do tła heksagonalnego */
+    --accent: #A67A5B; /* Warm brown, matching the hexagonal background */
     --text: #ffffff;
     --text-secondary: #aaaaaa;
     --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -20,7 +20,7 @@ body {
     line-height: 1.6;
 }
 
-/* TŁO HEX GRID */
+/* HEX GRID BACKGROUND */
 #bg-app, #webgl-canvas {
     position: fixed;
     top: 0;
@@ -36,7 +36,7 @@ body {
     height: 100vh;
 }
 
-/* Placeholder dla modelu 3D */
+/* Placeholder for 3D model */
 .model-placeholder {
     display: flex;
     justify-content: center;
@@ -63,7 +63,7 @@ body {
     filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.7));
 }
 
-/* Sekcja powitalna */
+/* Hero Section */
 .hero {
     height: 100vh;
     display: flex;
@@ -163,7 +163,7 @@ body {
     user-select: none;
 }
 
-/* Gradientowy tekst */
+/* Gradient text */
 .animated-text {
     background: linear-gradient(to bottom, #FFFFFF, #A67A5B);
     -webkit-background-clip: text;
@@ -171,7 +171,7 @@ body {
     color: transparent;
 }
 
-/* Animacje */
+/* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -204,7 +204,7 @@ body {
     }
 }
 
-/* Forma z krokami */
+/* Form Section */
 .form-section {
     display: none;
     flex-direction: column;
@@ -246,6 +246,8 @@ body {
     display: block;
     margin: 10px 0;
     font-size: 18px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .step input[type="text"], .step input[type="email"], .step textarea {
@@ -256,6 +258,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
     border-radius: 5px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .step textarea {
@@ -269,22 +273,32 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
+    margin: 20px auto;
+    display: block;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
 }
 
-/* Styl checkboxów (Uiverse.io) */
+/* Checkbox/Radio styles (Uiverse.io) */
 .container {
     display: flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
     margin: 12px 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .container input {
     display: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.container input[type="radio"], .container input[type="checkbox"] {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .container svg {
@@ -361,7 +375,7 @@ body {
     color: var(--accent);
 }
 
-/* Responsywność */
+/* Responsiveness */
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 36px;
