@@ -125,6 +125,8 @@ body {
     align-items: center;
     min-width: 160px;
     justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .btn-primary {
@@ -157,6 +159,8 @@ body {
     border: 2px solid rgba(255, 255, 255, 0.3);
     padding: 10px 20px;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 /* Gradientowy tekst */
@@ -266,13 +270,64 @@ body {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+/* Styl checkboxów (Uiverse.io) */
+.container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin: 12px 0;
+}
+
+.container input {
+    display: none;
+}
+
+.container svg {
+    overflow: visible;
+}
+
+.container .path {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke-dasharray 0.5s ease, stroke 0.3s ease;
+    stroke-dasharray: 0 0 240 9999999;
+    stroke-dashoffset: 1;
+    scale: -1 1;
+    transform-origin: center;
+    animation: hi 0.5s;
+}
+
+.container input:checked ~ svg .path {
+    stroke: var(--accent);
+    stroke-dasharray: 0 262 70 9999999;
+    transition-delay: 0s;
+    scale: 1 1;
+    animation: none;
+}
+
+@keyframes hi {
+    0% {
+        stroke-dashoffset: 20;
+    }
+    to {
+        stroke-dashoffset: 1;
+    }
 }
 
 .step-indicators {
+    position: absolute;
+    bottom: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
 }
 
 .indicator {
@@ -282,6 +337,8 @@ body {
     border-radius: 50%;
     margin: 0 5px;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .indicator.active {
@@ -296,6 +353,8 @@ body {
     cursor: pointer;
     padding: 0 10px;
     transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .nav-arrow:hover {
@@ -336,6 +395,10 @@ body {
         left: 10px;
         padding: 8px 16px;
     }
+    
+    .step-indicators {
+        bottom: 20px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -360,5 +423,14 @@ body {
     .nav-arrow {
         font-size: 20px;
         padding: 0 8px;
+    }
+    
+    .step-indicators {
+        bottom: 15px;
+    }
+    
+    .container {
+        gap: 6px;
+        margin: 10px 0;
     }
 }
