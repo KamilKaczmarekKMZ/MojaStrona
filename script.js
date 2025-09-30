@@ -1,4 +1,4 @@
-// Import i inicjalizacja tła Hexagonal Grid
+// Import and initialize Hexagonal Grid Background
 try {
     import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.16/build/backgrounds/grid1.cdn.min.js')
         .then((module) => {
@@ -11,7 +11,7 @@ try {
             bg.grid.light2.color.set(0x8B4513);
             bg.grid.light2.intensity = 200;
 
-            // Ustawienie świateł na środku ekranu, za modelem 3D (Z=-100)
+            // Set lights to the center of the screen, behind the 3D model (Z=-100)
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
             bg.grid.light1.position.set(centerX, centerY, -100);
@@ -20,12 +20,12 @@ try {
             bg.camera.zoom = 1;
             bg.camera.updateProjectionMatrix();
 
-            // Odłączenie wszystkich zdarzeń myszy
+            // Disconnect all mouse events
             canvas.removeEventListener('mousemove', bg.grid.onMouseMove);
             canvas.removeEventListener('wheel', bg.grid.onMouseWheel);
             canvas.removeEventListener('touchmove', bg.grid.onTouchMove);
 
-            // Pętla animacyjna zapewniająca statyczną pozycję świateł
+            // Animation loop to ensure static light position
             function animate() {
                 bg.grid.light1.position.set(centerX, centerY, -100);
                 bg.grid.light2.position.set(centerX, centerY, -100);
@@ -39,17 +39,17 @@ try {
                 bg.renderer.setSize(width, height);
                 bg.camera.aspect = width / height;
                 bg.camera.updateProjectionMatrix();
-                // Aktualizacja pozycji świateł przy zmianie rozmiaru okna
+                // Update light positions on window resize
                 bg.grid.light1.position.set(width / 2, height / 2, -100);
                 bg.grid.light2.position.set(width / 2, height / 2, -100);
             });
         })
-        .catch((error) => console.error('Błąd podczas ładowania tła:', error));
+        .catch((error) => console.error('Error loading background:', error));
 } catch (error) {
-    console.error('Błąd podczas importowania modułu:', error);
+    console.error('Error importing module:', error);
 }
 
-// Funkcja do generowania randomowego linku
+// Function to generate a random link
 function getRandomLink() {
     const randomLinks = [
         'https://example.com/page1',
@@ -61,7 +61,7 @@ function getRandomLink() {
     return randomLinks[Math.floor(Math.random() * randomLinks.length)];
 }
 
-// Animacja sekcji hero po załadowaniu strony
+// Hero section animation on page load
 window.addEventListener('load', () => {
     document.querySelector('.hero h1').classList.add('animated-text');
     document.querySelector('.hero h2').classList.add('animated-text');
@@ -71,7 +71,7 @@ window.addEventListener('load', () => {
     document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
 });
 
-// Obsługa przycisków
+// Button handlers
 document.addEventListener('DOMContentLoaded', () => {
     const letsBeginBtn = document.getElementById('letsBeginBtn');
     const learnMoreBtn = document.getElementById('learnMoreBtn');
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextStepBtn = document.getElementById('nextStepBtn');
     let currentStep = 0;
 
-    // Funkcja do przełączania kroków
+    // Function to switch steps
     function switchStep(newStep) {
         if (newStep >= 0 && newStep < steps.length) {
             steps[currentStep].classList.remove('active');
@@ -94,6 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
             indicators[currentStep].classList.add('active');
         }
     }
+
+    // Ensure single selection for receiveEmails checkboxes
+    const receiveEmailsCheckboxes = document.querySelectorAll('input[name="receiveEmails"]');
+    receiveEmailsCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                receiveEmailsCheckboxes.forEach(cb => {
+                    if (cb !== checkbox) cb.checked = false;
+                });
+            }
+        });
+    });
 
     learnMoreBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -116,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formSection.style.display = 'none';
             heroSection.style.display = 'flex';
             heroSection.style.animation = 'fadeInUp 1s forwards';
-            // Reset animacji dla elementów hero
+            // Reset animations for hero elements
             document.querySelector('.hero h1').style.animation = 'none';
             document.querySelector('.hero h2').style.animation = 'none';
             document.querySelector('.hero p').style.animation = 'none';
@@ -127,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('.hero p').style.animation = 'fadeInUp 1s forwards 0.6s';
                 document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
             }, 10);
-            // Reset formularza i kroku
+            // Reset form and step
             steps[currentStep].classList.remove('active');
             indicators[currentStep].classList.remove('active');
             currentStep = 0;
@@ -136,14 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     });
 
-    // Nawigacja między krokami (kropki)
+    // Step navigation (dots)
     indicators.forEach((indicator, index) => {
         indicator.addEventListener('click', () => {
             switchStep(index);
         });
     });
 
-    // Nawigacja strzałkami wizualnymi
+    // Visual arrow navigation
     prevStepBtn.addEventListener('click', () => {
         switchStep(currentStep - 1);
     });
@@ -152,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         switchStep(currentStep + 1);
     });
 
-    // Nawigacja klawiaturą (strzałki lewo/prawo)
+    // Keyboard navigation (left/right arrows)
     document.addEventListener('keydown', (e) => {
         if (formSection.style.display !== 'none') {
             if (e.key === 'ArrowLeft') {
@@ -163,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Nawigacja swipe (przesunięcie palcem) na urządzeniach dotykowych
+    // Swipe navigation on touch devices
     const formSteps = document.querySelector('.form-steps');
     let touchStartX = 0;
     let touchEndX = 0;
@@ -175,27 +187,27 @@ document.addEventListener('DOMContentLoaded', () => {
     formSteps.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
         if (touchStartX - touchEndX > 50) {
-            switchStep(currentStep + 1); // Swipe lewo -> następny krok
+            switchStep(currentStep + 1); // Swipe left -> next step
         } else if (touchEndX - touchStartX > 50) {
-            switchStep(currentStep - 1); // Swipe prawo -> poprzedni krok
+            switchStep(currentStep - 1); // Swipe right -> previous step
         }
     });
 
-    // Submit formy (przykład)
+    // Form submission
     document.getElementById('submitForm').addEventListener('click', () => {
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
-        const industry = Array.from(document.querySelectorAll('input[name="industry"]:checked')).map(cb => cb.value);
+        const companySize = document.querySelector('input[name="companySize"]:checked')?.value;
         const occupation = document.getElementById('occupation').value;
-        const experience = Array.from(document.querySelectorAll('input[name="experience"]:checked')).map(cb => cb.value);
-        const fromBeginning = document.querySelector('input[name="fromBeginning"]:checked')?.value;
+        const experience = document.querySelector('input[name="experience"]:checked')?.value;
+        const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked')?.value;
 
-        console.log({ name, email, industry, occupation, experience, fromBeginning });
-        alert('Formularz wysłany!'); // Możesz dostosować do wysyłki na serwer
+        console.log({ name, email, companySize, occupation, experience, receiveEmails });
+        alert('Form submitted!'); // Can be customized for server-side submission
     });
 });
 
-// Fallback dla modelu 3D
+// Fallback for 3D model
 setTimeout(() => {
     const modelViewer = document.querySelector('model-viewer');
     const poster = document.querySelector('.model-placeholder');
