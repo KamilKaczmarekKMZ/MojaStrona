@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -10,12 +10,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Tło Hexagonal Grid -->
+    <!-- Hexagonal Grid Background -->
     <div id="bg-app">
         <canvas id="webgl-canvas"></canvas>
     </div>
 
-    <!-- Sekcja powitalna -->
+    <!-- Hero Section -->
     <section class="hero" id="hero-section">
         <!-- 3D Model -->
         <model-viewer
@@ -45,21 +45,21 @@
         </div>
     </section>
 
-    <!-- Forma z krokami -->
+    <!-- Form Section -->
     <section class="form-section" id="form-section">
         <button class="btn btn-back" id="backBtn">Back</button>
         <div class="form-steps">
             <div class="step active" data-step="1">
-                <h3>Podstawowe informacje</h3>
-                <label for="name">Imię:</label>
-                <input type="text" id="name" placeholder="Wpisz swoje imię">
+                <h3>Basic Information</h3>
+                <label for="name">Name:</label>
+                <input type="text" id="name" placeholder="Enter your name">
                 <label for="email">Email:</label>
-                <input type="email" id="email" placeholder="Wpisz swój email">
+                <input type="email" id="email" placeholder="Enter your email">
             </div>
             <div class="step" data-step="2">
-                <h3>Branża</h3>
+                <h3>Company Size</h3>
                 <label class="container">
-                    <input type="checkbox" name="industry" value="IT">
+                    <input type="radio" name="companySize" value="1-10">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
                         <path
                             d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
@@ -67,10 +67,10 @@
                             class="path"
                         ></path>
                     </svg>
-                    <span>IT/Technologia</span>
+                    <span>1 - 10 employees</span>
                 </label>
                 <label class="container">
-                    <input type="checkbox" name="industry" value="Finanse">
+                    <input type="radio" name="companySize" value="10-50">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
                         <path
                             d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
@@ -78,10 +78,10 @@
                             class="path"
                         ></path>
                     </svg>
-                    <span>Finanse</span>
+                    <span>10 - 50 employees</span>
                 </label>
                 <label class="container">
-                    <input type="checkbox" name="industry" value="Produkcja">
+                    <input type="radio" name="companySize" value="50-100">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
                         <path
                             d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
@@ -89,10 +89,10 @@
                             class="path"
                         ></path>
                     </svg>
-                    <span>Produkcja</span>
+                    <span>50 - 100 employees</span>
                 </label>
                 <label class="container">
-                    <input type="checkbox" name="industry" value="Inna">
+                    <input type="radio" name="companySize" value="100+">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
                         <path
                             d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
@@ -100,17 +100,17 @@
                             class="path"
                         ></path>
                     </svg>
-                    <span>Inna</span>
+                    <span>100+ employees</span>
                 </label>
             </div>
             <div class="step" data-step="3">
-                <h3>Czym się zajmujesz?</h3>
-                <textarea id="occupation" placeholder="Opisz swoją działalność..."></textarea>
+                <h3>What do you do?</h3>
+                <textarea id="occupation" placeholder="Describe your activities..."></textarea>
             </div>
             <div class="step" data-step="4">
-                <h3>Doświadczenie z automatyzacją</h3>
+                <h3>Automation Experience</h3>
                 <label class="container">
-                    <input type="checkbox" name="experience" value="Brak">
+                    <input type="radio" name="experience" value="None">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
                         <path
                             d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
@@ -118,10 +118,10 @@
                             class="path"
                         ></path>
                     </svg>
-                    <span>Brak doświadczenia</span>
+                    <span>No experience</span>
                 </label>
                 <label class="container">
-                    <input type="checkbox" name="experience" value="Podstawowe">
+                    <input type="radio" name="experience" value="Basic">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
                         <path
                             d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
@@ -129,10 +129,10 @@
                             class="path"
                         ></path>
                     </svg>
-                    <span>Podstawowe doświadczenie</span>
+                    <span>Basic experience</span>
                 </label>
                 <label class="container">
-                    <input type="checkbox" name="experience" value="Zaawansowane">
+                    <input type="radio" name="experience" value="Advanced">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
                         <path
                             d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
@@ -140,18 +140,34 @@
                             class="path"
                         ></path>
                     </svg>
-                    <span>Zaawansowane doświadczenie</span>
+                    <span>Advanced experience</span>
                 </label>
             </div>
             <div class="step" data-step="5">
-                <h3>Czy chcesz zacząć od podstaw?</h3>
-                <label>
-                    <input type="radio" name="fromBeginning" value="Tak"> Tak
+                <h3>Would you like to receive automated emails with the latest promotions?</h3>
+                <label class="container">
+                    <input type="checkbox" name="receiveEmails" value="Yes">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>Yes</span>
                 </label>
-                <label>
-                    <input type="radio" name="fromBeginning" value="Nie"> Nie
+                <label class="container">
+                    <input type="checkbox" name="receiveEmails" value="No">
+                    <svg viewBox="0 0 64 64" height="1em" width="1em">
+                        <path
+                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
+                            pathLength="575.0541381835938"
+                            class="path"
+                        ></path>
+                    </svg>
+                    <span>No</span>
                 </label>
-                <button id="submitForm">Wyślij</button>
+                <button id="submitForm">Submit</button>
             </div>
         </div>
         <div class="step-indicators">
