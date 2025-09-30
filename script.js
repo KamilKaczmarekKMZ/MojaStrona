@@ -20,6 +20,11 @@ try {
             bg.camera.zoom = 1;
             bg.camera.updateProjectionMatrix();
 
+            // Odłączenie wszystkich zdarzeń myszy
+            canvas.removeEventListener('mousemove', bg.grid.onMouseMove);
+            canvas.removeEventListener('wheel', bg.grid.onMouseWheel);
+            canvas.removeEventListener('touchmove', bg.grid.onTouchMove);
+
             // Pętla animacyjna zapewniająca statyczną pozycję świateł
             function animate() {
                 bg.grid.light1.position.set(centerX, centerY, -100);
@@ -58,7 +63,10 @@ function getRandomLink() {
 
 // Animacja sekcji hero po załadowaniu strony
 window.addEventListener('load', () => {
-    document.querySelector('.hero h1').style.animation = 'fadeInUp 1s forwards 0.3s';
+    document.querySelector('.hero h1').classList.add('animated-text');
+    document.querySelector('.hero h2').classList.add('animated-text');
+    document.querySelector('.hero h1').style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
+    document.querySelector('.hero h2').style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
     document.querySelector('.hero p').style.animation = 'fadeInUp 1s forwards 0.6s';
     document.querySelector('.hero-buttons').style.animation = 'fadeInUp 1s forwards 0.9s';
 });
