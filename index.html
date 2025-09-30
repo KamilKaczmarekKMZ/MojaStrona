@@ -53,11 +53,14 @@
                 <h3>Basic Information</h3>
                 <label for="name">Name:</label>
                 <input type="text" id="name" placeholder="Enter your name">
+                <p class="error-message" id="name-error"></p>
                 <label for="email">Email:</label>
                 <input type="email" id="email" placeholder="Enter your email">
+                <p class="error-message" id="email-error"></p>
             </div>
             <div class="step" data-step="2">
                 <h3>Company Size</h3>
+                <p class="error-message" id="companySize-error"></p>
                 <label class="container">
                     <input type="radio" name="companySize" value="1-10">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
@@ -106,9 +109,11 @@
             <div class="step" data-step="3">
                 <h3>What do you do?</h3>
                 <textarea id="occupation" placeholder="Describe your activities..."></textarea>
+                <p class="error-message" id="occupation-error"></p>
             </div>
             <div class="step" data-step="4">
                 <h3>Automation Experience</h3>
+                <p class="error-message" id="experience-error"></p>
                 <label class="container">
                     <input type="radio" name="experience" value="None">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
@@ -145,6 +150,7 @@
             </div>
             <div class="step" data-step="5">
                 <h3>Would you like to receive automated emails with the latest promotions?</h3>
+                <p class="error-message" id="receiveEmails-error"></p>
                 <label class="container">
                     <input type="checkbox" name="receiveEmails" value="Yes">
                     <svg viewBox="0 0 64 64" height="1em" width="1em">
@@ -167,7 +173,7 @@
                     </svg>
                     <span>No</span>
                 </label>
-                <button id="submitForm">Submit</button>
+                <button id="submitForm" disabled>Submit</button>
             </div>
         </div>
         <div class="step-indicators">
