@@ -164,6 +164,31 @@ body {
     user-select: none;
 }
 
+/* Navigation buttons for form steps */
+.btn-nav {
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--text);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.btn-nav:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(166, 122, 91, 0.2);
+}
+
+.prev-nav, .next-nav {
+    min-width: 100px;
+}
+
 /* Gradient text */
 .animated-text {
     background: linear-gradient(to bottom, #FFFFFF, #A67A5B);
@@ -222,7 +247,7 @@ body {
 
 /* Chat Section */
 .chat-section {
-    display: none; /* Managed by JavaScript */
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -378,6 +403,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 }
 
 .indicator {
@@ -393,22 +419,6 @@ body {
 
 .indicator.active {
     background: var(--accent);
-}
-
-.nav-arrow {
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0 10px;
-    transition: var(--transition);
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-}
-
-.nav-arrow:hover {
-    color: var(--accent);
 }
 
 /* Chat Section Specific Styles */
@@ -526,6 +536,12 @@ body {
         bottom: 20px;
     }
     
+    .btn-nav {
+        padding: 8px 16px;
+        font-size: 14px;
+        min-width: 80px;
+    }
+    
     .chat-container {
         height: 90vh;
     }
@@ -550,9 +566,10 @@ body {
         font-size: 28px;
     }
     
-    .nav-arrow {
-        font-size: 20px;
-        padding: 0 8px;
+    .btn-nav {
+        padding: 6px 12px;
+        font-size: 12px;
+        min-width: 70px;
     }
     
     .step-indicators {
