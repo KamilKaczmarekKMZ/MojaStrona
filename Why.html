@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartSystems - Automation Solutions</title>
+    <meta name="description" content="Dowiedz się, jak automatyzacja SmartSystems obniża koszty i zwiększa przychody Twojej firmy dzięki nowoczesnym rozwiązaniom SaaS.">
+    <meta name="keywords" content="automatyzacja, SaaS, oszczędności, ROI, SmartSystems, procesy biznesowe">
+    <title>SmartSystems - Dlaczego warto wybrać automatyzację</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway:400,400i,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary: #0a0a0a;
             --secondary: #1a1a1a;
-            --accent: #ff3e78;
+            --accent: #A67A5B;
             --text: #ffffff;
-            --text-secondary: #aaaaaa;
+            --text-secondary: #cccccc;
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
@@ -32,7 +35,7 @@
             padding: 20px;
         }
 
-        /* TŁO HEX GRID */
+        /* Tło Hexagonal Grid */
         #bg-app, #webgl-canvas {
             position: fixed;
             top: 0;
@@ -41,6 +44,17 @@
             left: 0;
             overflow: hidden;
             z-index: -1;
+        }
+
+        #bg-fallback {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            display: none;
         }
 
         /* Loader */
@@ -77,63 +91,49 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Gooey Marquee styles */
-        .marquee-container {
-            position: relative;
+        /* Spis treści */
+        .toc {
+            position: static;
             width: 90%;
             max-width: 1200px;
-            margin: 100px auto 40px;
+            margin: 20px auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
             z-index: 10;
+            text-align: center;
         }
 
-        .marquee {
-            position: relative;
-            width: 100%;
-            height: 2em;
-            font-size: 5em;
-            display: grid;
-            place-items: center;
-            overflow: hidden;
-            margin-bottom: 2rem;
+        .toc h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
         }
 
-        .marquee_text {
-            position: absolute;
-            min-width: 100%;
-            white-space: nowrap;
-            animation: marquee 16s infinite linear;
-            font-family: Raleway, sans-serif;
-            font-weight: 700;
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
         }
 
-        @keyframes marquee {
-            from { transform: translateX(70%); }
-            to { transform: translateX(-70%); }
+        .toc li {
+            margin-bottom: 0.5rem;
         }
 
-        .marquee_blur {
-            position: absolute;
-            inset: 0;
-            display: grid;
-            place-items: center;
-            background-color: transparent;
-            background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.8), 1rem, transparent 50%),
-                linear-gradient(to left, rgba(255, 255, 255, 0.8), 1rem, transparent 50%);
-            filter: contrast(15);
+        .toc a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
 
-        .marquee_blur p {
-            filter: blur(0.07em);
+        .toc a:hover {
+            color: var(--accent);
         }
 
-        .marquee_clear {
-            position: absolute;
-            inset: 0;
-            display: grid;
-            place-items: center;
-        }
-
+        /* Kontener treści */
         .content-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -141,14 +141,22 @@
             background: rgba(0, 0, 0, 0.7);
             border-radius: 12px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .content-container.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .content-section {
             margin-bottom: 2.5rem;
         }
 
-        .content-section h2 {
+        .content-section h1, .content-section h2 {
             color: var(--accent);
             font-size: 2.2rem;
             margin-bottom: 1.2rem;
@@ -178,6 +186,21 @@
         .content-section li {
             margin-bottom: 0.7rem;
             font-size: 1.1rem;
+            position: relative;
+            padding-left: 30px;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .content-section li:hover {
+            transform: translateY(-2px);
+            color: var(--accent);
+        }
+
+        .content-section li i {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            color: var(--accent);
         }
 
         .highlight {
@@ -185,6 +208,52 @@
             font-weight: 600;
         }
 
+        /* FAQ */
+        .faq-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+        }
+
+        .faq-question {
+            background: var(--secondary);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: var(--accent);
+            color: var(--text);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 0 0 8px 8px;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-answer p {
+            padding: 15px 0;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            padding: 15px;
+        }
+
+        /* CTA */
         .cta-section {
             text-align: center;
             padding: 2rem;
@@ -192,7 +261,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .cta-button {
+        .cta-button, .back-button {
             display: inline-block;
             background: var(--accent);
             color: white;
@@ -202,25 +271,45 @@
             font-weight: 600;
             font-size: 1.2rem;
             transition: all 0.3s ease;
-            margin-top: 1rem;
+            margin: 1rem 0.5rem;
         }
 
-        .cta-button:hover {
+        .cta-button:hover, .back-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 62, 120, 0.3);
+            box-shadow: 0 10px 20px rgba(166, 122, 91, 0.3);
+        }
+
+        /* Back to Top */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
         }
 
         /* Responsywność */
         @media (max-width: 992px) {
-            .marquee {
-                font-size: 4em;
-            }
-            
             .content-container {
                 padding: 1.5rem;
             }
             
-            .content-section h2 {
+            .content-section h1, .content-section h2 {
                 font-size: 1.8rem;
             }
             
@@ -230,16 +319,11 @@
         }
 
         @media (max-width: 768px) {
-            .marquee {
-                font-size: 3em;
-                height: 1.5em;
-            }
-            
             .content-container {
                 padding: 1rem;
             }
             
-            .content-section h2 {
+            .content-section h1, .content-section h2 {
                 font-size: 1.6rem;
             }
             
@@ -250,19 +334,19 @@
             .content-section p, .content-section li {
                 font-size: 1rem;
             }
+            
+            .toc {
+                position: static;
+            }
         }
 
         @media (max-width: 576px) {
-            .marquee {
-                font-size: 2.2em;
-            }
-            
             body {
                 padding: 10px;
             }
             
-            .marquee-container {
-                margin: 80px auto 20px;
+            .toc {
+                margin: 10px auto;
             }
         }
     </style>
@@ -271,6 +355,7 @@
     <!-- Tło Hexagonal Grid -->
     <div id="bg-app">
         <canvas id="webgl-canvas"></canvas>
+        <img id="bg-fallback" src="https://via.placeholder.com/1920x1080?text=Background" alt="Statyczne tło strony automatyzacji">
     </div>
 
     <!-- Loader -->
@@ -278,108 +363,102 @@
         <div class="loader-spinner"></div>
     </div>
 
-    <!-- Gooey Marquee Content -->
-    <div class="marquee-container">
-        <div class="marquee">
-            <div class="marquee_blur" aria-hidden="true">
-                <p class="marquee_text">SmartSystems Automation Solutions!</p>
-            </div>
-            <div class="marquee_clear">
-                <p class="marquee_text">SmartSystems Automation Solutions!</p>
-            </div>
-        </div>
-    </div>
+    <!-- Spis treści -->
+    <nav class="toc">
+        <h2>Spis treści</h2>
+        <ul>
+            <li><a href="#efficiency">Rewolucja efektywności</a></li>
+            <li><a href="#cost-savings">Oszczędności i ROI</a></li>
+            <li><a href="#flexibility">Elastyczność biznesowa</a></li>
+            <li><a href="#security">Bezpieczeństwo i kontrola</a></li>
+            <li><a href="#ai">AI i uczenie maszynowe</a></li>
+            <li><a href="#faq">Najczęściej zadawane pytania</a></li>
+        </ul>
+    </nav>
 
-    <!-- Content Container -->
+    <!-- Kontener treści -->
     <div class="content-container">
-        <div class="content-section">
-            <h2>The Efficiency Revolution: Why Our Clients Choose Automation</h2>
-            <p><span class="highlight">Work smarter, not harder</span> – our SaaS solutions aren't just about cost savings; they represent a fundamental transformation in how you do business. Imagine a company that runs with the precision of a Swiss watch, 24/7/365, without fatigue, without errors, without breaks.</p>
+        <div class="content-section" id="efficiency">
+            <h1>Rewolucja efektywności: Dlaczego warto wybrać automatyzację</h1>
+            <p><span class="highlight">Pracuj mądrzej, nie ciężej</span> – nasze rozwiązania SaaS to nie tylko oszczędności, ale fundamentalna transformacja Twojego biznesu. Wyobraź sobie firmę działającą z precyzją szwajcarskiego zegarka, 24/7/365, bez zmęczenia, błędów czy przerw.</p>
         </div>
 
-        <div class="content-section">
-            <h3>Unbeatable Cost Advantage</h3>
+        <div class="content-section" id="cost-savings">
+            <h2>Oszczędności kosztów i wysoki ROI</h2>
             <ul>
-                <li><span class="highlight">Save up to 70% on operational costs</span> – no salaries, vacations, sick leave, social security contributions, or recruitment fees.</li>
-                <li><span class="highlight">Immediate Return on Investment (ROI)</span> – achieve a full return on your implementation costs within just 3-6 months on average.</li>
-                <li><span class="highlight">Predictable monthly expenses</span> – no more budgetary surprises.</li>
+                <li><i class="fas fa-check"></i><span class="highlight">Oszczędź do 70% kosztów operacyjnych</span> – brak pensji, urlopów, rekrutacji.</li>
+                <li><i class="fas fa-chart-line"></i><span class="highlight">347% ROI w 2 lata</span> – według badań Forrester.</li>
+                <li><i class="fas fa-dollar-sign"></i><span class="highlight">Szybki zwrot inwestycji</span> – pełny ROI w 3-6 miesięcy.</li>
+                <li><i class="fas fa-calculator"></i><span class="highlight">Przewidywalne wydatki</span> – koniec z budżetowymi niespodziankami.</li>
             </ul>
         </div>
 
-        <div class="content-section">
-            <h3>Superhuman Efficiency and Precision</h3>
+        <div class="content-section" id="flexibility">
+            <h2>Elastyczność, o której marzy każda firma</h2>
             <ul>
-                <li><span class="highlight">Non-stop operation</span> – automation never sleeps, never gets sick, never takes a vacation.</li>
-                <li><span class="highlight">Zero errors</span> – executes tasks with mathematical precision, eliminating costly mistakes.</li>
-                <li><span class="highlight">Instant scalability</span> – unlike a human team, you can increase your work volume in minutes, not months.</li>
+                <li><i class="fas fa-cogs"></i><span class="highlight">Niestandardowe procesy</span> – dostosowane do Twoich potrzeb.</li>
+                <li><i class="fas fa-puzzle-piece"></i><span class="highlight">Modułowy design</span> – dodawaj lub usuwaj funkcje w miarę rozwoju.</li>
+                <li><i class="fas fa-link"></i><span class="highlight">Integracja z narzędziami</span> – płynne połączenie z istniejącymi systemami.</li>
             </ul>
         </div>
 
-        <div class="content-section">
-            <h2>Business Transformation: How Automation Increases Revenue While Reducing Costs</h2>
-            <p>Our advanced SaaS solutions don't just lower costs; they primarily <span class="highlight">generate real, measurable revenue growth</span> – often by 30-50% within the first 12 months.</p>
-        </div>
-
-        <div class="content-section">
-            <h3>The Flexibility Every Business Dreams Of</h3>
+        <div class="content-section" id="security">
+            <h2>Bezpieczeństwo i kontrola na najwyższym poziomie</h2>
             <ul>
-                <li><span class="highlight">Custom workflows</span> – every process is perfectly tailored to your unique needs.</li>
-                <li><span class="highlight">Modular design</span> – add, modify, or remove features as your business evolves.</li>
-                <li><span class="highlight">Integration with existing systems</span> – seamless connection with the tools you already use.</li>
+                <li><i class="fas fa-shield-alt"></i><span class="highlight">Pełna transparentność</span> – wiesz, co, kiedy i jak się dzieje.</li>
+                <li><i class="fas fa-chart-bar"></i><span class="highlight">Analityka w czasie rzeczywistym</span> – dane zamiast domysłów.</li>
+                <li><i class="fas fa-lock"></i><span class="highlight">Bezpieczeństwo danych</span> – eliminacja wycieków z powodu błędów ludzkich.</li>
+                <li><i class="fas fa-trash-alt"></i><span class="highlight">Automatyczne czyszczenie danych</span> – usuwanie nieaktualnych informacji.</li>
+                <li><i class="fas fa-file-contract"></i><span class="highlight">Zgodność z GDPR</span> – pełne zarządzanie zgodami marketingowymi.</li>
             </ul>
         </div>
 
-        <div class="content-section">
-            <h3>Revenue Growth with Less Effort</h3>
+        <div class="content-section" id="ai">
+            <h2>Przyszłość jest dziś: AI i uczenie maszynowe</h2>
             <ul>
-                <li><span class="highlight">Process acceleration by up to 10x</span> – faster execution = more transactions.</li>
-                <li><span class="highlight">Freeing your team from repetitive tasks</span> – people can focus on what truly matters: creativity and strategy.</li>
-                <li><span class="highlight">Increased customer satisfaction</span> – faster responses, flawless service, 24/7 availability.</li>
+                <li><i class="fas fa-brain"></i><span class="highlight">Systemy samouczące</span> – im dłużej działają, tym są mądrzejsze.</li>
+                <li><i class="fas fa-lightbulb"></i><span class="highlight">Predykcyjna optymalizacja</span> – przewidywanie problemów zanim się pojawią.</li>
+                <li><i class="fas fa-user-check"></i><span class="highlight">Personalizacja na skalę</span> – każdy klient czuje się wyjątkowy.</li>
             </ul>
         </div>
 
-        <div class="content-section">
-            <h3>💸 Boosted ROI: Hard Data, Soft Costs</h3>
-            <ul>
-                <li><span class="highlight">Average ROI of 347% over 2 years</span> – according to independent Forrester research.</li>
-                <li><span class="highlight">45-70% reduction in operational costs</span> in automated processes.</li>
-                <li><span class="highlight">5x faster order and service fulfillment times</span>.</li>
-                <li><span class="highlight">Scalability without extra costs</span> – handle 100 or 10,000 customers without growing your team.</li>
-            </ul>
-        </div>
-
-        <div class="content-section">
-            <h3>Next-Level Security and Control</h3>
-            <ul>
-                <li><span class="highlight">Full operational transparency</span> – you know exactly what, when, and how things are happening.</li>
-                <li><span class="highlight">Advanced real-time analytics</span> – hard data instead of guesswork.</li>
-                <li><span class="highlight">Data security</span> – eliminates the risk of sensitive information leaks due to human error.</li>
-                <li><span class="highlight">Automatic data cleansing</span> – the system removes outdated information without your involvement.</li>
-                <li><span class="highlight">Marketing consent management</span> – full control and documentation for GDPR compliance.</li>
-                <li><span class="highlight">End-to-end encryption</span> – all data protected at the highest level.</li>
-            </ul>
-        </div>
-
-        <div class="content-section">
-            <h3>The Future is Today: AI and Machine Learning</h3>
-            <ul>
-                <li><span class="highlight">Self-learning systems</span> – the longer they work, the smarter and more efficient they become.</li>
-                <li><span class="highlight">Predictive optimization</span> – automation anticipates problems before they arise.</li>
-                <li><span class="highlight">Personalization at scale</span> – every customer feels unique, with no additional effort.</li>
-            </ul>
+        <div class="content-section faq-section" id="faq">
+            <h2>Najczęściej zadawane pytania</h2>
+            <div class="faq-item">
+                <div class="faq-question" aria-expanded="false" aria-label="Jak szybko mogę zobaczyć efekty automatyzacji?">
+                    <span>Jak szybko mogę zobaczyć efekty automatyzacji?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Zazwyczaj nasi klienci widzą pierwsze efekty w ciągu 3-6 miesięcy, z pełnym zwrotem inwestycji (ROI) w tym okresie, jak pokazują badania Forrester.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" aria-expanded="false" aria-label="Czy automatyzacja pasuje do małej firmy?">
+                    <span>Czy automatyzacja pasuje do małej firmy?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Tak! Nasze rozwiązania są modułowe i skalowalne, idealne dla firm każdej wielkości.</p>
+                </div>
+            </div>
         </div>
 
         <div class="cta-section">
-            <p><span class="highlight">Investing in automation isn't an expense – it's a strategic move that puts you lightyears ahead of the competition.</span> While others are still stuck in 20th-century patterns, you are building the company of the future: efficient, flexible, and constantly growing.</p>
-            
-            <p><span class="highlight">The best time to automate is NOW.</span> Every day of delay means thousands in lost opportunities and wasted resources.</p>
-            
-            <a href="#contact" class="cta-button">Ready to turn costs into revenue?</a>
+            <p><span class="highlight">Inwestycja w automatyzację to strategiczny ruch</span>, który stawia Cię przed konkurencją. Buduj firmę przyszłości: efektywną, elastyczną i rosnącą.</p>
+            <p><span class="highlight">Najlepszy czas na automatyzację to TERAZ.</span> Każdy dzień zwłoki to stracone możliwości.</p>
+            <a href="https://kamilkaczmarekkmz.github.io/MojaStrona/#form-section" class="cta-button" aria-label="Przejdź do formularza kontaktowego">Gotowy przekuć koszty w zyski?</a>
+            <a href="https://kamilkaczmarekkmz.github.io/MojaStrona/" class="back-button" aria-label="Wróć do strony głównej">Wróć do strony głównej</a>
         </div>
     </div>
 
+    <!-- Przycisk Back to Top -->
+    <div class="back-to-top" aria-label="Wróć na górę strony">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
     <script>
-        // Import i inicjalizacja tła Hexagonal Grid z obsługą błędów
+        // Inicjalizacja tła Hexagonal Grid
         try {
             import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.16/build/backgrounds/grid1.cdn.min.js')
                 .then((module) => {
@@ -387,31 +466,76 @@
                     const canvas = document.getElementById('webgl-canvas');
                     if (canvas) {
                         const bg = Grid1Background(canvas);
-                        // DOPASOWANE KOLORY POCZĄTKOWE - ZIEMISTA PALETA
                         bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
                         bg.grid.light1.color.set(0xF5F5DC);
                         bg.grid.light1.intensity = 650;
                         bg.grid.light2.color.set(0x8B4513);
                         bg.grid.light2.intensity = 350;
-                        
-                        // Ukryj loader po załadowaniu tła
+                        document.querySelector('.loader').classList.add('hidden');
+                    } else {
+                        document.querySelector('#bg-fallback').style.display = 'block';
                         document.querySelector('.loader').classList.add('hidden');
                     }
                 })
                 .catch((error) => {
                     console.error('Błąd podczas ładowania tła:', error);
+                    document.querySelector('#bg-fallback').style.display = 'block';
                     document.querySelector('.loader').classList.add('hidden');
                 });
         } catch (error) {
             console.error('Błąd podczas importowania modułu:', error);
+            document.querySelector('#bg-fallback').style.display = 'block';
             document.querySelector('.loader').classList.add('hidden');
         }
 
         // Ładowanie strony
-        window.addEventListener('load', function() {
-            setTimeout(function() {
+        window.addEventListener('load', () => {
+            setTimeout(() => {
                 document.querySelector('.loader').classList.add('hidden');
             }, 1500);
+        });
+
+        // Animacje przewijania
+        const sections = document.querySelectorAll('.content-container');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        sections.forEach(section => observer.observe(section));
+
+        // FAQ
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                const isActive = faqItem.classList.contains('active');
+                faqQuestions.forEach(item => {
+                    item.parentElement.classList.remove('active');
+                    item.setAttribute('aria-expanded', 'false');
+                });
+                if (!isActive) {
+                    faqItem.classList.add('active');
+                    question.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        // Back to Top
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     </script>
 </body>
