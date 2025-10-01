@@ -205,18 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('All sections reset');
     }
 
-    // Function to generate a random link
-    function getRandomLink() {
-        const randomLinks = [
-            'https://example.com/page1',
-            'https://example.com/page2',
-            'https://example.com/page3',
-            'https://example.com/page4',
-            'https://example.com/page5'
-        ];
-        return randomLinks[Math.floor(Math.random() * randomLinks.length)];
-    }
-
     // Button handlers
     const letsBeginBtn = document.getElementById('letsBeginBtn');
     const learnMoreBtn = document.getElementById('learnMoreBtn');
@@ -313,8 +301,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     learnMoreBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Learn more clicked');
-        window.location.href = getRandomLink();
+        console.log('Learn more clicked, redirecting to Why page');
+        window.location.href = 'https://kamilkaczmarekkmz.github.io/MojaStrona/Why';
     });
 
     letsBeginBtn.addEventListener('click', (e) => {
