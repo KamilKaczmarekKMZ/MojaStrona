@@ -14,7 +14,6 @@
             --secondary: #1a1a1a;
             --accent: #A67A5B;
             --text: #ffffff;
-            --text-secondary: #cccccc;
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
@@ -34,7 +33,6 @@
             padding: 20px;
         }
 
-        /* Tło Hexagonal Grid */
         #bg-app, #webgl-canvas {
             position: fixed;
             top: 0;
@@ -56,7 +54,6 @@
             display: none;
         }
 
-        /* Loader */
         .loader {
             position: fixed;
             top: 0;
@@ -90,7 +87,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Kontener treści */
         .content-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -165,7 +161,6 @@
             font-weight: 600;
         }
 
-        /* FAQ */
         .faq-section {
             margin-bottom: 2.5rem;
         }
@@ -210,7 +205,6 @@
             padding: 15px;
         }
 
-        /* CTA */
         .cta-section {
             text-align: center;
             padding: 2rem;
@@ -236,7 +230,6 @@
             box-shadow: 0 10px 20px rgba(166, 122, 91, 0.3);
         }
 
-        /* Back to Top */
         .back-to-top {
             position: fixed;
             bottom: 20px;
@@ -260,7 +253,6 @@
             opacity: 1;
         }
 
-        /* Responsywność */
         @media (max-width: 992px) {
             .content-container {
                 padding: 1.5rem;
@@ -301,18 +293,15 @@
     </style>
 </head>
 <body>
-    <!-- Tło Hexagonal Grid -->
     <div id="bg-app">
         <canvas id="webgl-canvas"></canvas>
         <img id="bg-fallback" src="https://via.placeholder.com/1920x1080?text=Background" alt="Static background for automation page">
     </div>
 
-    <!-- Loader -->
     <div class="loader">
         <div class="loader-spinner"></div>
     </div>
 
-    <!-- Kontener treści -->
     <div class="content-container">
         <div class="content-section" id="efficiency">
             <h1>The Efficiency Revolution: Why Choose Automation</h1>
@@ -388,7 +377,6 @@
         </div>
     </div>
 
-    <!-- Przycisk Back to Top -->
     <div class="back-to-top" aria-label="Back to top">
         <i class="fas fa-arrow-up"></i>
     </div>
@@ -413,13 +401,11 @@
                         document.querySelector('.loader').classList.add('hidden');
                     }
                 })
-                .catch((error) => {
-                    console.error('Error loading background:', error);
+                .catch(() => {
                     document.querySelector('#bg-fallback').style.display = 'block';
                     document.querySelector('.loader').classList.add('hidden');
                 });
-        } catch (error) {
-            console.error('Error importing module:', error);
+        } catch {
             document.querySelector('#bg-fallback').style.display = 'block';
             document.querySelector('.loader').classList.add('hidden');
         }
