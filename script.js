@@ -4,9 +4,7 @@ function initializeBackground() {
             .then((module) => {
                 const Grid1Background = module.default;
                 const canvas = document.getElementById('webgl-canvas');
-                if (!canvas) {
-                    return;
-                }
+                if (!canvas) return;
                 canvas.style.display = 'block';
                 canvas.style.width = '100vw';
                 canvas.style.height = '100vh';
@@ -49,8 +47,7 @@ function initializeBackground() {
                 });
             })
             .catch(() => {});
-    } catch {
-    }
+    } catch {}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -68,6 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
         heroP.style.animation = 'fadeInUp 1s forwards 0.6s';
         heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
     }
+
+    // Generate unique Chat ID
+    function generateChatId() {
+        return 'chat-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    let chatId = null;
 
     function validateStep1() {
         const name = document.getElementById('name').value.trim();
@@ -150,10 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function validateAllSteps() {
-        return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
-    }
-
     function validateCurrentStep(stepIndex) {
         switch (stepIndex) {
             case 0: return validateStep1();
@@ -163,6 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
             case 4: return validateStep5();
             default: return true;
         }
+    }
+
+    function validateAllSteps() {
+        return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
     }
 
     function resetForm() {
@@ -178,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('occupation-error').textContent = '';
         document.getElementById('experience-error').textContent = '';
         document.getElementById('receiveEmails-error').textContent = '';
+        chatId = null; // Reset Chat ID
     }
 
     function resetSections() {
@@ -215,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function switchStep(newStep) {
         if (newStep >= 0 && newStep < steps.length) {
             if (newStep > currentStep && !validateCurrentStep(currentStep)) {
-                return; // Block navigation if current step is invalid
+                return;
             }
             steps[currentStep].classList.remove('active');
             indicators[currentStep].classList.remove('active');
@@ -368,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     submitBtn.addEventListener('click', async () => {
         if (validateAllSteps()) {
+            chatId = generateChatId();
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const companySize = document.querySelector('input[name="companySize"]:checked')?.value;
@@ -376,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked')?.value;
 
             const formData = {
+                chatId,
                 name,
                 email,
                 companySize,
@@ -412,9 +419,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 1000);
                 } else {
                     alert('Error submitting form. Please try again.');
+                    chatId = null;
                 }
             } catch {
                 alert('Error submitting form. Please check your connection.');
+                chatId = null;
             }
         } else {
             if (!validateStep1()) {
@@ -441,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sendMessageBtn.addEventListener('click', async () => {
         const messageText = chatInput.value.trim();
-        if (messageText) {
+        if (messageText && chatId) {
             addMessage('user', messageText);
             try {
                 const response = await fetch('http://localhost:5678/webhook/487a128f-9cef-47d3-9709-93ca4b7824e3', {
@@ -449,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ message: messageText })
+                    body: JSON.stringify({ chatId, message: messageText })
                 });
 
                 if (response.ok) {
@@ -465,6 +474,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch {
                 addMessage('bot', 'Error sending message. Please check your connection.');
             }
+            chatInput.value = '';
+        } else if (!chatId) {
+            addMessage('bot', 'Please submit the form first to start a chat.');
             chatInput.value = '';
         }
     });
@@ -494,6 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
             }, 10);
             chatMessages.innerHTML = '';
+            chatId = null;
         }, 1000);
     });
 
