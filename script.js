@@ -154,6 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
     }
 
+    function validateCurrentStep(stepIndex) {
+        switch (stepIndex) {
+            case 0: return validateStep1();
+            case 1: return validateStep2();
+            case 2: return validateStep3();
+            case 3: return validateStep4();
+            case 4: return validateStep5();
+            default: return true;
+        }
+    }
+
     function resetForm() {
         document.getElementById('name').value = '';
         document.getElementById('email').value = '';
@@ -203,6 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchStep(newStep) {
         if (newStep >= 0 && newStep < steps.length) {
+            if (newStep > currentStep && !validateCurrentStep(currentStep)) {
+                return; // Block navigation if current step is invalid
+            }
             steps[currentStep].classList.remove('active');
             indicators[currentStep].classList.remove('active');
             currentStep = newStep;
@@ -307,6 +321,49 @@ document.addEventListener('DOMContentLoaded', () => {
             indicators[currentStep].classList.add('active');
             updateSubmitButton();
         }, 1000);
+    });
+
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            if (index <= currentStep || validateCurrentStep(currentStep)) {
+                switchStep(index);
+            }
+        });
+    });
+
+    prevStepBtn.addEventListener('click', () => {
+        switchStep(currentStep - 1);
+    });
+
+    nextStepBtn.addEventListener('click', () => {
+        switchStep(currentStep + 1);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (formSection.style.display !== 'none') {
+            if (e.key === 'ArrowLeft') {
+                switchStep(currentStep - 1);
+            } else if (e.key === 'ArrowRight' && validateCurrentStep(currentStep)) {
+                switchStep(currentStep + 1);
+            }
+        }
+    });
+
+    const formSteps = document.querySelector('.form-steps');
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    formSteps.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    formSteps.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50 && validateCurrentStep(currentStep)) {
+            switchStep(currentStep + 1);
+        } else if (touchEndX - touchStartX > 50) {
+            switchStep(currentStep - 1);
+        }
     });
 
     submitBtn.addEventListener('click', async () => {
