@@ -11,12 +11,11 @@ function initializeBackground() {
                 canvas.style.zIndex = '-1';
 
                 const bg = Grid1Background(canvas);
-                // Darker colors: black, gray, dark brown
-                bg.grid.setColors([0x2A2A2A, 0x111111, 0x3A3A3A]);
-                bg.grid.light1.color.set(0x333333);
-                bg.grid.light1.intensity = 300;
-                bg.grid.light2.color.set(0x222222);
-                bg.grid.light2.intensity = 150;
+                bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
+                bg.grid.light1.color.set(0xF5F5DC);
+                bg.grid.light1.intensity = 400;
+                bg.grid.light2.color.set(0x8B4513);
+                bg.grid.light2.intensity = 200;
 
                 const centerX = window.innerWidth / 2;
                 const centerY = window.innerHeight / 2;
@@ -47,137 +46,244 @@ function initializeBackground() {
                     bg.grid.light2.position.set(width / 2, height / 2, -100);
                 });
             })
-            .catch(() => console.log("Background module failed"));
+            .catch(() => {});
     } catch {}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeBackground();
 
-    // UI Elements
-    const heroSection = document.getElementById('hero-section');
-    const formSection = document.getElementById('form-section');
-    const chatSection = document.getElementById('chat-section');
-    const letsBeginBtn = document.getElementById('letsBeginBtn');
-    const learnMoreBtn = document.getElementById('learnMoreBtn');
-    const backBtn = document.getElementById('backBtn');
-    const closeChatBtn = document.getElementById('closeChatBtn');
-    const prevStepBtn = document.getElementById('prevStepBtn');
-    const nextStepBtn = document.getElementById('nextStepBtn');
-    const submitBtn = document.getElementById('submitForm');
-    const indicators = document.querySelectorAll('.indicator');
-    const steps = document.querySelectorAll('.step');
-    
-    let currentStep = 0;
-    let chatId = null;
+    const heroH1 = document.querySelector('.hero h1');
+    const heroH2 = document.querySelector('.hero h2');
+    const heroP = document.querySelector('.hero p');
+    const heroButtons = document.querySelector('.hero-buttons');
+    if (heroH1 && heroH2 && heroP && heroButtons) {
+        heroH1.classList.add('animated-text');
+        heroH2.classList.add('animated-text');
+        heroH1.style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
+        heroH2.style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
+        heroP.style.animation = 'fadeInUp 1s forwards 0.6s';
+        heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
+    }
 
+    // Generate unique Chat ID
     function generateChatId() {
         return 'chat-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     }
 
-    // Validation functions
+    let chatId = null;
+
     function validateStep1() {
-        const name = document.getElementById('name')?.value.trim();
-        const email = document.getElementById('email')?.value.trim();
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const nameError = document.getElementById('name-error');
+        const emailError = document.getElementById('email-error');
+
         let isValid = true;
-        if (!name) { document.getElementById('name-error').textContent = 'Name required'; isValid = false; }
-        else { document.getElementById('name-error').textContent = ''; }
-        if (!email) { document.getElementById('email-error').textContent = 'Email required'; isValid = false; }
-        else if (!emailRegex.test(email)) { document.getElementById('email-error').textContent = 'Valid email required'; isValid = false; }
-        else { document.getElementById('email-error').textContent = ''; }
+
+        if (!name) {
+            nameError.textContent = 'Name is required';
+            isValid = false;
+        } else {
+            nameError.textContent = '';
+        }
+
+        if (!email) {
+            emailError.textContent = 'Email is required';
+            isValid = false;
+        } else if (!emailRegex.test(email)) {
+            emailError.textContent = 'Please enter a valid email';
+            isValid = false;
+        } else {
+            emailError.textContent = '';
+        }
+
         return isValid;
     }
+
     function validateStep2() {
-        const checked = document.querySelector('input[name="companySize"]:checked');
-        const err = document.getElementById('companySize-error');
-        if (!checked) { err.textContent = 'Select company size'; return false; }
-        err.textContent = ''; return true;
+        const companySize = document.querySelector('input[name="companySize"]:checked');
+        const companySizeError = document.getElementById('companySize-error');
+
+        if (!companySize) {
+            companySizeError.textContent = 'Please select a company size';
+            return false;
+        } else {
+            companySizeError.textContent = '';
+            return true;
+        }
     }
+
     function validateStep3() {
-        const occ = document.getElementById('occupation')?.value.trim();
-        const err = document.getElementById('occupation-error');
-        if (!occ) { err.textContent = 'Describe your activities'; return false; }
-        err.textContent = ''; return true;
+        const occupation = document.getElementById('occupation').value.trim();
+        const occupationError = document.getElementById('occupation-error');
+
+        if (!occupation) {
+            occupationError.textContent = 'Please describe your activities';
+            return false;
+        } else {
+            occupationError.textContent = '';
+            return true;
+        }
     }
+
     function validateStep4() {
-        const checked = document.querySelector('input[name="experience"]:checked');
-        const err = document.getElementById('experience-error');
-        if (!checked) { err.textContent = 'Select experience level'; return false; }
-        err.textContent = ''; return true;
+        const experience = document.querySelector('input[name="experience"]:checked');
+        const experienceError = document.getElementById('experience-error');
+
+        if (!experience) {
+            experienceError.textContent = 'Please select your automation experience';
+            return false;
+        } else {
+            experienceError.textContent = '';
+            return true;
+        }
     }
+
     function validateStep5() {
-        const checked = document.querySelector('input[name="receiveEmails"]:checked');
-        const err = document.getElementById('receiveEmails-error');
-        if (!checked) { err.textContent = 'Select an option'; return false; }
-        err.textContent = ''; return true;
+        const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked');
+        const receiveEmailsError = document.getElementById('receiveEmails-error');
+
+        if (!receiveEmails) {
+            receiveEmailsError.textContent = 'Please select an option';
+            return false;
+        } else {
+            receiveEmailsError.textContent = '';
+            return true;
+        }
     }
-    function validateCurrentStep(step) {
-        if (step === 0) return validateStep1();
-        if (step === 1) return validateStep2();
-        if (step === 2) return validateStep3();
-        if (step === 3) return validateStep4();
-        if (step === 4) return validateStep5();
-        return true;
+
+    function validateCurrentStep(stepIndex) {
+        switch (stepIndex) {
+            case 0: return validateStep1();
+            case 1: return validateStep2();
+            case 2: return validateStep3();
+            case 3: return validateStep4();
+            case 4: return validateStep5();
+            default: return true;
+        }
     }
+
     function validateAllSteps() {
         return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
     }
-    function updateSubmitButton() {
-        if (submitBtn) submitBtn.disabled = !validateAllSteps();
+
+    function resetForm() {
+        document.getElementById('name').value = '';
+        document.getElementById('email').value = '';
+        document.querySelectorAll('input[name="companySize"]').forEach(radio => radio.checked = false);
+        document.getElementById('occupation').value = '';
+        document.querySelectorAll('input[name="experience"]').forEach(radio => radio.checked = false);
+        document.querySelectorAll('input[name="receiveEmails"]').forEach(checkbox => checkbox.checked = false);
+        document.getElementById('name-error').textContent = '';
+        document.getElementById('email-error').textContent = '';
+        document.getElementById('companySize-error').textContent = '';
+        document.getElementById('occupation-error').textContent = '';
+        document.getElementById('experience-error').textContent = '';
+        document.getElementById('receiveEmails-error').textContent = '';
+        chatId = null; // Reset Chat ID
     }
+
+    function resetSections() {
+        heroSection.style.display = 'none';
+        heroSection.style.animation = 'none';
+        heroSection.classList.remove('active');
+        formSection.style.display = 'none';
+        formSection.style.animation = 'none';
+        formSection.classList.remove('active');
+        chatSection.style.display = 'none';
+        chatSection.style.animation = 'none';
+        chatSection.classList.remove('active');
+    }
+
+    const letsBeginBtn = document.getElementById('letsBeginBtn');
+    const learnMoreBtn = document.getElementById('learnMoreBtn');
+    const backBtn = document.getElementById('backBtn');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const heroSection = document.getElementById('hero-section');
+    const formSection = document.getElementById('form-section');
+    const chatSection = document.getElementById('chat-section');
+    const indicators = document.querySelectorAll('.indicator');
+    const steps = document.querySelectorAll('.step');
+    const prevStepBtn = document.getElementById('prevStepBtn');
+    const nextStepBtn = document.getElementById('nextStepBtn');
+    const submitBtn = document.getElementById('submitForm');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const chatMessages = document.getElementById('chatMessages');
+    let currentStep = 0;
+
+    chatSection.style.display = 'none';
+    chatSection.classList.remove('active');
 
     function switchStep(newStep) {
         if (newStep >= 0 && newStep < steps.length) {
-            if (newStep > currentStep && !validateCurrentStep(currentStep)) return;
+            if (newStep > currentStep && !validateCurrentStep(currentStep)) {
+                return;
+            }
             steps[currentStep].classList.remove('active');
             indicators[currentStep].classList.remove('active');
             currentStep = newStep;
             steps[currentStep].classList.add('active');
             indicators[currentStep].classList.add('active');
+            updateSubmitButton();
         }
     }
 
-    // Event listeners for form inputs
-    document.getElementById('name')?.addEventListener('input', updateSubmitButton);
-    document.getElementById('email')?.addEventListener('input', updateSubmitButton);
-    document.querySelectorAll('input[name="companySize"]').forEach(r => r.addEventListener('change', updateSubmitButton));
-    document.getElementById('occupation')?.addEventListener('input', updateSubmitButton);
-    document.querySelectorAll('input[name="experience"]').forEach(r => r.addEventListener('change', updateSubmitButton));
-    document.querySelectorAll('input[name="receiveEmails"]').forEach(r => r.addEventListener('change', updateSubmitButton));
-
-    prevStepBtn?.addEventListener('click', () => switchStep(currentStep - 1));
-    nextStepBtn?.addEventListener('click', () => switchStep(currentStep + 1));
-    indicators.forEach((ind, idx) => ind.addEventListener('click', () => {
-        if (idx <= currentStep || validateCurrentStep(currentStep)) switchStep(idx);
-    }));
-
-    function resetSections() {
-        heroSection.style.display = 'none';
-        formSection.style.display = 'none';
-        chatSection.style.display = 'none';
-        heroSection.classList.remove('active');
-        formSection.classList.remove('active');
-        chatSection.classList.remove('active');
+    function updateSubmitButton() {
+        submitBtn.disabled = !validateAllSteps();
     }
 
-    function resetFormFields() {
-        document.getElementById('name').value = '';
-        document.getElementById('email').value = '';
-        document.querySelectorAll('input[name="companySize"]').forEach(r => r.checked = false);
-        document.getElementById('occupation').value = '';
-        document.querySelectorAll('input[name="experience"]').forEach(r => r.checked = false);
-        document.querySelectorAll('input[name="receiveEmails"]').forEach(r => r.checked = false);
-        document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
-        currentStep = 0;
-        steps.forEach((s, i) => {
-            s.classList.toggle('active', i === 0);
-            indicators[i].classList.toggle('active', i === 0);
+    const receiveEmailsCheckboxes = document.querySelectorAll('input[name="receiveEmails"]');
+    receiveEmailsCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                receiveEmailsCheckboxes.forEach(cb => {
+                    if (cb !== checkbox) cb.checked = false;
+                });
+            }
+            updateSubmitButton();
         });
-        updateSubmitButton();
-    }
+    });
 
-    letsBeginBtn?.addEventListener('click', (e) => {
+    document.getElementById('name').addEventListener('input', () => {
+        validateStep1();
+        updateSubmitButton();
+    });
+
+    document.getElementById('email').addEventListener('input', () => {
+        validateStep1();
+        updateSubmitButton();
+    });
+
+    document.querySelectorAll('input[name="companySize"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            validateStep2();
+            updateSubmitButton();
+        });
+    });
+
+    document.getElementById('occupation').addEventListener('input', () => {
+        validateStep3();
+        updateSubmitButton();
+    });
+
+    document.querySelectorAll('input[name="experience"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            validateStep4();
+            updateSubmitButton();
+        });
+    });
+
+    updateSubmitButton();
+
+    learnMoreBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'https://kamilkaczmarekkmz.github.io/MojaStrona/Why';
+    });
+
+    letsBeginBtn.addEventListener('click', (e) => {
         e.preventDefault();
         resetSections();
         heroSection.style.animation = 'fadeOut 1s forwards';
@@ -186,16 +292,13 @@ document.addEventListener('DOMContentLoaded', () => {
             formSection.style.display = 'flex';
             formSection.style.animation = 'fadeInUp 1s forwards';
             formSection.classList.add('active');
-            resetFormFields();
-        }, 500);
+            chatSection.style.display = 'none';
+            chatSection.classList.remove('active');
+            updateSubmitButton();
+        }, 1000);
     });
 
-    learnMoreBtn?.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.href = 'https://kamilkaczmarekkmz.github.io/MojaStrona/Why';
-    });
-
-    backBtn?.addEventListener('click', () => {
+    backBtn.addEventListener('click', () => {
         resetSections();
         formSection.style.animation = 'fadeOut 1s forwards';
         setTimeout(() => {
@@ -203,79 +306,215 @@ document.addEventListener('DOMContentLoaded', () => {
             heroSection.style.display = 'flex';
             heroSection.style.animation = 'fadeInUp 1s forwards';
             heroSection.classList.add('active');
-            resetFormFields();
-        }, 500);
+            chatSection.style.display = 'none';
+            chatSection.classList.remove('active');
+            heroH1.style.animation = 'none';
+            heroH2.style.animation = 'none';
+            heroP.style.animation = 'none';
+            heroButtons.style.animation = 'none';
+            setTimeout(() => {
+                heroH1.style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
+                heroH2.style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
+                heroP.style.animation = 'fadeInUp 1s forwards 0.6s';
+                heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
+            }, 10);
+            resetForm();
+            steps[currentStep].classList.remove('active');
+            indicators[currentStep].classList.remove('active');
+            currentStep = 0;
+            steps[currentStep].classList.add('active');
+            indicators[currentStep].classList.add('active');
+            updateSubmitButton();
+        }, 1000);
     });
 
-    // Chat functions
-    function addMessage(sender, text) {
-        const container = document.getElementById('chatMessages');
-        if (!container) return;
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message', sender);
-        msgDiv.textContent = text;
-        container.appendChild(msgDiv);
-        container.scrollTop = container.scrollHeight;
-    }
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            if (index <= currentStep || validateCurrentStep(currentStep)) {
+                switchStep(index);
+            }
+        });
+    });
 
-    submitBtn?.addEventListener('click', async () => {
+    prevStepBtn.addEventListener('click', () => {
+        switchStep(currentStep - 1);
+    });
+
+    nextStepBtn.addEventListener('click', () => {
+        switchStep(currentStep + 1);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (formSection.style.display !== 'none') {
+            if (e.key === 'ArrowLeft') {
+                switchStep(currentStep - 1);
+            } else if (e.key === 'ArrowRight' && validateCurrentStep(currentStep)) {
+                switchStep(currentStep + 1);
+            }
+        }
+    });
+
+    const formSteps = document.querySelector('.form-steps');
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    formSteps.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    formSteps.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50 && validateCurrentStep(currentStep)) {
+            switchStep(currentStep + 1);
+        } else if (touchEndX - touchStartX > 50) {
+            switchStep(currentStep - 1);
+        }
+    });
+
+    submitBtn.addEventListener('click', async () => {
         if (validateAllSteps()) {
             chatId = generateChatId();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const companySize = document.querySelector('input[name="companySize"]:checked')?.value;
+            const occupation = document.getElementById('occupation').value;
+            const experience = document.querySelector('input[name="experience"]:checked')?.value;
+            const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked')?.value;
+
             const formData = {
                 chatId,
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                companySize: document.querySelector('input[name="companySize"]:checked')?.value,
-                occupation: document.getElementById('occupation').value,
-                experience: document.querySelector('input[name="experience"]:checked')?.value,
-                receiveEmails: document.querySelector('input[name="receiveEmails"]:checked')?.value
+                name,
+                email,
+                companySize,
+                occupation,
+                experience,
+                receiveEmails
             };
+
             try {
                 const response = await fetch('http://localhost:5678/webhook/487a128f-9cef-47d3-9709-93ca4b7824e3', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData)
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
                 });
+
                 if (response.ok) {
+                    alert('Form submitted successfully!');
                     formSection.style.animation = 'fadeOut 1s forwards';
                     setTimeout(() => {
                         formSection.style.display = 'none';
+                        formSection.classList.remove('active');
                         chatSection.style.display = 'flex';
                         chatSection.style.animation = 'fadeInUp 1s forwards';
+                        chatSection.classList.add('active');
                         addMessage('bot', 'Hello! How can I assist you today?');
-                    }, 500);
-                } else { alert('Error submitting form'); chatId = null; }
-            } catch { alert('Connection error'); chatId = null; }
-        } else { alert('Please fill all steps correctly'); }
+                        resetForm();
+                        steps[currentStep].classList.remove('active');
+                        indicators[currentStep].classList.remove('active');
+                        currentStep = 0;
+                        steps[currentStep].classList.add('active');
+                        indicators[currentStep].classList.add('active');
+                    }, 1000);
+                } else {
+                    alert('Error submitting form. Please try again.');
+                    chatId = null;
+                }
+            } catch {
+                alert('Error submitting form. Please check your connection.');
+                chatId = null;
+            }
+        } else {
+            if (!validateStep1()) {
+                switchStep(0);
+            } else if (!validateStep2()) {
+                switchStep(1);
+            } else if (!validateStep3()) {
+                switchStep(2);
+            } else if (!validateStep4()) {
+                switchStep(3);
+            } else if (!validateStep5()) {
+                switchStep(4);
+            }
+        }
     });
 
-    const sendBtn = document.getElementById('sendMessageBtn');
-    const chatInput = document.getElementById('chatInput');
-    sendBtn?.addEventListener('click', async () => {
-        const msg = chatInput.value.trim();
-        if (msg && chatId) {
-            addMessage('user', msg);
+    function addMessage(sender, text) {
+        const message = document.createElement('div');
+        message.classList.add('message', sender);
+        message.textContent = text;
+        chatMessages.appendChild(message);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    sendMessageBtn.addEventListener('click', async () => {
+        const messageText = chatInput.value.trim();
+        if (messageText && chatId) {
+            addMessage('user', messageText);
             try {
-                const res = await fetch('http://localhost:5678/webhook/487a128f-9cef-47d3-9709-93ca4b7824e3', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chatId, message: msg })
+                const response = await fetch('http://localhost:5678/webhook/487a128f-9cef-47d3-9709-93ca4b7824e3', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ chatId, message: messageText })
                 });
-                if (res.ok) {
-                    const data = await res.json();
-                    addMessage('bot', data.response || 'Thanks for your message!');
-                } else { addMessage('bot', 'Error sending message'); }
-            } catch { addMessage('bot', 'Connection error'); }
-            chatInput.value = '';
-        } else if (!chatId) addMessage('bot', 'Please submit the form first');
-    });
-    chatInput?.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendBtn?.click(); });
 
-    closeChatBtn?.addEventListener('click', () => {
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.response) {
+                        addMessage('bot', data.response);
+                    } else {
+                        addMessage('bot', 'Thanks for your message! How can I help you further?');
+                    }
+                } else {
+                    addMessage('bot', 'Error sending message. Please try again.');
+                }
+            } catch {
+                addMessage('bot', 'Error sending message. Please check your connection.');
+            }
+            chatInput.value = '';
+        } else if (!chatId) {
+            addMessage('bot', 'Please submit the form first to start a chat.');
+            chatInput.value = '';
+        }
+    });
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessageBtn.click();
+        }
+    });
+
+    closeChatBtn.addEventListener('click', () => {
         resetSections();
         chatSection.style.animation = 'fadeOut 1s forwards';
         setTimeout(() => {
             chatSection.style.display = 'none';
             heroSection.style.display = 'flex';
             heroSection.style.animation = 'fadeInUp 1s forwards';
-            document.getElementById('chatMessages').innerHTML = '';
+            heroSection.classList.add('active');
+            heroH1.style.animation = 'none';
+            heroH2.style.animation = 'none';
+            heroP.style.animation = 'none';
+            heroButtons.style.animation = 'none';
+            setTimeout(() => {
+                heroH1.style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
+                heroH2.style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
+                heroP.style.animation = 'fadeInUp 1s forwards 0.6s';
+                heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
+            }, 10);
+            chatMessages.innerHTML = '';
             chatId = null;
-        }, 500);
+        }, 1000);
     });
+
+    setTimeout(() => {
+        const modelViewer = document.querySelector('model-viewer');
+        const poster = document.querySelector('.model-placeholder');
+        if (modelViewer && poster) {
+            poster.style.display = 'flex';
+        }
+    }, 5000);
 });
