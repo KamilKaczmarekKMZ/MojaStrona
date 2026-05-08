@@ -1,198 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Three Dimensions - Premium Design Studio specializing in automation and revenue growth">
-    <title>SmartSystemsKK</title>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ KMZ | SmartSystemsKK</title>
+    <style>
+        /* CSS w osobnym bloku poniżej */
+    </style>
 </head>
 <body>
-    <!-- Hexagonal Grid Background -->
-    <div id="bg-app">
-        <canvas id="webgl-canvas"></canvas>
-    </div>
+    <canvas id="webgl-canvas"></canvas>
+    <div id="bg-app"></div>
 
-    <!-- Hero Section -->
-    <section class="hero" id="hero-section">
-        <!-- 3D Model -->
-        <model-viewer
-            class="hero-model"
-            src="assets/twoje-logo.glb"
-            alt="3D logo Three Dimensions Studio"
-            interaction-prompt="none"
-            camera-orbit="0deg 90deg 0deg"
-            exposure="1.2"
-            environment-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
-            shadow-intensity="0"
-            shadow-softness="0.5"
-            auto-rotate
-            style="background-color: transparent;"
-        >
-            <div class="model-placeholder" slot="poster">
-                <p>3D Model Loading...</p>
+    <section id="hero-section" class="hero active">
+        <div class="hero-content">
+            <h1 class="animated-text">DJ KMZ</h1>
+            <div class="hero-buttons">
+                <button id="letsBeginBtn" class="btn btn-transparent">Let's Begin</button>
+                <button id="learnMoreBtn" class="btn btn-transparent">Learn more</button>
             </div>
-        </model-viewer>
-
-        <h1 class="animated-text">Automate Processes</h1>
-        <h2 class="animated-text">Grow Revenue</h2>
-        <p>Your competitive advantage starts now</p>
-        <div class="hero-buttons">
-            <a href="#" class="btn btn-primary" id="letsBeginBtn">Let's begin</a>
-            <a href="#" class="btn btn-secondary" id="learnMoreBtn">Learn more</a>
+        </div>
+        <!-- model 3D opcjonalny -->
+        <div class="hero-model">
+            <div class="model-placeholder"></div>
         </div>
     </section>
 
-    <!-- Form Section -->
-    <section class="form-section" id="form-section">
-        <button class="btn btn-back" id="backBtn">Back</button>
+    <section id="form-section" class="form-section">
+        <button id="backBtn" class="btn-back">← Back</button>
         <div class="form-steps">
-            <div class="step active" data-step="1">
-                <h3>Basic Information</h3>
-                <label for="name">Name:</label>
-                <input type="text" id="name" placeholder="Enter your name">
-                <p class="error-message" id="name-error"></p>
-                <label for="email">Email:</label>
-                <input type="email" id="email" placeholder="Enter your email">
-                <p class="error-message" id="email-error"></p>
+            <!-- Steps 1-5 -->
+            <div class="step active" data-step="0">
+                <h3>Contact Details</h3>
+                <label>Name</label>
+                <input type="text" id="name" placeholder="Your name">
+                <div id="name-error" class="error-message"></div>
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Your email">
+                <div id="email-error" class="error-message"></div>
+            </div>
+            <div class="step" data-step="1">
+                <h3>Company Size</h3>
+                <label class="container">1-10 employees
+                    <input type="radio" name="companySize" value="1-10">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <label class="container">11-50 employees
+                    <input type="radio" name="companySize" value="11-50">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <label class="container">51-200 employees
+                    <input type="radio" name="companySize" value="51-200">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <label class="container">201-500 employees
+                    <input type="radio" name="companySize" value="201-500">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <div id="companySize-error" class="error-message"></div>
             </div>
             <div class="step" data-step="2">
-                <h3>Company Size</h3>
-                <p class="error-message" id="companySize-error"></p>
-                <label class="container">
-                    <input type="radio" name="companySize" value="1-10">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
-                    </svg>
-                    <span>1 - 10 employees</span>
-                </label>
-                <label class="container">
-                    <input type="radio" name="companySize" value="10-50">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
-                    </svg>
-                    <span>10 - 50 employees</span>
-                </label>
-                <label class="container">
-                    <input type="radio" name="companySize" value="50-100">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
-                    </svg>
-                    <span>50 - 100 employees</span>
-                </label>
-                <label class="container">
-                    <input type="radio" name="companySize" value="100+">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
-                    </svg>
-                    <span>100+ employees</span>
-                </label>
+                <h3>What do you do?</h3>
+                <textarea id="occupation" placeholder="Describe your main activities..."></textarea>
+                <div id="occupation-error" class="error-message"></div>
             </div>
             <div class="step" data-step="3">
-                <h3>What do you do?</h3>
-                <textarea id="occupation" placeholder="Describe your activities..."></textarea>
-                <p class="error-message" id="occupation-error"></p>
+                <h3>Automation experience</h3>
+                <label class="container">None
+                    <input type="radio" name="experience" value="none">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <label class="container">Basic
+                    <input type="radio" name="experience" value="basic">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <label class="container">Intermediate
+                    <input type="radio" name="experience" value="intermediate">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <label class="container">Advanced
+                    <input type="radio" name="experience" value="advanced">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
+                    </svg>
+                </label>
+                <div id="experience-error" class="error-message"></div>
             </div>
             <div class="step" data-step="4">
-                <h3>Automation Experience</h3>
-                <p class="error-message" id="experience-error"></p>
-                <label class="container">
-                    <input type="radio" name="experience" value="None">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
+                <h3>Receive emails?</h3>
+                <label class="container">Yes
+                    <input type="radio" name="receiveEmails" value="yes">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
                     </svg>
-                    <span>No experience</span>
                 </label>
-                <label class="container">
-                    <input type="radio" name="experience" value="Basic">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
+                <label class="container">No
+                    <input type="radio" name="receiveEmails" value="no">
+                    <svg viewBox="0 0 64 64" height="25" width="25">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8" class="path"></path>
                     </svg>
-                    <span>Basic experience</span>
                 </label>
-                <label class="container">
-                    <input type="radio" name="experience" value="Advanced">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
-                    </svg>
-                    <span>Advanced experience</span>
-                </label>
+                <div id="receiveEmails-error" class="error-message"></div>
             </div>
-            <div class="step" data-step="5">
-                <h3>Would you like to receive automated emails with the latest promotions?</h3>
-                <p class="error-message" id="receiveEmails-error"></p>
-                <label class="container">
-                    <input type="checkbox" name="receiveEmails" value="Yes">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
-                    </svg>
-                    <span>Yes</span>
-                </label>
-                <label class="container">
-                    <input type="checkbox" name="receiveEmails" value="No">
-                    <svg viewBox="0 0 64 64" height="1em" width="1em">
-                        <path
-                            d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16"
-                            pathLength="575.0541381835938"
-                            class="path"
-                        ></path>
-                    </svg>
-                    <span>No</span>
-                </label>
-                <button id="submitForm" disabled>Submit</button>
+            <div class="step-navigation">
+                <button id="prevStepBtn" class="btn-nav prev-nav">← Prev</button>
+                <button id="nextStepBtn" class="btn-nav next-nav">Next →</button>
             </div>
+            <button id="submitForm" class="btn-submit" disabled>Submit</button>
         </div>
         <div class="step-indicators">
-            <button class="btn btn-nav prev-nav" id="prevStepBtn">Previous</button>
-            <span class="indicator active"></span>
-            <span class="indicator"></span>
-            <span class="indicator"></span>
-            <span class="indicator"></span>
-            <span class="indicator"></span>
-            <button class="btn btn-nav next-nav" id="nextStepBtn">Next</button>
+            <div class="indicator active"></div>
+            <div class="indicator"></div>
+            <div class="indicator"></div>
+            <div class="indicator"></div>
+            <div class="indicator"></div>
         </div>
     </section>
 
-    <!-- Chat Section -->
-    <section class="chat-section" id="chat-section">
-        <button class="btn btn-close" id="closeChatBtn">Close</button>
+    <section id="chat-section" class="chat-section">
+        <button id="closeChatBtn" class="btn-close">✕ Close</button>
         <div class="chat-container">
-            <h3>Chat with Us</h3>
-            <div class="chat-messages" id="chatMessages"></div>
+            <h3>Chat with us</h3>
+            <div id="chatMessages" class="chat-messages"></div>
             <div class="chat-input">
                 <input type="text" id="chatInput" placeholder="Type your message...">
                 <button id="sendMessageBtn">Send</button>
@@ -200,6 +143,8 @@
         </div>
     </section>
 
-    <script src="script.js"></script>
+    <script>
+        // JavaScript w osobnym bloku poniżej
+    </script>
 </body>
 </html>
