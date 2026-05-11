@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Winylowa Karuzela 3D - Pauza zatrzymuje winyl</title>
+    <title>Winylowa Karuzela 3D - Logo 3D na górze</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -16,6 +17,36 @@
             height: 100%;
             overflow: hidden;
             background-color: #0a0a0a;
+        }
+
+        /* === LOGO 3D NA GÓRZE === */
+        .logo-3d-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        .logo-3d {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .model-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            color: white;
+            font-size: 10px;
         }
 
         /* === WIZUALIZATOR AUDIO W TLE === */
@@ -483,10 +514,44 @@
             .vinyl-label {
                 font-size: 7px;
             }
+            .logo-3d-container {
+                width: 60px;
+                height: 60px;
+                top: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-3d-container {
+                width: 50px;
+                height: 50px;
+                top: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- LOGO 3D NA GÓRZE -->
+    <div class="logo-3d-container">
+        <model-viewer
+            class="logo-3d"
+            src="assets/twoje-logo.glb"
+            alt="3D Logo"
+            interaction-prompt="none"
+            camera-orbit="0deg 90deg 0deg"
+            exposure="1.2"
+            environment-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
+            shadow-intensity="0"
+            auto-rotate
+            rotation-per-second="15deg"
+            style="background-color: transparent; width: 100%; height: 100%;"
+        >
+            <div class="model-placeholder" slot="poster">
+                <p>Ładowanie...</p>
+            </div>
+        </model-viewer>
+    </div>
+
     <div id="visualizer-container">
         <canvas id="visualizer-canvas"></canvas>
     </div>
@@ -552,8 +617,8 @@
                 neonColor: { r: 156, g: 0, b: 255 },
                 vizColor: { r: 0.6, g: 0.2, b: 0.9 },
                 audioUrl: twojUtwor,
-                title: "Umbrela",
-                artist: "Twoja Muzyka"
+                title: "Hip Hop",
+                artist: "DJ KMZ"
             },
             {
                 cover: 'https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/Pop%20cover.png',
@@ -561,8 +626,8 @@
                 neonColor: { r: 0, g: 200, b: 100 },
                 vizColor: { r: 0.2, g: 0.8, b: 0.4 },
                 audioUrl: twojUtwor,
-                title: "Umbrela",
-                artist: "Twoja Muzyka"
+                title: "Pop",
+                artist: "DJ KMZ"
             }
         ];
         
@@ -700,17 +765,15 @@
             playerPlayBtn.textContent = '▶';
         }
         
-        // Pauza / Resume z poziomu odtwarzacza - zatrzymuje tylko dźwięk i obrót, ale pozostawia winyl widoczny
+        // Pauza / Resume z poziomu odtwarzacza
         function togglePlayPause() {
             if (!currentAudio || !currentAlbumCard) return;
             
             if (currentAudio.paused) {
-                // Wznowienie
                 currentAudio.play();
                 playerPlayBtn.textContent = '⏸';
                 isVinylSpinning = true;
             } else {
-                // Pauza
                 currentAudio.pause();
                 playerPlayBtn.textContent = '▶';
                 isVinylSpinning = false;
@@ -848,7 +911,7 @@
                     e.stopPropagation();
                     
                     if (!albumCard.isPlaying) {
-                        // STOP wszystkie inne i zatrzymaj odtwarzacz
+                        // STOP wszystkie inne
                         if (currentAudio) {
                             currentAudio.pause();
                             currentAudio = null;
@@ -862,7 +925,6 @@
                         stopVinylSpinning();
                         hidePlayer();
                         
-                        // Inicjalizuj AudioContext
                         if (!audioCtx) {
                             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                             analyser = audioCtx.createAnalyser();
@@ -919,7 +981,7 @@
                             alert("Nie można odtworzyć utworu. Błąd: " + err.message);
                         }
                     } else {
-                        // STOP - zatrzymaj i zresetuj wszystko
+                        // STOP - zatrzymaj i zresetuj
                         if (albumCard.audio) {
                             albumCard.audio.pause();
                             albumCard.audio.currentTime = 0;
