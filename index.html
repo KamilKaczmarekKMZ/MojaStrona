@@ -19,6 +19,94 @@
             background-color: #0a0a0a;
         }
 
+        /* === PRELOADER === */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Pasek ładowania */
+        .loader {
+            height: 2px;
+            width: 300px;
+            background: rgb(44, 44, 44);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loader .black_overlay {
+            background: linear-gradient(
+                87deg,
+                rgb(0, 0, 0) 0%,
+                rgba(0, 0, 0, 0.14) 30%,
+                rgba(0, 0, 0, 0.14) 70%,
+                rgb(0, 0, 0) 100%
+            );
+            position: absolute;
+            inset: 0px;
+        }
+
+        .loader .light {
+            width: 70px;
+            height: 100%;
+            position: absolute;
+            left: -20%;
+            top: 0px;
+            background: linear-gradient(
+                87deg,
+                rgba(0, 0, 0, 0) 0%,
+                rgb(0, 204, 255) 40%,
+                rgb(0, 204, 255) 60%,
+                rgba(0, 0, 0, 0) 100%
+            );
+            animation: light 2s infinite ease-in-out;
+        }
+
+        @keyframes light {
+            from {
+                left: -30%;
+            }
+            to {
+                left: 100%;
+            }
+        }
+
+        /* Napis LOADING */
+        .loading-text {
+            font-family: 'Inter', monospace;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: rgba(0, 204, 255, 0.8);
+            text-transform: uppercase;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 1;
+                text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
+            }
+        }
+
         /* === LOGO 3D NA GÓRZE === */
         .logo-3d-container {
             position: fixed;
@@ -29,6 +117,12 @@
             height: 80px;
             z-index: 200;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo-3d-container.loaded {
+            opacity: 1;
         }
 
         .logo-3d {
@@ -76,6 +170,12 @@
             justify-content: center;
             position: relative;
             z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #wrap.visible {
+            opacity: 1;
         }
 
         .wrapper {
@@ -493,6 +593,12 @@
             .player-times {
                 font-size: 9px;
             }
+            .loader {
+                width: 250px;
+            }
+            .loading-text {
+                font-size: 10px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -531,9 +637,19 @@
     </style>
 </head>
 <body>
+    <!-- PRELOADER -->
+    <div id="preloader" class="preloader">
+        <div class="loader">
+            <div class="black_overlay"></div>
+            <div class="light"></div>
+        </div>
+        <div class="loading-text">LOADING</div>
+    </div>
+
     <!-- LOGO 3D NA GÓRZE -->
-    <div class="logo-3d-container">
+    <div id="logoContainer" class="logo-3d-container">
         <model-viewer
+            id="logo3d"
             class="logo-3d"
             src="assets/twoje-logo.glb"
             alt="3D Logo"
@@ -597,6 +713,45 @@
     <script type="module">
         import * as THREE from "three";
 
+        // === PRELOADER – ukryj gdy wszystko gotowe ===
+        const preloader = document.getElementById('preloader');
+        const wrap = document.getElementById('wrap');
+        const logoContainer = document.getElementById('logoContainer');
+        
+        // Funkcja ukrywająca preloader
+        function hidePreloader() {
+            preloader.classList.add('hidden');
+            wrap.classList.add('visible');
+            logoContainer.classList.add('loaded');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        }
+        
+        // Sprawdzanie czy logo 3D jest załadowane
+        const logoModel = document.getElementById('logo3d');
+        let logoLoaded = false;
+        let threeReady = false;
+        
+        if (logoModel) {
+            logoModel.addEventListener('load', () => {
+                console.log('Logo 3D załadowane');
+                logoLoaded = true;
+                if (threeReady) hidePreloader();
+            });
+            
+            // Timeout na wypadek gdyby logo się nie załadowało (max 3 sekundy)
+            setTimeout(() => {
+                if (!logoLoaded) {
+                    console.log('Logo 3D timeout - kontynuuję bez czekania');
+                    logoLoaded = true;
+                    if (threeReady) hidePreloader();
+                }
+            }, 3000);
+        } else {
+            logoLoaded = true;
+        }
+        
         // === TWOJE UTWORY MP3 ===
         const twojUtwor = "https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/American%20Boy%20In%20Paris.mp3";
         
@@ -1179,6 +1334,12 @@
         initVisualizer();
         
         setTimeout(() => updateVisualizerColor(), 100);
+        
+        // Sygnalizacja że Three.js jest gotowy
+        setTimeout(() => {
+            threeReady = true;
+            if (logoLoaded) hidePreloader();
+        }, 500);
     </script>
 </body>
 </html>
