@@ -1,520 +1,586 @@
-function initializeBackground() {
-    try {
-        import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.16/build/backgrounds/grid1.cdn.min.js')
-            .then((module) => {
-                const Grid1Background = module.default;
-                const canvas = document.getElementById('webgl-canvas');
-                if (!canvas) return;
-                canvas.style.display = 'block';
-                canvas.style.width = '100vw';
-                canvas.style.height = '100vh';
-                canvas.style.zIndex = '-1';
+import * as THREE from "three";
 
-                const bg = Grid1Background(canvas);
-                bg.grid.setColors([0xC9AD92, 0x473523, 0xD8C4B0]);
-                bg.grid.light1.color.set(0xF5F5DC);
-                bg.grid.light1.intensity = 400;
-                bg.grid.light2.color.set(0x8B4513);
-                bg.grid.light2.intensity = 200;
+// === TWOJE UTWORY MP3 ===
+const twojUtwor = "https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/Umbrela.mp3";
 
-                const centerX = window.innerWidth / 2;
-                const centerY = window.innerHeight / 2;
-                bg.grid.light1.position.set(centerX, centerY, -100);
-                bg.grid.light2.position.set(centerX, centerY, -100);
+// === DANE PŁYT Z TWOIMI OKŁADKAMI ===
+const albumsData = [
+    {
+        cover: 'https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/Afro%20House%20Cover.png',
+        print: 'http://assets.teamrock.com/image/14d29742-c6f7-43f6-bbe1-6bf7b3b34c6f?w=800',
+        neonColor: { r: 0, g: 150, b: 255 },
+        vizColor: { r: 0.2, g: 0.5, b: 0.9 },
+        audioUrl: twojUtwor,
+        title: "Afro House",
+        artist: "Twoja Muzyka"
+    },
+    {
+        cover: 'https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/Hip%20Hop%20Cover.png',
+        print: 'http://assets.teamrock.com/image/14d29742-c6f7-43f6-bbe1-6bf7b3b34c6f?w=800',
+        neonColor: { r: 156, g: 0, b: 255 },
+        vizColor: { r: 0.6, g: 0.2, b: 0.9 },
+        audioUrl: twojUtwor,
+        title: "Hip Hop",
+        artist: "Twoja Muzyka"
+    },
+    {
+        cover: 'https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/Pop%20cover.png',
+        print: 'http://assets.teamrock.com/image/14d29742-c6f7-43f6-bbe1-6bf7b3b34c6f?w=800',
+        neonColor: { r: 0, g: 200, b: 100 },
+        vizColor: { r: 0.2, g: 0.8, b: 0.4 },
+        audioUrl: twojUtwor,
+        title: "Pop",
+        artist: "Twoja Muzyka"
+    }
+];
 
-                bg.camera.zoom = 1;
-                bg.camera.updateProjectionMatrix();
+// === KARUZELA 3D ===
+const carousel = document.getElementById('carousel3d');
+const quantity = albumsData.length;
+carousel.style.setProperty('--quantity', quantity);
 
-                canvas.removeEventListener('mousemove', bg.grid.onMouseMove);
-                canvas.removeEventListener('wheel', bg.grid.onMouseWheel);
-                canvas.removeEventListener('touchmove', bg.grid.onTouchMove);
+let currentRotation = 0;
+let currentCardIndex = 1;
+let cards = [];
+let isTransitioning = false;
 
-                function animate() {
-                    bg.grid.light1.position.set(centerX, centerY, -100);
-                    bg.grid.light2.position.set(centerX, centerY, -100);
-                    requestAnimationFrame(animate);
-                }
-                animate();
+// Audio context dla wizualizatora
+let audioCtx = null;
+let analyser = null;
+let dataArray = null;
+let currentAudio = null;
+let currentAlbumCard = null;
+let isSeeking = false;
 
-                window.addEventListener('resize', () => {
-                    const width = window.innerWidth;
-                    const height = window.innerHeight;
-                    bg.renderer.setSize(width, height);
-                    bg.camera.aspect = width / height;
-                    bg.camera.updateProjectionMatrix();
-                    bg.grid.light1.position.set(width / 2, height / 2, -100);
-                    bg.grid.light2.position.set(width / 2, height / 2, -100);
-                });
-            })
-            .catch(() => {});
-    } catch {}
+// Zmienne do sterowania animacją obrotu
+let isVinylSpinning = false;
+let rotationAnimation = null;
+let currentRotationDeg = 0;
+let lastTimestamp = 0;
+
+// Elementy odtwarzacza
+const player = document.getElementById('player');
+const playerPlayBtn = document.getElementById('playerPlayBtn');
+const playerTitle = document.getElementById('playerTitle');
+const playerArtist = document.getElementById('playerArtist');
+const progressFill = document.getElementById('progressFill');
+const progressWrapper = document.getElementById('progressWrapper');
+const currentTimeSpan = document.getElementById('currentTime');
+const durationTimeSpan = document.getElementById('durationTime');
+
+let updateInterval = null;
+
+function formatTime(seconds) {
+    if (isNaN(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeBackground();
-
-    const heroH1 = document.querySelector('.hero h1');
-    const heroH2 = document.querySelector('.hero h2');
-    const heroP = document.querySelector('.hero p');
-    const heroButtons = document.querySelector('.hero-buttons');
-    if (heroH1 && heroH2 && heroP && heroButtons) {
-        heroH1.classList.add('animated-text');
-        heroH2.classList.add('animated-text');
-        heroH1.style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
-        heroH2.style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
-        heroP.style.animation = 'fadeInUp 1s forwards 0.6s';
-        heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
+function updateProgressBar() {
+    if (!currentAudio || !currentAlbumCard) return;
+    if (currentAudio.duration && !isNaN(currentAudio.duration)) {
+        const percent = (currentAudio.currentTime / currentAudio.duration) * 100;
+        progressFill.style.width = `${percent}%`;
+        currentTimeSpan.textContent = formatTime(currentAudio.currentTime);
+        durationTimeSpan.textContent = formatTime(currentAudio.duration);
     }
+}
 
-    // Generate unique Chat ID
-    function generateChatId() {
-        return 'chat-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-    }
-
-    let chatId = null;
-
-    function validateStep1() {
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const nameError = document.getElementById('name-error');
-        const emailError = document.getElementById('email-error');
-
-        let isValid = true;
-
-        if (!name) {
-            nameError.textContent = 'Name is required';
-            isValid = false;
-        } else {
-            nameError.textContent = '';
+function startProgressUpdates() {
+    if (updateInterval) clearInterval(updateInterval);
+    updateInterval = setInterval(() => {
+        if (currentAudio && currentAlbumCard) {
+            updateProgressBar();
         }
+    }, 100);
+}
 
-        if (!email) {
-            emailError.textContent = 'Email is required';
-            isValid = false;
-        } else if (!emailRegex.test(email)) {
-            emailError.textContent = 'Please enter a valid email';
-            isValid = false;
-        } else {
-            emailError.textContent = '';
-        }
-
-        return isValid;
+function stopProgressUpdates() {
+    if (updateInterval) {
+        clearInterval(updateInterval);
+        updateInterval = null;
     }
+}
 
-    function validateStep2() {
-        const companySize = document.querySelector('input[name="companySize"]:checked');
-        const companySizeError = document.getElementById('companySize-error');
+function showPlayer(title, artist) {
+    playerTitle.textContent = title;
+    playerArtist.textContent = artist;
+    progressFill.style.width = '0%';
+    currentTimeSpan.textContent = '0:00';
+    durationTimeSpan.textContent = '0:00';
+    player.classList.add('visible');
+    startProgressUpdates();
+}
 
-        if (!companySize) {
-            companySizeError.textContent = 'Please select a company size';
-            return false;
-        } else {
-            companySizeError.textContent = '';
-            return true;
+function hidePlayer() {
+    player.classList.remove('visible');
+    stopProgressUpdates();
+}
+
+// Funkcje do sterowania obrotem winyla
+function startVinylSpinning(vinylElement) {
+    if (rotationAnimation) cancelAnimationFrame(rotationAnimation);
+    lastTimestamp = 0;
+    
+    function animateSpin(timestamp) {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const delta = Math.min(0.033, (timestamp - lastTimestamp) / 1000);
+        lastTimestamp = timestamp;
+        
+        if (isVinylSpinning && vinylElement) {
+            currentRotationDeg += 72 * delta;
+            currentRotationDeg = currentRotationDeg % 360;
+            vinylElement.style.transform = `translate(-50%, -50%) rotate(${currentRotationDeg}deg)`;
         }
+        rotationAnimation = requestAnimationFrame(animateSpin);
     }
+    rotationAnimation = requestAnimationFrame(animateSpin);
+}
 
-    function validateStep3() {
-        const occupation = document.getElementById('occupation').value.trim();
-        const occupationError = document.getElementById('occupation-error');
-
-        if (!occupation) {
-            occupationError.textContent = 'Please describe your activities';
-            return false;
-        } else {
-            occupationError.textContent = '';
-            return true;
-        }
+function stopVinylSpinning() {
+    if (rotationAnimation) {
+        cancelAnimationFrame(rotationAnimation);
+        rotationAnimation = null;
     }
+}
 
-    function validateStep4() {
-        const experience = document.querySelector('input[name="experience"]:checked');
-        const experienceError = document.getElementById('experience-error');
-
-        if (!experience) {
-            experienceError.textContent = 'Please select your automation experience';
-            return false;
-        } else {
-            experienceError.textContent = '';
-            return true;
-        }
+function resetVinylRotation(vinylElement) {
+    currentRotationDeg = 0;
+    if (vinylElement) {
+        vinylElement.style.transform = `translate(-50%, -50%) rotate(0deg)`;
     }
+}
 
-    function validateStep5() {
-        const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked');
-        const receiveEmailsError = document.getElementById('receiveEmails-error');
-
-        if (!receiveEmails) {
-            receiveEmailsError.textContent = 'Please select an option';
-            return false;
-        } else {
-            receiveEmailsError.textContent = '';
-            return true;
-        }
+function stopAllAudioAndReset() {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
     }
-
-    function validateCurrentStep(stepIndex) {
-        switch (stepIndex) {
-            case 0: return validateStep1();
-            case 1: return validateStep2();
-            case 2: return validateStep3();
-            case 3: return validateStep4();
-            case 4: return validateStep5();
-            default: return true;
-        }
+    if (currentAlbumCard) {
+        currentAlbumCard.isPlaying = false;
+        currentAlbumCard.updateVisualState();
+        currentAlbumCard = null;
     }
+    isVinylSpinning = false;
+    stopVinylSpinning();
+    hidePlayer();
+    playerPlayBtn.textContent = '▶';
+}
 
-    function validateAllSteps() {
-        return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
+// Pauza / Resume z poziomu odtwarzacza
+function togglePlayPause() {
+    if (!currentAudio || !currentAlbumCard) return;
+    
+    if (currentAudio.paused) {
+        currentAudio.play();
+        playerPlayBtn.textContent = '⏸';
+        isVinylSpinning = true;
+    } else {
+        currentAudio.pause();
+        playerPlayBtn.textContent = '▶';
+        isVinylSpinning = false;
     }
+}
 
-    function resetForm() {
-        document.getElementById('name').value = '';
-        document.getElementById('email').value = '';
-        document.querySelectorAll('input[name="companySize"]').forEach(radio => radio.checked = false);
-        document.getElementById('occupation').value = '';
-        document.querySelectorAll('input[name="experience"]').forEach(radio => radio.checked = false);
-        document.querySelectorAll('input[name="receiveEmails"]').forEach(checkbox => checkbox.checked = false);
-        document.getElementById('name-error').textContent = '';
-        document.getElementById('email-error').textContent = '';
-        document.getElementById('companySize-error').textContent = '';
-        document.getElementById('occupation-error').textContent = '';
-        document.getElementById('experience-error').textContent = '';
-        document.getElementById('receiveEmails-error').textContent = '';
-        chatId = null; // Reset Chat ID
-    }
+playerPlayBtn.addEventListener('click', togglePlayPause);
 
-    function resetSections() {
-        heroSection.style.display = 'none';
-        heroSection.style.animation = 'none';
-        heroSection.classList.remove('active');
-        formSection.style.display = 'none';
-        formSection.style.animation = 'none';
-        formSection.classList.remove('active');
-        chatSection.style.display = 'none';
-        chatSection.style.animation = 'none';
-        chatSection.classList.remove('active');
-    }
-
-    const letsBeginBtn = document.getElementById('letsBeginBtn');
-    const learnMoreBtn = document.getElementById('learnMoreBtn');
-    const backBtn = document.getElementById('backBtn');
-    const closeChatBtn = document.getElementById('closeChatBtn');
-    const heroSection = document.getElementById('hero-section');
-    const formSection = document.getElementById('form-section');
-    const chatSection = document.getElementById('chat-section');
-    const indicators = document.querySelectorAll('.indicator');
-    const steps = document.querySelectorAll('.step');
-    const prevStepBtn = document.getElementById('prevStepBtn');
-    const nextStepBtn = document.getElementById('nextStepBtn');
-    const submitBtn = document.getElementById('submitForm');
-    const chatInput = document.getElementById('chatInput');
-    const sendMessageBtn = document.getElementById('sendMessageBtn');
-    const chatMessages = document.getElementById('chatMessages');
-    let currentStep = 0;
-
-    chatSection.style.display = 'none';
-    chatSection.classList.remove('active');
-
-    function switchStep(newStep) {
-        if (newStep >= 0 && newStep < steps.length) {
-            if (newStep > currentStep && !validateCurrentStep(currentStep)) {
-                return;
-            }
-            steps[currentStep].classList.remove('active');
-            indicators[currentStep].classList.remove('active');
-            currentStep = newStep;
-            steps[currentStep].classList.add('active');
-            indicators[currentStep].classList.add('active');
-            updateSubmitButton();
-        }
-    }
-
-    function updateSubmitButton() {
-        submitBtn.disabled = !validateAllSteps();
-    }
-
-    const receiveEmailsCheckboxes = document.querySelectorAll('input[name="receiveEmails"]');
-    receiveEmailsCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            if (checkbox.checked) {
-                receiveEmailsCheckboxes.forEach(cb => {
-                    if (cb !== checkbox) cb.checked = false;
-                });
-            }
-            updateSubmitButton();
-        });
+function generateCarousel() {
+    carousel.innerHTML = '';
+    cards = [];
+    
+    albumsData.forEach((data, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.setProperty('--index', idx);
+        
+        card.innerHTML = `
+            <div class="album-card" data-index="${idx}">
+                <div class="neon-glow" style="box-shadow: 
+                    0 0 20px 5px rgba(${data.neonColor.r}, ${data.neonColor.g}, ${data.neonColor.b}, 0.6),
+                    0 0 40px 15px rgba(${data.neonColor.r}, ${data.neonColor.g}, ${data.neonColor.b}, 0.4),
+                    0 0 80px 25px rgba(${data.neonColor.r}, ${data.neonColor.g}, ${data.neonColor.b}, 0.2),
+                    inset 0 0 15px 3px rgba(${data.neonColor.r}, ${data.neonColor.g}, ${data.neonColor.b}, 0.5);"></div>
+                <div class="cover" style="background-image: url('${data.cover}');"></div>
+                <div class="vinyl">
+                    <div class="print" style="background-image: url('${data.print}');"></div>
+                    <div class="vinyl-label"><span>${data.title.substring(0, 10)}</span></div>
+                </div>
+                <button class="playBtn">▶</button>
+            </div>
+        `;
+        
+        carousel.appendChild(card);
+        cards.push(card);
     });
+    
+    updateCarouselRotation();
+    updateActiveCard();
+    initRotation();
+}
 
-    document.getElementById('name').addEventListener('input', () => {
-        validateStep1();
-        updateSubmitButton();
-    });
+const anglePerCard = 360 / quantity;
 
-    document.getElementById('email').addEventListener('input', () => {
-        validateStep1();
-        updateSubmitButton();
-    });
-
-    document.querySelectorAll('input[name="companySize"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            validateStep2();
-            updateSubmitButton();
-        });
-    });
-
-    document.getElementById('occupation').addEventListener('input', () => {
-        validateStep3();
-        updateSubmitButton();
-    });
-
-    document.querySelectorAll('input[name="experience"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            validateStep4();
-            updateSubmitButton();
-        });
-    });
-
-    updateSubmitButton();
-
-    learnMoreBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.href = 'https://kamilkaczmarekkmz.github.io/MojaStrona/Why';
-    });
-
-    letsBeginBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        resetSections();
-        heroSection.style.animation = 'fadeOut 1s forwards';
-        setTimeout(() => {
-            heroSection.style.display = 'none';
-            formSection.style.display = 'flex';
-            formSection.style.animation = 'fadeInUp 1s forwards';
-            formSection.classList.add('active');
-            chatSection.style.display = 'none';
-            chatSection.classList.remove('active');
-            updateSubmitButton();
-        }, 1000);
-    });
-
-    backBtn.addEventListener('click', () => {
-        resetSections();
-        formSection.style.animation = 'fadeOut 1s forwards';
-        setTimeout(() => {
-            formSection.style.display = 'none';
-            heroSection.style.display = 'flex';
-            heroSection.style.animation = 'fadeInUp 1s forwards';
-            heroSection.classList.add('active');
-            chatSection.style.display = 'none';
-            chatSection.classList.remove('active');
-            heroH1.style.animation = 'none';
-            heroH2.style.animation = 'none';
-            heroP.style.animation = 'none';
-            heroButtons.style.animation = 'none';
-            setTimeout(() => {
-                heroH1.style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
-                heroH2.style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
-                heroP.style.animation = 'fadeInUp 1s forwards 0.6s';
-                heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
-            }, 10);
-            resetForm();
-            steps[currentStep].classList.remove('active');
-            indicators[currentStep].classList.remove('active');
-            currentStep = 0;
-            steps[currentStep].classList.add('active');
-            indicators[currentStep].classList.add('active');
-            updateSubmitButton();
-        }, 1000);
-    });
-
-    indicators.forEach((indicator, index) => {
-        indicator.addEventListener('click', () => {
-            if (index <= currentStep || validateCurrentStep(currentStep)) {
-                switchStep(index);
-            }
-        });
-    });
-
-    prevStepBtn.addEventListener('click', () => {
-        switchStep(currentStep - 1);
-    });
-
-    nextStepBtn.addEventListener('click', () => {
-        switchStep(currentStep + 1);
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (formSection.style.display !== 'none') {
-            if (e.key === 'ArrowLeft') {
-                switchStep(currentStep - 1);
-            } else if (e.key === 'ArrowRight' && validateCurrentStep(currentStep)) {
-                switchStep(currentStep + 1);
-            }
-        }
-    });
-
-    const formSteps = document.querySelector('.form-steps');
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    formSteps.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-
-    formSteps.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        if (touchStartX - touchEndX > 50 && validateCurrentStep(currentStep)) {
-            switchStep(currentStep + 1);
-        } else if (touchEndX - touchStartX > 50) {
-            switchStep(currentStep - 1);
-        }
-    });
-
-    submitBtn.addEventListener('click', async () => {
-        if (validateAllSteps()) {
-            chatId = generateChatId();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const companySize = document.querySelector('input[name="companySize"]:checked')?.value;
-            const occupation = document.getElementById('occupation').value;
-            const experience = document.querySelector('input[name="experience"]:checked')?.value;
-            const receiveEmails = document.querySelector('input[name="receiveEmails"]:checked')?.value;
-
-            const formData = {
-                chatId,
-                name,
-                email,
-                companySize,
-                occupation,
-                experience,
-                receiveEmails
-            };
-
-            try {
-                const response = await fetch('http://localhost:5678/webhook/487a128f-9cef-47d3-9709-93ca4b7824e3', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    alert('Form submitted successfully!');
-                    formSection.style.animation = 'fadeOut 1s forwards';
-                    setTimeout(() => {
-                        formSection.style.display = 'none';
-                        formSection.classList.remove('active');
-                        chatSection.style.display = 'flex';
-                        chatSection.style.animation = 'fadeInUp 1s forwards';
-                        chatSection.classList.add('active');
-                        addMessage('bot', 'Hello! How can I assist you today?');
-                        resetForm();
-                        steps[currentStep].classList.remove('active');
-                        indicators[currentStep].classList.remove('active');
-                        currentStep = 0;
-                        steps[currentStep].classList.add('active');
-                        indicators[currentStep].classList.add('active');
-                    }, 1000);
-                } else {
-                    alert('Error submitting form. Please try again.');
-                    chatId = null;
-                }
-            } catch {
-                alert('Error submitting form. Please check your connection.');
-                chatId = null;
-            }
-        } else {
-            if (!validateStep1()) {
-                switchStep(0);
-            } else if (!validateStep2()) {
-                switchStep(1);
-            } else if (!validateStep3()) {
-                switchStep(2);
-            } else if (!validateStep4()) {
-                switchStep(3);
-            } else if (!validateStep5()) {
-                switchStep(4);
-            }
-        }
-    });
-
-    function addMessage(sender, text) {
-        const message = document.createElement('div');
-        message.classList.add('message', sender);
-        message.textContent = text;
-        chatMessages.appendChild(message);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    sendMessageBtn.addEventListener('click', async () => {
-        const messageText = chatInput.value.trim();
-        if (messageText && chatId) {
-            addMessage('user', messageText);
-            try {
-                const response = await fetch('http://localhost:5678/webhook/487a128f-9cef-47d3-9709-93ca4b7824e3', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ chatId, message: messageText })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.response) {
-                        addMessage('bot', data.response);
-                    } else {
-                        addMessage('bot', 'Thanks for your message! How can I help you further?');
-                    }
-                } else {
-                    addMessage('bot', 'Error sending message. Please try again.');
-                }
-            } catch {
-                addMessage('bot', 'Error sending message. Please check your connection.');
-            }
-            chatInput.value = '';
-        } else if (!chatId) {
-            addMessage('bot', 'Please submit the form first to start a chat.');
-            chatInput.value = '';
-        }
-    });
-
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendMessageBtn.click();
-        }
-    });
-
-    closeChatBtn.addEventListener('click', () => {
-        resetSections();
-        chatSection.style.animation = 'fadeOut 1s forwards';
-        setTimeout(() => {
-            chatSection.style.display = 'none';
-            heroSection.style.display = 'flex';
-            heroSection.style.animation = 'fadeInUp 1s forwards';
-            heroSection.classList.add('active');
-            heroH1.style.animation = 'none';
-            heroH2.style.animation = 'none';
-            heroP.style.animation = 'none';
-            heroButtons.style.animation = 'none';
-            setTimeout(() => {
-                heroH1.style.animation = 'fadeInUp 1s forwards 0.3s, glowText 1.5s ease-in-out forwards 0.3s';
-                heroH2.style.animation = 'fadeInUp 1s forwards 0.4s, glowText 1.5s ease-in-out forwards 0.4s';
-                heroP.style.animation = 'fadeInUp 1s forwards 0.6s';
-                heroButtons.style.animation = 'fadeInUp 1s forwards 0.9s';
-            }, 10);
-            chatMessages.innerHTML = '';
-            chatId = null;
-        }, 1000);
-    });
-
+// NASTĘPNA PŁYTA (→) - idzie w prawo
+function nextCard() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentRotation += anglePerCard;
+    carousel.style.transform = `perspective(1000px) rotateX(0deg) rotateY(${currentRotation}deg)`;
     setTimeout(() => {
-        const modelViewer = document.querySelector('model-viewer');
-        const poster = document.querySelector('.model-placeholder');
-        if (modelViewer && poster) {
-            poster.style.display = 'flex';
+        updateActiveCard();
+        updateVisualizerColor();
+        isTransitioning = false;
+    }, 600);
+}
+
+// POPRZEDNIA PŁYTA (←) - idzie w lewo
+function prevCard() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentRotation -= anglePerCard;
+    carousel.style.transform = `perspective(1000px) rotateX(0deg) rotateY(${currentRotation}deg)`;
+    setTimeout(() => {
+        updateActiveCard();
+        updateVisualizerColor();
+        isTransitioning = false;
+    }, 600);
+}
+
+function updateCarouselRotation() {
+    carousel.style.transform = `perspective(1000px) rotateX(0deg) rotateY(${currentRotation}deg)`;
+}
+
+function updateActiveCard() {
+    const rawAngle = (-currentRotation) % 360;
+    let angle = rawAngle < 0 ? rawAngle + 360 : rawAngle;
+    
+    let bestIdx = 0;
+    let bestDiff = 360;
+    
+    for (let i = 0; i < quantity; i++) {
+        const cardAngle = (i * anglePerCard) % 360;
+        let diff = Math.abs(cardAngle - angle);
+        if (diff > 180) diff = 360 - diff;
+        if (diff < bestDiff) {
+            bestDiff = diff;
+            bestIdx = i;
         }
-    }, 5000);
+    }
+    
+    currentCardIndex = bestIdx;
+    
+    cards.forEach((card, idx) => {
+        card.classList.remove('active');
+        if (idx === bestIdx) {
+            card.classList.add('active');
+        }
+    });
+}
+
+function updateVisualizerColor() {
+    if (!visualizerMaterial) return;
+    const color = albumsData[currentCardIndex].vizColor;
+    visualizerMaterial.uniforms.activeColor.value = new THREE.Vector3(color.r, color.g, color.b);
+}
+
+function initRotation() {
+    cards.forEach((card, idx) => {
+        const albumCard = card.querySelector('.album-card');
+        const playBtn = card.querySelector('.playBtn');
+        const cover = card.querySelector('.cover');
+        const vinyl = card.querySelector('.vinyl');
+        const trackData = albumsData[idx];
+        
+        albumCard.isPlaying = false;
+        albumCard.updateVisualState = function() {
+            if (albumCard.isPlaying) {
+                cover.classList.add('hidden');
+                vinyl.classList.add('visible');
+                playBtn.classList.add('playing');
+                playBtn.textContent = '⏹';
+                isVinylSpinning = true;
+                startVinylSpinning(vinyl);
+            } else {
+                cover.classList.remove('hidden');
+                vinyl.classList.remove('visible');
+                playBtn.classList.remove('playing');
+                playBtn.textContent = '▶';
+                isVinylSpinning = false;
+                stopVinylSpinning();
+                resetVinylRotation(vinyl);
+            }
+        };
+        
+        playBtn.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            
+            if (!albumCard.isPlaying) {
+                // STOP wszystkie inne
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+                if (currentAlbumCard) {
+                    currentAlbumCard.isPlaying = false;
+                    currentAlbumCard.updateVisualState();
+                    currentAlbumCard = null;
+                }
+                isVinylSpinning = false;
+                stopVinylSpinning();
+                hidePlayer();
+                
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 256;
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                }
+                
+                try {
+                    if (audioCtx.state === 'suspended') {
+                        await audioCtx.resume();
+                    }
+                    
+                    const audio = new Audio();
+                    audio.crossOrigin = "anonymous";
+                    audio.preload = "auto";
+                    audio.src = trackData.audioUrl;
+                    audio.loop = false;
+                    
+                    const source = audioCtx.createMediaElementSource(audio);
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    
+                    await audio.play();
+                    
+                    currentAudio = audio;
+                    currentAlbumCard = albumCard;
+                    albumCard.isPlaying = true;
+                    albumCard.updateVisualState();
+                    albumCard.audio = audio;
+                    
+                    showPlayer(trackData.title, trackData.artist);
+                    playerPlayBtn.textContent = '⏸';
+                    
+                    audio.addEventListener('ended', () => {
+                        if (currentAlbumCard === albumCard) {
+                            stopAllAudioAndReset();
+                        }
+                    });
+                    
+                    audio.addEventListener('loadedmetadata', () => {
+                        durationTimeSpan.textContent = formatTime(audio.duration);
+                    });
+                    
+                    audio.addEventListener('timeupdate', () => {
+                        if (currentAlbumCard === albumCard && !isSeeking) {
+                            const percent = (audio.currentTime / audio.duration) * 100;
+                            progressFill.style.width = `${percent}%`;
+                            currentTimeSpan.textContent = formatTime(audio.currentTime);
+                        }
+                    });
+                    
+                } catch(err) {
+                    console.error("Playback error:", err);
+                    alert("Nie można odtworzyć utworu. Błąd: " + err.message);
+                }
+            } else {
+                // STOP - zatrzymaj i zresetuj
+                if (albumCard.audio) {
+                    albumCard.audio.pause();
+                    albumCard.audio.currentTime = 0;
+                    albumCard.audio = null;
+                }
+                albumCard.isPlaying = false;
+                albumCard.updateVisualState();
+                if (currentAlbumCard === albumCard) {
+                    currentAlbumCard = null;
+                    currentAudio = null;
+                    hidePlayer();
+                    playerPlayBtn.textContent = '▶';
+                }
+                isVinylSpinning = false;
+                stopVinylSpinning();
+            }
+        });
+        
+        albumCard.updateVisualState();
+    });
+}
+
+// === Obsługa przeciągania paska postępu ===
+let isDragging = false;
+
+progressWrapper.addEventListener('mousedown', (e) => {
+    if (!currentAudio || !currentAlbumCard) return;
+    isDragging = true;
+    isSeeking = true;
+    const rect = progressWrapper.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = Math.min(100, Math.max(0, (x / rect.width) * 100));
+    progressFill.style.width = `${percent}%`;
+    const newTime = (percent / 100) * currentAudio.duration;
+    currentAudio.currentTime = newTime;
+    currentTimeSpan.textContent = formatTime(newTime);
 });
+
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging || !currentAudio) return;
+    const rect = progressWrapper.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = Math.min(100, Math.max(0, (x / rect.width) * 100));
+    progressFill.style.width = `${percent}%`;
+    const newTime = (percent / 100) * currentAudio.duration;
+    currentAudio.currentTime = newTime;
+    currentTimeSpan.textContent = formatTime(newTime);
+});
+
+window.addEventListener('mouseup', () => {
+    isDragging = false;
+    isSeeking = false;
+});
+
+// === WIZUALIZATOR ===
+let visualizerMaterial;
+let bassEnergy = 0;
+let transitionVal = 0;
+let timeVal = 0;
+
+const vertexShader = `
+varying vec2 vUv;
+void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+const fragmentShader = `
+uniform vec2 iResolution;
+uniform float iTime;
+uniform float bassEnergy;
+uniform float transitionFactor;
+uniform vec3 activeColor;
+
+varying vec2 vUv;
+
+float smootherstep(float edge0, float edge1, float x) {
+    float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+}
+
+void main() {
+    vec2 p = vUv;
+    vec2 center = vec2(0.5, 0.5);
+    float dist = distance(p, center);
+    
+    float pulse = 0.5 + bassEnergy * 0.8 * transitionFactor;
+    float glowSize = 0.3 + bassEnergy * 0.25 * transitionFactor;
+    
+    float glow = 1.0 - smootherstep(glowSize - 0.15, glowSize + 0.15, dist);
+    glow = pow(glow, 1.5) * pulse;
+    
+    float wave1 = sin(dist * 20.0 - iTime * 2.0) * 0.1;
+    float wave2 = sin(dist * 35.0 + iTime * 1.5) * 0.07;
+    float wave = (wave1 + wave2) * bassEnergy * transitionFactor;
+    
+    vec3 bgColor = vec3(0.03, 0.03, 0.08);
+    vec3 glowColor = activeColor;
+    
+    float noise = fract(sin(p.x * 200.0 + p.y * 100.0 + iTime * 10.0) * 43758.5453);
+    noise = noise * 0.05;
+    
+    vec3 finalColor = bgColor + glowColor * glow * 0.6 + glowColor * wave * 0.3 + noise;
+    float vignette = 1.0 - dist * 0.5;
+    finalColor *= vignette;
+    
+    gl_FragColor = vec4(finalColor, 0.9);
+}
+`;
+
+function initVisualizer() {
+    const canvas = document.getElementById('visualizer-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    camera.position.z = 1;
+    
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    
+    visualizerMaterial = new THREE.ShaderMaterial({
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader,
+        uniforms: {
+            iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+            iTime: { value: 0 },
+            bassEnergy: { value: 0 },
+            transitionFactor: { value: 0 },
+            activeColor: { value: new THREE.Vector3(0.2, 0.5, 0.9) }
+        },
+        transparent: true
+    });
+    
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, visualizerMaterial);
+    scene.add(mesh);
+    
+    function animateVisualizer() {
+        requestAnimationFrame(animateVisualizer);
+        timeVal += 0.016;
+        visualizerMaterial.uniforms.iTime.value = timeVal;
+        
+        let anyPlaying = false;
+        let energy = 0;
+        cards.forEach(card => {
+            const albumCard = card.querySelector('.album-card');
+            if (albumCard.isPlaying) {
+                anyPlaying = true;
+                energy = 0.5 + Math.sin(timeVal * 10) * 0.3;
+            }
+        });
+        
+        if (anyPlaying && transitionVal < 1.0) {
+            transitionVal = Math.min(transitionVal + 0.02, 1.0);
+            visualizerMaterial.uniforms.transitionFactor.value = transitionVal;
+        } else if (!anyPlaying && transitionVal > 0.0) {
+            transitionVal = Math.max(transitionVal - 0.02, 0.0);
+            visualizerMaterial.uniforms.transitionFactor.value = transitionVal;
+        }
+        
+        if (anyPlaying && analyser && dataArray && currentAudio && !currentAudio.paused) {
+            try {
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < 20; i++) {
+                    sum += dataArray[i];
+                }
+                energy = sum / (20 * 255);
+                bassEnergy = bassEnergy * 0.7 + energy * 0.3;
+            } catch(e) {}
+        } else if (anyPlaying) {
+            bassEnergy = bassEnergy * 0.8 + 0.3 * 0.2;
+        } else {
+            bassEnergy = bassEnergy * 0.95;
+        }
+        
+        visualizerMaterial.uniforms.bassEnergy.value = bassEnergy;
+        renderer.render(scene, camera);
+    }
+    
+    animateVisualizer();
+    
+    window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        visualizerMaterial.uniforms.iResolution.value.set(window.innerWidth, window.innerHeight);
+    });
+}
+
+// === START ===
+document.getElementById('prevBtn').addEventListener('click', () => prevCard());
+document.getElementById('nextBtn').addEventListener('click', () => nextCard());
+
+generateCarousel();
+initVisualizer();
+
+setTimeout(() => updateVisualizerColor(), 100);
