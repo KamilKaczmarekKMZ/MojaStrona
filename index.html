@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Winylowa Karuzela 3D - Logo 3D na górze</title>
+    <title>Winylowa Karuzela 3D - Zawsze widoczny przycisk</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         * {
@@ -41,7 +41,6 @@
             visibility: hidden;
         }
 
-        /* Pasek ładowania */
         .loader {
             height: 2px;
             width: 300px;
@@ -79,15 +78,10 @@
         }
 
         @keyframes light {
-            from {
-                left: -30%;
-            }
-            to {
-                left: 100%;
-            }
+            from { left: -30%; }
+            to { left: 100%; }
         }
 
-        /* Napis LOADING */
         .loading-text {
             font-family: 'Inter', monospace;
             font-size: 12px;
@@ -98,13 +92,8 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
-                opacity: 0.4;
-            }
-            50% {
-                opacity: 1;
-                text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
-            }
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; text-shadow: 0 0 5px rgba(0, 204, 255, 0.5); }
         }
 
         /* === LOGO 3D NA GÓRZE === */
@@ -353,7 +342,7 @@
             pointer-events: none;
         }
 
-        /* PRZYCISK STOP na płycie */
+        /* === PRZYCISK PLAY/STOP - ZAWSZE WIDOCZNY DLA AKTYWNEJ PŁYTY === */
         .playBtn {
             position: absolute;
             top: 50%;
@@ -375,8 +364,8 @@
             justify-content: center;
             transition: all 0.3s ease;
             font-family: Arial, sans-serif;
-            opacity: 0;
-            visibility: hidden;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
 
         .playBtn:hover {
@@ -385,14 +374,16 @@
             border-color: #A67A5B;
         }
 
-        .card.active .album-card:hover .playBtn:not(.playing) {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .playBtn.playing {
+        /* Przycisk zawsze widoczny dla aktywnej płyty */
+        .card.active .playBtn {
             opacity: 1 !important;
             visibility: visible !important;
+        }
+
+        /* Gdy płyta gra - zmiana koloru przycisku */
+        .playBtn.playing {
+            background: rgba(166, 122, 91, 0.9);
+            border-color: #A67A5B;
         }
 
         .vinyl-label {
@@ -599,6 +590,11 @@
             .loading-text {
                 font-size: 10px;
             }
+            .playBtn {
+                width: 38px;
+                height: 38px;
+                font-size: 12px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -606,11 +602,6 @@
                 --w: 160px;
                 --h: 160px;
                 --translateZ: 150px;
-            }
-            .playBtn {
-                width: 38px;
-                height: 38px;
-                font-size: 12px;
             }
             .nav-arrow {
                 width: 35px;
@@ -624,6 +615,11 @@
                 width: 60px;
                 height: 60px;
                 top: 15px;
+            }
+            .playBtn {
+                width: 38px;
+                height: 38px;
+                font-size: 12px;
             }
         }
 
@@ -713,12 +709,11 @@
     <script type="module">
         import * as THREE from "three";
 
-        // === PRELOADER – ukryj gdy wszystko gotowe ===
+        // === PRELOADER ===
         const preloader = document.getElementById('preloader');
         const wrap = document.getElementById('wrap');
         const logoContainer = document.getElementById('logoContainer');
         
-        // Funkcja ukrywająca preloader
         function hidePreloader() {
             preloader.classList.add('hidden');
             wrap.classList.add('visible');
@@ -728,22 +723,17 @@
             }, 500);
         }
         
-        // Sprawdzanie czy logo 3D jest załadowane
         const logoModel = document.getElementById('logo3d');
         let logoLoaded = false;
         let threeReady = false;
         
         if (logoModel) {
             logoModel.addEventListener('load', () => {
-                console.log('Logo 3D załadowane');
                 logoLoaded = true;
                 if (threeReady) hidePreloader();
             });
-            
-            // Timeout na wypadek gdyby logo się nie załadowało (max 3 sekundy)
             setTimeout(() => {
                 if (!logoLoaded) {
-                    console.log('Logo 3D timeout - kontynuuję bez czekania');
                     logoLoaded = true;
                     if (threeReady) hidePreloader();
                 }
@@ -753,7 +743,7 @@
         }
         
         // === TWOJE UTWORY MP3 ===
-        const twojUtwor = "https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/American%20Boy%20In%20Pariss.mp3";
+        const twojUtwor = "https://raw.githubusercontent.com/KamilKaczmarekKMZ/MojaStrona/main/American%20Boy%20In%20Paris.mp3";
         
         // === DANE PŁYT ===
         const albumsData = [
@@ -796,7 +786,6 @@
         let cards = [];
         let isTransitioning = false;
         
-        // Audio context dla wizualizatora
         let audioCtx = null;
         let analyser = null;
         let dataArray = null;
@@ -804,13 +793,11 @@
         let currentAlbumCard = null;
         let isSeeking = false;
         
-        // Zmienna do sterowania animacją obrotu
         let isVinylSpinning = false;
         let rotationAnimation = null;
         let currentRotationDeg = 0;
         let lastTimestamp = 0;
         
-        // Elementy odtwarzacza
         const player = document.getElementById('player');
         const playerPlayBtn = document.getElementById('playerPlayBtn');
         const playerTitle = document.getElementById('playerTitle');
@@ -870,7 +857,6 @@
             stopProgressUpdates();
         }
         
-        // Funkcje do sterowania obrotem winyla
         function startVinylSpinning(vinylElement) {
             if (rotationAnimation) cancelAnimationFrame(rotationAnimation);
             lastTimestamp = 0;
@@ -920,7 +906,6 @@
             playerPlayBtn.textContent = '▶';
         }
         
-        // Pauza / Resume z poziomu odtwarzacza
         function togglePlayPause() {
             if (!currentAudio || !currentAlbumCard) return;
             
@@ -1066,7 +1051,6 @@
                     e.stopPropagation();
                     
                     if (!albumCard.isPlaying) {
-                        // STOP wszystkie inne
                         if (currentAudio) {
                             currentAudio.pause();
                             currentAudio = null;
@@ -1136,7 +1120,6 @@
                             alert("Nie można odtworzyć utworu. Błąd: " + err.message);
                         }
                     } else {
-                        // STOP - zatrzymaj i zresetuj
                         if (albumCard.audio) {
                             albumCard.audio.pause();
                             albumCard.audio.currentTime = 0;
@@ -1286,7 +1269,6 @@
                     const albumCard = card.querySelector('.album-card');
                     if (albumCard.isPlaying) {
                         anyPlaying = true;
-                        energy = 0.5 + Math.sin(timeVal * 10) * 0.3;
                     }
                 });
                 
@@ -1309,7 +1291,7 @@
                         bassEnergy = bassEnergy * 0.7 + energy * 0.3;
                     } catch(e) {}
                 } else if (anyPlaying) {
-                    bassEnergy = bassEnergy * 0.8 + 0.3 * 0.2;
+                    bassEnergy = bassEnergy * 0.8 + 0.2 * 0.2;
                 } else {
                     bassEnergy = bassEnergy * 0.95;
                 }
@@ -1335,7 +1317,6 @@
         
         setTimeout(() => updateVisualizerColor(), 100);
         
-        // Sygnalizacja że Three.js jest gotowy
         setTimeout(() => {
             threeReady = true;
             if (logoLoaded) hidePreloader();
